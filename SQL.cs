@@ -104,7 +104,7 @@ namespace D00B
             {
                 m_Command = new SqlCommand(m_strQueryString, m_Connection);
                 if (IsStoredProcedure)
-                    m_Command.CommandType = System.Data.CommandType.StoredProcedure;
+                    m_Command.CommandType = CommandType.StoredProcedure;
                 m_Command.CommandTimeout = 0;
             }
 
@@ -137,7 +137,7 @@ namespace D00B
             {
                 m_Command = new SqlCommand(m_strQueryString, m_Connection);
                 if (IsStoredProcedure)
-                    m_Command.CommandType = System.Data.CommandType.StoredProcedure;
+                    m_Command.CommandType = CommandType.StoredProcedure;
                 m_Command.CommandTimeout = 0;
             }
 
@@ -164,7 +164,7 @@ namespace D00B
 
                 m_Command = new SqlCommand(m_strQueryString, m_Connection);
                 if (IsStoredProcedure)
-                    m_Command.CommandType = System.Data.CommandType.StoredProcedure;
+                    m_Command.CommandType = CommandType.StoredProcedure;
                 m_Command.CommandTimeout = 0;
             }
             if (Type == SqlDbType.NVarChar)
@@ -183,7 +183,7 @@ namespace D00B
             {
                 m_Command = new SqlCommand(m_strQueryString, m_Connection);
                 if (IsStoredProcedure)
-                    m_Command.CommandType = System.Data.CommandType.StoredProcedure;
+                    m_Command.CommandType = CommandType.StoredProcedure;
                 m_Command.CommandTimeout = 0;
             }
 

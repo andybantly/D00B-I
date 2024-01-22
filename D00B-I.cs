@@ -250,7 +250,6 @@ namespace D00B
                     // Update the virtual sizes
                     lvTables.VirtualListSize = g_TableMap.Count;
 
-
                     // Select the first item
                     if (lvTables.VirtualListSize > 0)
                     {
@@ -510,6 +509,10 @@ namespace D00B
                     string strTable = TableKey.Key2;
                     string strColumn = string.Empty;
                     string strOT = TableKey.JoinTag;
+
+                    // Colums
+                    DBTable Table = g_TableMap[TableKey];
+                    lvColumns.VirtualListSize = Table.Columns.Count;
 
                     // Update the current tables adjacent tables and find out where we can go
                     UpdateAdjTables(strOwner, strTable);
