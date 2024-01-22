@@ -385,6 +385,7 @@
             this.lvJoinTables.View = System.Windows.Forms.View.Details;
             this.lvJoinTables.VirtualMode = true;
             this.lvJoinTables.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.LvJoinTables_RetrieveVirtualItem);
+            this.lvJoinTables.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.LvJoinTables_MouseDoubleClick);
             // 
             // label1
             // 

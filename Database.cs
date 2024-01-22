@@ -307,7 +307,7 @@ namespace D00B
         }
         public static bool operator ==(DBTable lhs, DBTable rhs) => lhs.Equals(rhs);
         public static bool operator !=(DBTable lhs, DBTable rhs) => !(lhs == rhs);
-        public string TableOwner
+        public string TableSchema
         {
             get { return m_TableKey.Key1; }
             set { m_TableKey.Key1 = string.IsNullOrEmpty(value) ? value : string.Empty; }

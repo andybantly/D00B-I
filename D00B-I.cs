@@ -128,7 +128,7 @@ namespace D00B
                     strQueryString = "[sys].[sp_pkeys]";
                     SQL SqlPK = new SQL(strConnectionString, strQueryString, true);
                     SqlPK.AddWithValue("@table_name", Table.TableName, SqlDbType.NVarChar);
-                    SqlPK.AddWithValue("@table_owner", Table.TableOwner, SqlDbType.NVarChar);
+                    SqlPK.AddWithValue("@table_owner", Table.TableSchema, SqlDbType.NVarChar);
                     if (SqlPK.ExecuteReader(out strError))
                     {
                         while (SqlPK.Read())
@@ -153,7 +153,7 @@ namespace D00B
                     strQueryString = "[sys].[sp_fkeys]";
                     SQL SqlFK = new SQL(strConnectionString, strQueryString, true);
                     SqlFK.AddWithValue("@pktable_name", Table.TableName, SqlDbType.NVarChar);
-                    SqlFK.AddWithValue("@pktable_owner", Table.TableOwner, SqlDbType.NVarChar);
+                    SqlFK.AddWithValue("@pktable_owner", Table.TableSchema, SqlDbType.NVarChar);
                     if (SqlFK.ExecuteReader(out strError))
                     {
                         while (SqlFK.Read())
@@ -175,7 +175,7 @@ namespace D00B
                     strQueryString = "[sys].[sp_columns]";
                     SQL SqlCol = new SQL(strConnectionString, strQueryString, true);
                     SqlCol.AddWithValue("@table_name", Table.TableName, SqlDbType.NVarChar);
-                    SqlCol.AddWithValue("@table_owner", Table.TableOwner, SqlDbType.NVarChar);
+                    SqlCol.AddWithValue("@table_owner", Table.TableSchema, SqlDbType.NVarChar);
                     if (SqlCol.ExecuteReader(out strError))
                     {
                         List<DBColumn> Columns = new List<DBColumn>();
@@ -348,14 +348,14 @@ namespace D00B
                             string strSrcOwn = m_JoinKeysFr[idx].Key1;
                             string strSrcTable = m_JoinKeysFr[idx].Key2;
                             string strSrcColumn = m_JoinKeysFr[idx].Key3;
-                            string strJoinOwner = m_JoinKeysTo[idx].Key1;
+                            string strJoinSchema = m_JoinKeysTo[idx].Key1;
                             string strJoinTable = m_JoinKeysTo[idx].Key2;
                             string strJoinColumn = m_JoinKeysTo[idx].Key3;
                             if (JoinType != Utility.Join.Self)
                             {
                                 strQueryString = string.Format("{0} {1} join [{2}].[{3}] {4} on {5}.{6} = {7}.{8}",
                                 strQueryString, strJoinType,
-                                strJoinOwner, strJoinTable, strCT,
+                                strJoinSchema, strJoinTable, strCT,
                                 strCF, strSrcColumn,
                                 strCT, strJoinColumn);
                             }
@@ -449,7 +449,7 @@ namespace D00B
                                 string strSrcTable = m_JoinKeysFr[idx].Key2;
                                 string strSrcColumn = m_JoinKeysFr[idx].Key3;
                                 string strCF = m_JoinKeysFr[idx].JoinTag;
-                                string strJoinOwner = m_JoinKeysTo[idx].Key1;
+                                string strJoinSchema = m_JoinKeysTo[idx].Key1;
                                 string strJoinTable = m_JoinKeysTo[idx].Key2;
                                 string strJoinColumn = m_JoinKeysTo[idx].Key3;
                                 string strCT = m_JoinKeysTo[idx].JoinTag;
@@ -457,7 +457,7 @@ namespace D00B
                                 {
                                     strQueryString = string.Format("{0} {1} join [{2}].[{3}] {4} on {5}.{6} = {7}.{8}",
                                     strQueryString, strJoinType,
-                                    strJoinOwner, strJoinTable, strCT,
+                                    strJoinSchema, strJoinTable, strCT,
                                     strCF, strSrcColumn,
                                     strCT, strJoinColumn);
                                 }
@@ -638,7 +638,7 @@ namespace D00B
                             {
                                 foreach (DBTableKey TK2 in TableR.Keys)
                                 {
-                                    if ((TableR.TableOwner == TK2.Key1) && (TableR.TableName == TK2.Key2))
+                                    if ((TableR.TableSchema == TK2.Key1) && (TableR.TableName == TK2.Key2))
                                     {
                                         //Console.WriteLine(string.Format("BackKey BK {0}->{1} to Table {2} do to Table {3}", TK2, TK1, TableL, TableR));
                                         ListViewItem Item = new ListViewItem(TK2.Key1);
@@ -676,21 +676,21 @@ namespace D00B
             strTable = string.Empty;
             strColumn = string.Empty;
 
-            bool bOwner = true;
+            bool bSchema = true;
             bool bTable = true;
 
             foreach (char c in strIn)
             {
                 if (c == '.')
                 {
-                    if (bOwner)
-                        bOwner = false;
+                    if (bSchema)
+                        bSchema = false;
                     else
                         bTable = false;
                 }
                 else
                 {
-                    if (bOwner)
+                    if (bSchema)
                         strSchema += c;
                     else if (bTable)
                         strTable += c;
@@ -1257,6 +1257,9 @@ namespace D00B
             }
         }
 
+        private void LvJoinTables_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+        }
         private void TxtPreview_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             bool bValid = int.TryParse(txtPreview.Text, out m_nPreview);
@@ -1314,25 +1317,25 @@ namespace D00B
             {
                 if (TableIndex() != -1 && ColumnIndex() != -1)
                 {
-                    string strSrcOwner = lvTables.Items[TableIndex()].Text;
+                    string strSrcSchema = lvTables.Items[TableIndex()].Text;
                     string strSrcTable = lvTables.Items[TableIndex()].SubItems[1].Text;
                     string strSrcColumn = lvColumns.Items[ColumnIndex()].Text;
-                    string strJoinOwner = string.Empty;
+                    string strJoinSchema = string.Empty;
                     string strJoinTable = string.Empty;
                     string strJoinColumn = string.Empty;
                     if (JoinTablesIndex() != -1)
                     {
-                        strJoinOwner = lvJoinTables.Items[JoinTablesIndex()].Text;
+                        strJoinSchema = lvJoinTables.Items[JoinTablesIndex()].Text;
                         strJoinTable = lvJoinTables.Items[JoinTablesIndex()].SubItems[1].Text;
                         strJoinColumn = lvJoinTables.Items[JoinTablesIndex()].SubItems[2].Text;
                     }
 
                     DlgJoin dlgJoin = new DlgJoin
                     {
-                        SourceOwner = strSrcOwner,
+                        SourceSchema = strSrcSchema,
                         SourceTable = strSrcTable,
                         SourceColumn = strSrcColumn,
-                        JoinOwner = strJoinOwner,
+                        JoinSchema = strJoinSchema,
                         JoinTable = strJoinTable,
                         JoinColumn = strJoinColumn
                     };
@@ -1342,21 +1345,21 @@ namespace D00B
                     if (res == DialogResult.OK)
                     {
                         DBJoinKey FKJoin, TKJoin;
-                        FKJoin = new DBJoinKey(strSrcOwner, strSrcTable, strSrcColumn, dlgJoin.JoinType);
+                        FKJoin = new DBJoinKey(strSrcSchema, strSrcTable, strSrcColumn, dlgJoin.JoinType);
                         FKJoin.JoinTag = string.Format("T{0}", m_nCT++);
                         m_JoinKeysFr.Add(FKJoin);
                         if (dlgJoin.JoinType != Utility.Join.Self)
-                            TKJoin = new DBJoinKey(strJoinOwner, strJoinTable, strJoinColumn, dlgJoin.JoinType);
+                            TKJoin = new DBJoinKey(strJoinSchema, strJoinTable, strJoinColumn, dlgJoin.JoinType);
                         else
-                            TKJoin = new DBJoinKey(strSrcOwner, strSrcTable, strSrcColumn, dlgJoin.JoinType);
+                            TKJoin = new DBJoinKey(strSrcSchema, strSrcTable, strSrcColumn, dlgJoin.JoinType);
                         TKJoin.JoinTag = string.Format("T{0}", m_nCT);
                         m_JoinKeysTo.Add(TKJoin);
 
                         // Add the join table to the list of tables
                         if (dlgJoin.JoinType != Utility.Join.Self)
-                            m_TableKeys.Add(new DBTableKey(strJoinOwner, strJoinTable, string.Empty));
+                            m_TableKeys.Add(new DBTableKey(strJoinSchema, strJoinTable, string.Empty));
                         else
-                            m_TableKeys.Add(new DBTableKey(strSrcOwner, strSrcTable, string.Empty));
+                            m_TableKeys.Add(new DBTableKey(strSrcSchema, strSrcTable, string.Empty));
 
                         // Select the table
                         SelectIndex();

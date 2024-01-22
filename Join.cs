@@ -36,7 +36,7 @@ namespace D00B
         {
             InitializeComponent();
         }
-        public string SourceOwner
+        public string SourceSchema
         {
             get { return m_strSrcOwner; }
             set { if (!string.IsNullOrEmpty(value)) m_strSrcOwner = value; }
@@ -51,7 +51,7 @@ namespace D00B
             get { return m_strSrcColumn; }
             set { if (!string.IsNullOrEmpty(value)) m_strSrcColumn = value; }
         }
-        public string JoinOwner
+        public string JoinSchema
         {
             get { return m_strJoinOwner; }
             set { if (!string.IsNullOrEmpty(value)) m_strJoinOwner = value; }
