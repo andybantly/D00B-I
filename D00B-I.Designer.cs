@@ -131,7 +131,7 @@
             // 
             this.chkPrevAll.AutoSize = true;
             this.chkPrevAll.Enabled = false;
-            this.chkPrevAll.Location = new System.Drawing.Point(416, 9);
+            this.chkPrevAll.Location = new System.Drawing.Point(416, 12);
             this.chkPrevAll.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkPrevAll.Name = "chkPrevAll";
             this.chkPrevAll.Size = new System.Drawing.Size(52, 24);
@@ -214,7 +214,7 @@
             this.chkData.TabIndex = 24;
             this.chkData.Text = "Data";
             this.chkData.UseVisualStyleBackColor = true;
-            this.chkData.CheckedChanged += new System.EventHandler(this.chkData_CheckedChanged);
+            this.chkData.CheckedChanged += new System.EventHandler(this.ChkData_CheckedChanged);
             // 
             // txtData
             // 
@@ -249,7 +249,7 @@
             // 
             this.lblPreview.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblPreview.AutoSize = true;
-            this.lblPreview.Location = new System.Drawing.Point(275, 107);
+            this.lblPreview.Location = new System.Drawing.Point(275, 12);
             this.lblPreview.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblPreview.Name = "lblPreview";
             this.lblPreview.Size = new System.Drawing.Size(63, 20);
@@ -260,7 +260,7 @@
             // 
             this.txtPreview.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtPreview.Enabled = false;
-            this.txtPreview.Location = new System.Drawing.Point(348, 105);
+            this.txtPreview.Location = new System.Drawing.Point(348, 9);
             this.txtPreview.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtPreview.Name = "txtPreview";
             this.txtPreview.Size = new System.Drawing.Size(52, 26);

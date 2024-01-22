@@ -73,11 +73,11 @@ namespace D00B
             lvTables.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             lvColumns.View = View.Details;
             lvColumns.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
-            lvAdjTables.View = View.Details;
+            lvAdjTables.View = View.Details; // Make Virtual
             lvAdjTables.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             lvJoinTables.View = View.Details;
             lvJoinTables.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
-            lvResults.View = View.Details;
+            lvResults.View = View.Details; // Make Virtual
             lvResults.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
         }
         private void CountTablesAndRows()
@@ -102,12 +102,12 @@ namespace D00B
                 {
                     while (SqlTables.Read())
                     {
-                        string strOwner = SqlTables.GetValue(0);
+                        string strSchema = SqlTables.GetValue(0);
                         string strTable = SqlTables.GetValue(1);
                         string strRows = SqlTables.GetValue(2);
                         string strColumn = string.Empty;
 
-                        DBTableKey TableKey = new DBTableKey(strOwner, strTable, strColumn);
+                        DBTableKey TableKey = new DBTableKey(strSchema, strTable, strColumn);
                         if (!g_TableMap.ContainsKey(TableKey))
                         {
                             DBTable Table = new DBTable(TableKey);
@@ -200,7 +200,7 @@ namespace D00B
 
         private void SetupJoinTables()
         {
-            lvJoinTables.Columns.Add("Owner");
+            lvJoinTables.Columns.Add("Schema");
             lvJoinTables.Columns[0].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvJoinTables.Font).Width;
             lvJoinTables.Columns.Add("Table");
             lvJoinTables.Columns[1].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXX", lvJoinTables.Font).Width;
@@ -233,7 +233,7 @@ namespace D00B
                 // Collect information about the database
                 CountTablesAndRows();
 
-                lvTables.Columns.Add("Owner");
+                lvTables.Columns.Add("Schema");
                 lvTables.Columns[0].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvTables.Font).Width;
                 lvTables.Columns.Add("Table");
                 lvTables.Columns[1].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXX", lvTables.Font).Width;
@@ -306,7 +306,7 @@ namespace D00B
                 {
                     // Get the current table selection
                     DBTableKey TableKey = m_TableKeys[0];
-                    string strOwner = TableKey.Key1;
+                    string strSchema = TableKey.Key1;
                     string strTable = TableKey.Key2;
                     string strColumn = string.Empty;
                     string strOT = TableKey.JoinTag;
@@ -317,7 +317,7 @@ namespace D00B
                     lvColumns.SelectedIndices.Clear();
 
                     // Update the current tables adjacent tables and find out where we can go
-                    UpdateAdjTables(strOwner, strTable);
+                    UpdateAdjTables(strSchema, strTable);
 
                     // Count the columns
                     m_Ascending.Clear();
@@ -325,7 +325,7 @@ namespace D00B
                     // Count the result tables data
                     string strError = string.Empty;
                     string connectionString = txtConnString.Text;
-                    string strQueryString = string.Format("select count(*) from [{0}].[{1}] {2}", strOwner, strTable, strOT);
+                    string strQueryString = string.Format("select count(*) from [{0}].[{1}] {2}", strSchema, strTable, strOT);
 
                     // Update ROW count
                     SQL Sql = new SQL(connectionString, strQueryString);
@@ -378,7 +378,7 @@ namespace D00B
                             if (TableIndex() != -1 && ColumnIndex() != -1)
                             {
                                 bCount = true;
-                                strOwner = lvResults.SelectedItems[0].Text;
+                                strSchema = lvResults.SelectedItems[0].Text;
                                 strTable = lvTables.Items[TableIndex()].SubItems[1].Text;
                                 strColumn = lvColumns.Items[ColumnIndex()].Text;
 
@@ -386,7 +386,7 @@ namespace D00B
                                 bool bIsNum = IsNumber(txtData.Text);
                                 string strTest = bIsNum ? "=" : (chkExact.Checked ? "=" : "like");
                                 string strTestVal = bIsNum ? txtData.Text : (chkExact.Checked ? string.Format("'{0}'", txtData.Text) : string.Format("'%{0}%'", txtData.Text));
-                                strQueryString = string.Format("select {0} from [{1}].[{2}] where [{3}].[{4}].{5} {6} {7}", strSelect, strOwner, strTable, strOwner, strTable, strColumn, strTest, strTestVal);
+                                strQueryString = string.Format("select {0} from [{1}].[{2}] where [{3}].[{4}].{5} {6} {7}", strSelect, strSchema, strTable, strSchema, strTable, strColumn, strTest, strTestVal);
                             }
                         }
                     }
@@ -426,7 +426,7 @@ namespace D00B
                                 bool bIsNum = IsNumber(txtData.Text);
                                 string strTest = bIsNum ? "=" : (chkExact.Checked ? "=" : "like");
                                 string strTestVal = bIsNum ? txtData.Text : (chkExact.Checked ? string.Format("'{0}'", txtData.Text) : string.Format("'%{0}%'", txtData.Text));
-                                strQueryString = string.Format("select {0} from [{1}].[{2}] where [{3}].[{4}].{5} {6} {7}", strSelect, strOwner, strTable, strOwner, strTable, strColumn, strTest, strTestVal);
+                                strQueryString = string.Format("select {0} from [{1}].[{2}] where [{3}].[{4}].{5} {6} {7}", strSelect, strSchema, strTable, strSchema, strTable, strColumn, strTest, strTestVal);
                             }
                         }
                     }
@@ -434,9 +434,9 @@ namespace D00B
                     if (string.IsNullOrEmpty(strQueryString))
                     {
                         if (chkPrevAll.Checked)
-                            strQueryString = string.Format("select * from [{0}].[{1}] {2}", strOwner, strTable, strOT);
+                            strQueryString = string.Format("select * from [{0}].[{1}] {2}", strSchema, strTable, strOT);
                         else
-                            strQueryString = string.Format("select top {0} * from [{1}].[{2}] {3}", m_nCount, strOwner, strTable, strOT);
+                            strQueryString = string.Format("select top {0} * from [{1}].[{2}] {3}", m_nCount, strSchema, strTable, strOT);
 
                         // Join and preview the output
                         if (TableIndex() != -1 && ColumnIndex() != -1 && m_TableKeys.Count > 1)
@@ -539,18 +539,18 @@ namespace D00B
                 }
             }
         }
-        private void UpdateAdjTables(string strOwner, string strTable)
+        private void UpdateAdjTables(string strSchema, string strTable)
         {
             lvAdjTables.Clear();
             lvAdjTables.SelectedIndices.Clear();
-            lvAdjTables.Columns.Add("Owner");
+            lvAdjTables.Columns.Add("Schema");
             lvAdjTables.Columns[0].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvAdjTables.Font).Width;
             lvAdjTables.Columns.Add("Table");
             lvAdjTables.Columns[1].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvAdjTables.Font).Width;
             lvAdjTables.Columns.Add("Columns");
             lvAdjTables.Columns[2].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXX", lvAdjTables.Font).Width;
 
-            DBTableKey TK = new DBTableKey(strOwner, strTable, string.Empty);
+            DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
             bool bInclude = g_TableMap.ContainsKey(TK) ? true : false;
             if (bInclude)
             {
@@ -562,7 +562,7 @@ namespace D00B
                     if (Column.IsPrimaryKey)
                     {
                         // Get the column it goes by in the adjacent foreign table
-                        List<DBTableKey> FKeyList = Table.FKKeyList(strOwner, strTable, strColumn);
+                        List<DBTableKey> FKeyList = Table.FKKeyList(strSchema, strTable, strColumn);
                         if (FKeyList != null)
                         {
                             foreach (DBTableKey FK in FKeyList)
@@ -572,7 +572,7 @@ namespace D00B
                                 ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, FK.Key2);
                                 ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, FK.Key3);
 
-                                TK = new DBTableKey(strOwner, FK.Key2, string.Empty); // Essentially the parent function
+                                TK = new DBTableKey(strSchema, FK.Key2, string.Empty); // Essentially the parent function
                                 if (g_TableMap.ContainsKey(TK))
                                 {
                                     Table = g_TableMap[TK];
@@ -597,12 +597,12 @@ namespace D00B
                     }
                     else
                     {
-                        ListViewItem Item = new ListViewItem(strOwner);
+                        ListViewItem Item = new ListViewItem(strSchema);
                         Item.UseItemStyleForSubItems = false;
                         ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, strTable);
                         ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, strColumn);
 
-                        TK = new DBTableKey(strOwner, strTable, strColumn);
+                        TK = new DBTableKey(strSchema, strTable, strColumn);
                         if (Table.HasKey(TK))
                         {
                             if (Table.Rows == "0")
@@ -623,7 +623,7 @@ namespace D00B
                 }
 
                 // BackKeys
-                DBTableKey TableKey = new DBTableKey(strOwner, strTable, string.Empty);
+                DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty);
                 if (g_TableMap.ContainsKey(TableKey))
                 {
                     DBTable TableL = g_TableMap[TableKey];
@@ -670,9 +670,9 @@ namespace D00B
             UpdateUI(true);
         }
 
-        private void ParseKey(string strIn, out string strOwner, out string strTable, out string strColumn)
+        private void ParseKey(string strIn, out string strSchema, out string strTable, out string strColumn)
         {
-            strOwner = string.Empty;
+            strSchema = string.Empty;
             strTable = string.Empty;
             strColumn = string.Empty;
 
@@ -691,7 +691,7 @@ namespace D00B
                 else
                 {
                     if (bOwner)
-                        strOwner += c;
+                        strSchema += c;
                     else if (bTable)
                         strTable += c;
                     else
@@ -829,7 +829,7 @@ namespace D00B
         private void SetupSearchResults()
         {
             lvResults.Clear();
-            lvResults.Columns.Add("Owner");
+            lvResults.Columns.Add("Schema");
             lvResults.Columns[0].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvResults.Font).Width;
             lvResults.Columns.Add("Table");
             lvResults.Columns[1].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvResults.Font).Width;
@@ -842,15 +842,17 @@ namespace D00B
             {
                 string strOwn = KVP.Key.Key1;
                 string strTable = KVP.Key.Key2;
-                bool bRows = KVP.Value.Rows == "0" ? false : true;
+                bool bRows = KVP.Value.Rows != "0";
 
                 DBTable Table = KVP.Value;
                 List<DBColumn> Columns = Table.Columns;
                 foreach (DBColumn Column in Columns)
                 {
                     bool bAdd = false;
-                    ListViewItem Item = new ListViewItem(strOwn);
-                    Item.UseItemStyleForSubItems = false;
+                    ListViewItem Item = new ListViewItem(strOwn)
+                    {
+                        UseItemStyleForSubItems = false
+                    };
                     if (!bRows)
                         Item.BackColor = Color.Red;
 
@@ -972,7 +974,7 @@ namespace D00B
             lvQuery.Invalidate();
         }
 
-        private void chkData_CheckedChanged(object sender, EventArgs e)
+        private void ChkData_CheckedChanged(object sender, EventArgs e)
         {
             if (chkData.Checked)
                 chkTable.Checked = false;
@@ -1082,10 +1084,10 @@ namespace D00B
             try
             {
                 string strCurSel = TableCurSel(e.ItemIndex);
-                ParseKey(strCurSel, out string strOwner, out string strTable, out string _);
-                DBTableKey TK = new DBTableKey(strOwner, strTable, string.Empty);
+                ParseKey(strCurSel, out string strSchema, out string strTable, out string _);
+                DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
                 DBTable Table = g_TableMap[TK];
-                e.Item = new ListViewItem(strOwner);
+                e.Item = new ListViewItem(strSchema);
                 e.Item.UseItemStyleForSubItems = false;
                 ListViewItem.ListViewSubItem lvSubValue = new ListViewItem.ListViewSubItem(e.Item, strTable);
                 if (Table.Rows == "0")
@@ -1173,7 +1175,7 @@ namespace D00B
                 if (m_oArray != null)
                 {
                     DBTableKey TableKey = m_TableKeys[0];
-                    string strOwner = TableKey.Key1;
+                    string strSchema = TableKey.Key1;
                     string strTable = TableKey.Key2;
                     string strColumn = string.Empty;
                     DBTable Table = g_TableMap[TableKey];
@@ -1224,10 +1226,10 @@ namespace D00B
             m_JoinKeysTo = new List<DBJoinKey>();
 
             // Setup the first key in case this isn't a join
-            ParseKey(TableCurSel(TableIndex()), out string strOwner, out string strTable, out string _);
-            if (string.IsNullOrEmpty(strOwner))
+            ParseKey(TableCurSel(TableIndex()), out string strSchema, out string strTable, out string _);
+            if (string.IsNullOrEmpty(strSchema))
                 return;
-            DBTableKey TableKey = new DBTableKey(strOwner, strTable, string.Empty)
+            DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty)
             {
                 JoinTag = string.Format("T{0}", ++m_nCT)
             };
@@ -1243,9 +1245,9 @@ namespace D00B
             if (iAdjTabIdx == -1)
                 return;
 
-            string strOwner = lvAdjTables.SelectedItems[0].Text;
+            string strSchema = lvAdjTables.SelectedItems[0].Text;
             string strTable = lvAdjTables.SelectedItems[0].SubItems[1].Text;
-            DBTableKey TK = new DBTableKey(strOwner, strTable, string.Empty);
+            DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
             if (g_TableMap.ContainsKey(TK))
             {
                 int iSelectedIndex = g_TableMap[TK].SelectedIndex;
@@ -1278,11 +1280,11 @@ namespace D00B
             if (iResIdx == -1)
                 return;
 
-            string strOwner = lvResults.SelectedItems[0].Text;
+            string strSchema = lvResults.SelectedItems[0].Text;
             string strTable = lvResults.SelectedItems[0].SubItems[1].Text;
             string strColumn = lvResults.SelectedItems[0].SubItems[2].Text;
 
-            DBTableKey TK = new DBTableKey(strOwner, strTable, string.Empty);
+            DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
             if (g_TableMap.ContainsKey(TK))
             {
                 DBTable Table = g_TableMap[TK];
@@ -1369,10 +1371,10 @@ namespace D00B
         {
             m_nCT = 0;
             m_TableKeys = new List<DBTableKey>();
-            ParseKey(TableCurSel(TableIndex()), out string strOwner, out string strTable, out string _);
-            if (string.IsNullOrEmpty(strOwner))
+            ParseKey(TableCurSel(TableIndex()), out string strSchema, out string strTable, out string _);
+            if (string.IsNullOrEmpty(strSchema))
                 return;
-            DBTableKey TableKey = new DBTableKey(strOwner, strTable, string.Empty)
+            DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty)
             {
                 JoinTag = string.Format("T{0}", ++m_nCT)
             };
@@ -1390,9 +1392,9 @@ namespace D00B
             int iAdjTableIndex = AdjTablesIndex();
             if (iAdjTableIndex == -1)
                 return;
-            string strOwner = lvAdjTables.Items[iAdjTableIndex].SubItems[0].Text;
+            string strSchema = lvAdjTables.Items[iAdjTableIndex].SubItems[0].Text;
             string strTable = lvAdjTables.Items[iAdjTableIndex].SubItems[1].Text;
-            DBTableKey TK = new DBTableKey(strOwner, strTable, string.Empty);
+            DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
 
             int iRow = 0;
             foreach (KeyValuePair<DBTableKey, DBTable> KVP in g_TableMap)
