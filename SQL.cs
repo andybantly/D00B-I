@@ -21,8 +21,8 @@ namespace D00B
         private string m_strQueryString = string.Empty;
         private bool m_bStoredProcedure = false;
 
-        private StringCollection m_Columns = new StringCollection();
-        private StringCollection m_CurrentRow = new StringCollection();
+        private readonly StringCollection m_Columns = new StringCollection();
+        private readonly StringCollection m_CurrentRow = new StringCollection();
 
         public SQL()
         {
@@ -252,14 +252,14 @@ namespace D00B
         {
             if (iCol < m_CurrentRow.Count)
                 return m_CurrentRow[iCol];
-            return String.Empty;
+            return string.Empty;
         }
 
         public string GetValue(string strColumnName)
         {
             if (Columns.Contains(strColumnName))
                 return m_CurrentRow[Columns.IndexOf(strColumnName)];
-            return String.Empty;
+            return string.Empty;
         }
 
         public StringCollection Columns

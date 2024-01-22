@@ -306,8 +306,8 @@ namespace D00B
                 {
                     // Get the current table selection
                     DBTableKey TableKey = m_TableKeys[0];
-                    string strSchema = TableKey.Key1;
-                    string strTable = TableKey.Key2;
+                    string strSchema = TableKey.Schema;
+                    string strTable = TableKey.Table;
                     string strColumn = string.Empty;
                     string strOT = TableKey.JoinTag;
 
@@ -345,12 +345,12 @@ namespace D00B
                             string strJoinType = m_JoinKeysFr[idx].ToString();
                             string strCF = m_JoinKeysFr[idx].JoinTag;
                             string strCT = m_JoinKeysTo[idx].JoinTag;
-                            string strSrcOwn = m_JoinKeysFr[idx].Key1;
-                            string strSrcTable = m_JoinKeysFr[idx].Key2;
-                            string strSrcColumn = m_JoinKeysFr[idx].Key3;
-                            string strJoinSchema = m_JoinKeysTo[idx].Key1;
-                            string strJoinTable = m_JoinKeysTo[idx].Key2;
-                            string strJoinColumn = m_JoinKeysTo[idx].Key3;
+                            string strSrcOwn = m_JoinKeysFr[idx].Schema;
+                            string strSrcTable = m_JoinKeysFr[idx].Table;
+                            string strSrcColumn = m_JoinKeysFr[idx].Column;
+                            string strJoinSchema = m_JoinKeysTo[idx].Schema;
+                            string strJoinTable = m_JoinKeysTo[idx].Table;
+                            string strJoinColumn = m_JoinKeysTo[idx].Column;
                             if (JoinType != Utility.Join.Self)
                             {
                                 strQueryString = string.Format("{0} {1} join [{2}].[{3}] {4} on {5}.{6} = {7}.{8}",
@@ -445,13 +445,13 @@ namespace D00B
                             {
                                 Utility.Join JoinType = m_JoinKeysFr[idx].JoinType;
                                 string strJoinType = m_JoinKeysFr[idx].ToString();
-                                string strSrcOwn = m_JoinKeysFr[idx].Key1;
-                                string strSrcTable = m_JoinKeysFr[idx].Key2;
-                                string strSrcColumn = m_JoinKeysFr[idx].Key3;
+                                string strSrcOwn = m_JoinKeysFr[idx].Schema;
+                                string strSrcTable = m_JoinKeysFr[idx].Table;
+                                string strSrcColumn = m_JoinKeysFr[idx].Column;
                                 string strCF = m_JoinKeysFr[idx].JoinTag;
-                                string strJoinSchema = m_JoinKeysTo[idx].Key1;
-                                string strJoinTable = m_JoinKeysTo[idx].Key2;
-                                string strJoinColumn = m_JoinKeysTo[idx].Key3;
+                                string strJoinSchema = m_JoinKeysTo[idx].Schema;
+                                string strJoinTable = m_JoinKeysTo[idx].Table;
+                                string strJoinColumn = m_JoinKeysTo[idx].Column;
                                 string strCT = m_JoinKeysTo[idx].JoinTag;
                                 if (JoinType != Utility.Join.Self)
                                 {
@@ -567,12 +567,12 @@ namespace D00B
                         {
                             foreach (DBTableKey FK in FKeyList)
                             {
-                                ListViewItem Item = new ListViewItem(FK.Key1);
+                                ListViewItem Item = new ListViewItem(FK.Schema);
                                 Item.UseItemStyleForSubItems = false;
-                                ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, FK.Key2);
-                                ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, FK.Key3);
+                                ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, FK.Table);
+                                ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, FK.Column);
 
-                                TK = new DBTableKey(strSchema, FK.Key2, string.Empty); // Essentially the parent function
+                                TK = new DBTableKey(strSchema, FK.Table, string.Empty); // Essentially the parent function
                                 if (g_TableMap.ContainsKey(TK))
                                 {
                                     Table = g_TableMap[TK];
@@ -634,18 +634,18 @@ namespace D00B
                         DBTable TableR = KVP2.Value;
                         foreach (DBTableKey TK1 in TableL.Keys)
                         {
-                            if (TableR.ContainsFK(TK1.Key1, TK1.Key2, TK1.Key3))
+                            if (TableR.ContainsFK(TK1.Schema, TK1.Table, TK1.Column))
                             {
                                 foreach (DBTableKey TK2 in TableR.Keys)
                                 {
-                                    if ((TableR.TableSchema == TK2.Key1) && (TableR.TableName == TK2.Key2))
+                                    if ((TableR.TableSchema == TK2.Schema) && (TableR.TableName == TK2.Table))
                                     {
                                         //Console.WriteLine(string.Format("BackKey BK {0}->{1} to Table {2} do to Table {3}", TK2, TK1, TableL, TableR));
-                                        ListViewItem Item = new ListViewItem(TK2.Key1);
+                                        ListViewItem Item = new ListViewItem(TK2.Schema);
                                         Item.UseItemStyleForSubItems = false;
-                                        ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, TK2.Key2);
-                                        ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, TK2.Key3);
-                                        TK = new DBTableKey(TK2.Key1, TK2.Key2, TK2.Key3);
+                                        ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, TK2.Table);
+                                        ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, TK2.Column);
+                                        TK = new DBTableKey(TK2.Schema, TK2.Table, TK2.Column);
                                         if (Table.HasKey(TK))
                                         {
                                             if (Table.Rows == "0")
@@ -840,8 +840,8 @@ namespace D00B
         {
             foreach (KeyValuePair<DBTableKey, DBTable> KVP in g_TableMap)
             {
-                string strOwn = KVP.Key.Key1;
-                string strTable = KVP.Key.Key2;
+                string strOwn = KVP.Key.Schema;
+                string strTable = KVP.Key.Table;
                 bool bRows = KVP.Value.Rows != "0";
 
                 DBTable Table = KVP.Value;
@@ -882,7 +882,7 @@ namespace D00B
                     {
                         // See if it is solely a PK
                         DBTableKey TK = new DBTableKey(strOwn, strTable, Column.Name);
-                        if (g_TableMap[new DBTableKey(KVP.Key.Key1, KVP.Key.Key2, KVP.Key.Key3)].HasKey(TK))
+                        if (g_TableMap[new DBTableKey(KVP.Key.Schema, KVP.Key.Table, KVP.Key.Column)].HasKey(TK))
                         {
                             ColumnItem.ForeColor = Color.DarkBlue;
                             ColumnItem.BackColor = Color.Yellow;
@@ -999,7 +999,7 @@ namespace D00B
                 {
                     if (KVP.Value.SelectedIndex == idx)
                     {
-                        strSelection = string.Format("{0}.{1}", KVP.Key.Key1, KVP.Key.Key2);
+                        strSelection = string.Format("{0}.{1}", KVP.Key.Schema, KVP.Key.Table);
                         break;
                     }
                 }
@@ -1042,7 +1042,7 @@ namespace D00B
                             DBColumn Column = Table.Columns[idx];
                             if (Column.IsPrimaryKey)
                             {
-                                if (Table.ContainsFK(TableKey.Key1, TableKey.Key2, Column.Name))
+                                if (Table.ContainsFK(TableKey.Schema, TableKey.Table, Column.Name))
                                 {
                                     // The case where the the foreign key is in the primary table
                                     lvSI.ForeColor = Color.DarkBlue;
@@ -1056,7 +1056,7 @@ namespace D00B
                             }
                             else
                             {
-                                DBTableKey TK = new DBTableKey(TableKey.Key1, TableKey.Key2, Column.Name);
+                                DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
                                 if (g_TableMap[TableKey].HasKey(TK))
                                 {
                                     lvSI.ForeColor = Color.DarkBlue;
@@ -1122,8 +1122,8 @@ namespace D00B
                         idx = e.ItemIndex - nRows;
                         e.Item = new ListViewItem();
                         e.Item.UseItemStyleForSubItems = false;
-                        e.Item.Text = TableKey.Key1;
-                        e.Item.SubItems.Add(TableKey.Key2);
+                        e.Item.Text = TableKey.Schema;
+                        e.Item.SubItems.Add(TableKey.Table);
                         DBColumn Column = Table.Columns[idx];
                         e.Item.SubItems.Add(Column.Name);
 
@@ -1135,7 +1135,7 @@ namespace D00B
 
                         if (Column.IsPrimaryKey)
                         {
-                            if (Table.ContainsFK(TableKey.Key1, TableKey.Key2, Column.Name))
+                            if (Table.ContainsFK(TableKey.Schema, TableKey.Table, Column.Name))
                             {
                                 // The case where the the foreign key is in the primary table
                                 e.Item.SubItems[2].ForeColor = Color.DarkBlue;
@@ -1149,7 +1149,7 @@ namespace D00B
                         }
                         else
                         {
-                            DBTableKey TK = new DBTableKey(TableKey.Key1, TableKey.Key2, Column.Name);
+                            DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
                             if (g_TableMap[TableKey].HasKey(TK))
                             {
                                 e.Item.SubItems[2].ForeColor = Color.DarkBlue;
@@ -1175,8 +1175,8 @@ namespace D00B
                 if (m_oArray != null)
                 {
                     DBTableKey TableKey = m_TableKeys[0];
-                    string strSchema = TableKey.Key1;
-                    string strTable = TableKey.Key2;
+                    string strSchema = TableKey.Schema;
+                    string strTable = TableKey.Table;
                     string strColumn = string.Empty;
                     DBTable Table = g_TableMap[TableKey];
                     DBColumn Column = Table.Columns[iRow];
@@ -1185,7 +1185,7 @@ namespace D00B
 
                     if (Column.IsPrimaryKey)
                     {
-                        if (Table.ContainsFK(TableKey.Key1, TableKey.Key2, Column.Name))
+                        if (Table.ContainsFK(TableKey.Schema, TableKey.Table, Column.Name))
                         {
                             // The case where the the foreign key is in the primary table
                             e.Item.ForeColor = Color.DarkBlue;
@@ -1200,7 +1200,7 @@ namespace D00B
                     else
                     {
                         // See if it is solely a PK
-                        DBTableKey TK = new DBTableKey(TableKey.Key1, TableKey.Key2, Column.Name);
+                        DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
                         if (g_TableMap[TableKey].HasKey(TK))
                         {
                             e.Item.ForeColor = Color.DarkBlue;

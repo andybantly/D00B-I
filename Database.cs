@@ -8,40 +8,40 @@ namespace D00B
 {
     public class DBTableKey : IComparable<DBTableKey>, IEquatable<DBTableKey>, IComparable
     {
-        private string m_strK1 = string.Empty;
-        private string m_strK2 = string.Empty;
-        private string m_strK3 = string.Empty;
+        private string m_strSchema = string.Empty;
+        private string m_strTable = string.Empty;
+        private string m_strColumn = string.Empty;
         private string m_strJoinTag = string.Empty;
 
         public DBTableKey()
         {
         }
 
-        public DBTableKey(string strK1, string strK2, string strK3) : this()
+        public DBTableKey(string strSchema, string strTable, string strColumn) : this()
         {
-            Key1 = strK1;
-            Key2 = strK2;
-            Key3 = strK3;
+            Schema = strSchema;
+            Table = strTable;
+            Column = strColumn;
         }
         public override string ToString()
         {
-            return Key1 + "." + Key2 + "." + Key3;
+            return Schema + "." + Table + "." + Column;
         }
-        public string Key1
+        public string Schema
         {
-            get { return m_strK1; }
-            set { if (!string.IsNullOrEmpty(value)) m_strK1 = value; }
+            get { return m_strSchema; }
+            set { if (!string.IsNullOrEmpty(value)) m_strSchema = value; }
         }
-        public string Key2
+        public string Table
         {
-            get { return m_strK2; }
-            set { if (!string.IsNullOrEmpty(value)) m_strK2 = value; }
+            get { return m_strTable; }
+            set { if (!string.IsNullOrEmpty(value)) m_strTable = value; }
         }
 
-        public string Key3
+        public string Column
         {
-            get { return m_strK3; }
-            set { if (!string.IsNullOrEmpty(value)) m_strK3 = value; }
+            get { return m_strColumn; }
+            set { if (!string.IsNullOrEmpty(value)) m_strColumn = value; }
         }
         public string JoinTag
         {
@@ -111,9 +111,9 @@ namespace D00B
 
         public DBJoinKey(string strK1, string strK2, string strK3, Utility.Join Join) : this()
         {
-            Key1 = strK1;
-            Key2 = strK2;
-            Key3 = strK3;
+            Schema = strK1;
+            Table = strK2;
+            Column = strK3;
             m_Join = Join;
         }
         public Utility.Join JoinType 
@@ -201,10 +201,10 @@ namespace D00B
         private string m_strRows = string.Empty;
         private int m_iSelectedIndex = 0;
         private bool m_bVisited = false;
-        List<DBTableKey> m_PKeys;
+        readonly List<DBTableKey> m_PKeys;
         List<DBColumn> m_Cols;
-        Dictionary<DBTableKey, List<DBTableKey>> m_MapPKtoFK;
-        Dictionary<DBTableKey, List<DBTableKey>> m_MapFKtoPK;
+        readonly Dictionary<DBTableKey, List<DBTableKey>> m_MapPKtoFK;
+        readonly Dictionary<DBTableKey, List<DBTableKey>> m_MapFKtoPK;
 
         public DBTable()
         {
@@ -223,11 +223,11 @@ namespace D00B
         }
         public bool ContainsPK(string strOwner, string strTable, string strColumn)
         {
-            return m_MapPKtoFK.ContainsKey(new DBTableKey(strOwner, strTable, strColumn)) ? true : false;
+            return m_MapPKtoFK.ContainsKey(new DBTableKey(strOwner, strTable, strColumn));
         }
         public bool ContainsFK(string strOwner, string strTable, string strColumn)
         {
-            return m_MapFKtoPK.ContainsKey(new DBTableKey(strOwner, strTable, strColumn)) ? true : false;
+            return m_MapFKtoPK.ContainsKey(new DBTableKey(strOwner, strTable, strColumn));
         }
         public List<DBTableKey> PKKeyList(string strOwner, string strTable, string strColumn)
         {
@@ -309,13 +309,13 @@ namespace D00B
         public static bool operator !=(DBTable lhs, DBTable rhs) => !(lhs == rhs);
         public string TableSchema
         {
-            get { return m_TableKey.Key1; }
-            set { m_TableKey.Key1 = string.IsNullOrEmpty(value) ? value : string.Empty; }
+            get { return m_TableKey.Schema; }
+            set { m_TableKey.Schema = string.IsNullOrEmpty(value) ? value : string.Empty; }
         }
         public string TableName
         {
-            get { return m_TableKey.Key2; }
-            set { m_TableKey.Key2 = string.IsNullOrEmpty(value) ? value : string.Empty; }
+            get { return m_TableKey.Table; }
+            set { m_TableKey.Table = string.IsNullOrEmpty(value) ? value : string.Empty; }
         }
         public List<DBColumn> Columns
         {
@@ -328,7 +328,7 @@ namespace D00B
         }
         public bool HasKey(DBTableKey PK)
         {
-            return Keys.Contains(PK) ? true : false;
+            return Keys.Contains(PK);
         }
         public bool Visited
         {

@@ -19,11 +19,11 @@ namespace D00B
                 Table.Visited = true;
 
                 //Console.Write(string.Format("{0}:{1}", Key.Key1, Table.TableName));
-                m_TablePath.Add(new DBTableKey(Key.Key1, Table.TableName, string.Empty));
+                m_TablePath.Add(new DBTableKey(Key.Schema, Table.TableName, string.Empty));
 
                 foreach (DBTableKey PK in Table.Keys)
                 {
-                    DBTableKey TK = new DBTableKey(PK.Key1, PK.Key2, string.Empty);
+                    DBTableKey TK = new DBTableKey(PK.Schema, PK.Table, string.Empty);
                     if (m_TableMap.ContainsKey(TK))
                     {
                         DBTable DestTable = m_TableMap[TK];
