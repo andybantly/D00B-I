@@ -1,8 +1,5 @@
-﻿using Microsoft.Office.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Windows.Forms.VisualStyles;
 
 namespace D00B
 {
