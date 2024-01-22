@@ -64,11 +64,11 @@ namespace D00B
             lvTables.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             lvColumns.View = View.Details;
             lvColumns.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
-            lvAdjTables.View = View.Details; // Make Virtual
+            lvAdjTables.View = View.Details;
             lvAdjTables.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             lvJoinTables.View = View.Details;
             lvJoinTables.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
-            lvResults.View = View.Details; // Make Virtual
+            lvResults.View = View.Details;
             lvResults.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
         }
         private void CountTablesAndRows()
@@ -217,7 +217,6 @@ namespace D00B
                 // Suspend retrieval of virtual items
                 lvQuery.VirtualListSize = 0;
                 lvTables.VirtualListSize = 0;
-                //lvAdjTables.VirtualListSize = 0; // Make virtual
                 lvJoinTables.VirtualListSize = 0;
                 lvColumns.VirtualListSize = 0;
 
@@ -259,9 +258,8 @@ namespace D00B
         private void SelectIndex()
         {
             Cursor.Current = Cursors.WaitCursor;
+
             // Flicker free drawing
-            // help says there is newer/modern syntax
-            // I always prefer thinking in c++ scope rules
             using (lvAdjTables.SuspendDrawing())
             {
                 using (lvResults.SuspendDrawing())
@@ -279,6 +277,7 @@ namespace D00B
                     }
                 }
             }
+
             Cursor.Current = Cursors.Default;
         }
         private void UpdateIndex()
@@ -692,14 +691,14 @@ namespace D00B
         }
         private int TableIndex()
         {
-            System.Windows.Forms.ListView.SelectedIndexCollection Col = lvTables.SelectedIndices;
+            ListView.SelectedIndexCollection Col = lvTables.SelectedIndices;
             if (Col == null || Col.Count == 0)
                 return -1;
             return Col[0];
         }
         private int ColumnIndex()
         {
-            System.Windows.Forms.ListView.SelectedIndexCollection Col = lvColumns.SelectedIndices;
+            ListView.SelectedIndexCollection Col = lvColumns.SelectedIndices;
             if (Col == null || Col.Count == 0)
                 return -1;
             return Col[0];
@@ -712,7 +711,7 @@ namespace D00B
         }
         private int JoinTablesIndex()
         {
-            System.Windows.Forms.ListView.SelectedIndexCollection Col = lvJoinTables.SelectedIndices;
+            ListView.SelectedIndexCollection Col = lvJoinTables.SelectedIndices;
             if (Col == null || Col.Count == 0)
                 return -1;
             return Col[0];
@@ -1250,6 +1249,20 @@ namespace D00B
 
         private void LvJoinTables_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            int iJoinTabIdx = JoinTablesIndex();
+            if (iJoinTabIdx == -1)
+                return;
+
+            string strSchema = lvJoinTables.Items[iJoinTabIdx].Text;
+            string strTable = lvJoinTables.Items[iJoinTabIdx].SubItems[1].Text;
+            DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
+            if (g_TableMap.ContainsKey(TK))
+            {
+                int iSelectedIndex = g_TableMap[TK].SelectedIndex;
+                lvTables.SelectedIndices.Add(iSelectedIndex);
+                SelectIndex();
+                lvTables.EnsureVisible(iSelectedIndex);
+            }
         }
         private void TxtPreview_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -1276,7 +1289,6 @@ namespace D00B
 
             string strSchema = lvResults.SelectedItems[0].Text;
             string strTable = lvResults.SelectedItems[0].SubItems[1].Text;
-            string strColumn = lvResults.SelectedItems[0].SubItems[2].Text;
 
             DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
             if (g_TableMap.ContainsKey(TK))
@@ -1294,7 +1306,6 @@ namespace D00B
             int iSel = lvQuery.SelectedIndices.Count;
             if (iSel == 0)
                 return;
-            iSel = lvQuery.SelectedIndices[0];
         }
 
         private void CbDataBases_SelectionChangeCommitted(object sender, EventArgs e)
@@ -1417,8 +1428,8 @@ namespace D00B
 
     class ListViewItemComparer : IComparer
     {
-        private int m_iColumn;
-        private bool m_bAscending;
+        private readonly int m_iColumn;
+        private readonly bool m_bAscending;
         public ListViewItemComparer()
         {
             m_iColumn = 0;
