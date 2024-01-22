@@ -213,6 +213,7 @@ namespace D00B
             int nTotalColumns = 0;
             foreach (KeyValuePair<DBTableKey, DBTable> KVP in g_TableMap) { nTotalColumns += KVP.Value.Columns.Count; }
             lvJoinTables.VirtualListSize = nTotalColumns;
+            lvJoinTables.SelectedIndices.Clear();
         }
 
         private void RefreshIndex()
@@ -252,15 +253,7 @@ namespace D00B
 
                     // Select the first item
                     if (lvTables.VirtualListSize > 0)
-                    {
                         lvTables.SelectedIndices.Add(0);
-
-                        // For colums
-                        DBTableKey TableKey = m_TableKeys[0];
-                        DBTable Table = g_TableMap[TableKey];
-                        lvColumns.VirtualListSize = Table.Columns.Count;
-                        lvColumns.SelectedIndices.Add(0);
-                    }
                 }
 
                 UpdateUI(true);
@@ -272,198 +265,6 @@ namespace D00B
             finally { }
         }
 
-        private void UpdateAdjTables(string strOwner, string strTable)
-        {
-            lvAdjTables.Clear();
-            lvAdjTables.Columns.Add("Owner");
-            lvAdjTables.Columns[0].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvAdjTables.Font).Width;
-            lvAdjTables.Columns.Add("Table");
-            lvAdjTables.Columns[1].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvAdjTables.Font).Width;
-            lvAdjTables.Columns.Add("Columns");
-            lvAdjTables.Columns[2].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXX", lvAdjTables.Font).Width;
-
-            DBTableKey TK = new DBTableKey(strOwner, strTable, string.Empty);
-            bool bInclude = g_TableMap.ContainsKey(TK) ? true : false;
-            if (bInclude)
-            {
-                DBTable Table = g_TableMap[TK];
-                foreach (DBColumn Column in Table.Columns)
-                {
-                    // Is it a key?
-                    string strColumn = Column.Name;
-                    if (Column.IsPrimaryKey)
-                    {
-                        // Get the column it goes by in the adjacent foreign table
-                        List<DBTableKey> FKeyList = Table.FKKeyList(strOwner, strTable, strColumn);
-                        if (FKeyList != null)
-                        {
-                            foreach (DBTableKey FK in FKeyList)
-                            {
-                                ListViewItem Item = new ListViewItem(FK.Key1);
-                                Item.UseItemStyleForSubItems = false;
-                                ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, FK.Key2);
-                                ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, FK.Key3);
-
-                                TK = new DBTableKey(strOwner, FK.Key2, string.Empty); // Essentially the parent function
-                                if (g_TableMap.ContainsKey(TK))
-                                {
-                                    Table = g_TableMap[TK];
-                                    if (Table.Rows == "0")
-                                        Item.BackColor = Color.Red;
-
-                                    // The case where the the foreign key is in the primary table
-                                    SubItem2.ForeColor = Color.DarkBlue;
-                                    SubItem2.BackColor = Color.Yellow;
-                                }
-                                else
-                                {
-                                    SubItem2.ForeColor = Color.DarkBlue;
-                                    SubItem2.BackColor = Color.Yellow;
-                                }
-
-                                Item.SubItems.Add(SubItem);
-                                Item.SubItems.Add(SubItem2);
-                                lvAdjTables.Items.Add(Item);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        ListViewItem Item = new ListViewItem(strOwner);
-                        Item.UseItemStyleForSubItems = false;
-                        ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, strTable);
-                        ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, strColumn);
-
-                        TK = new DBTableKey(strOwner, strTable, strColumn);
-                        if (Table.HasKey(TK))
-                        {
-                            if (Table.Rows == "0")
-                            {
-                                Item.BackColor = Color.Red;
-                                SubItem.BackColor = Color.Red;
-                                SubItem2.BackColor = Color.Red;
-                            }
-
-                            SubItem2.ForeColor = Color.DarkBlue;
-                            SubItem2.BackColor = Color.Yellow;
-
-                            Item.SubItems.Add(SubItem);
-                            Item.SubItems.Add(SubItem2);
-                            lvAdjTables.Items.Add(Item);
-                        }
-                    }
-                }
-
-                // BackKeys
-                DBTableKey TableKey = new DBTableKey(strOwner, strTable, string.Empty);
-                if (g_TableMap.ContainsKey(TableKey))
-                {
-                    DBTable TableL = g_TableMap[TableKey];
-                    foreach (KeyValuePair<DBTableKey, DBTable> KVP2 in g_TableMap)
-                    {
-                        if (KVP2.Key == TableKey)
-                            continue;
-                        DBTable TableR = KVP2.Value;
-                        foreach (DBTableKey TK1 in TableL.Keys)
-                        {
-                            if (TableR.ContainsFK(TK1.Key1, TK1.Key2, TK1.Key3))
-                            {
-                                foreach (DBTableKey TK2 in TableR.Keys)
-                                {
-                                    if ((TableR.TableOwner == TK2.Key1) && (TableR.TableName == TK2.Key2))
-                                    {
-                                        //Console.WriteLine(string.Format("BackKey BK {0}->{1} to Table {2} do to Table {3}", TK2, TK1, TableL, TableR));
-                                        ListViewItem Item = new ListViewItem(TK2.Key1);
-                                        Item.UseItemStyleForSubItems = false;
-                                        ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, TK2.Key2);
-                                        ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, TK2.Key3);
-                                        TK = new DBTableKey(TK2.Key1, TK2.Key2, TK2.Key3);
-                                        if (Table.HasKey(TK))
-                                        {
-                                            if (Table.Rows == "0")
-                                            {
-                                                Item.BackColor = Color.Red;
-                                                SubItem.BackColor = Color.Red;
-                                                SubItem2.BackColor = Color.Red;
-                                            }
-                                        }
-                                        SubItem2.ForeColor = Color.Yellow;
-                                        SubItem2.BackColor = Color.DarkGreen;
-                                        Item.SubItems.Add(SubItem);
-                                        Item.SubItems.Add(SubItem2);
-                                        lvAdjTables.Items.Add(Item);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            UpdateUI(true);
-        }
-
-        private void ParseKey(string strIn, out string strOwner, out string strTable, out string strColumn)
-        {
-            strOwner = string.Empty;
-            strTable = string.Empty;
-            strColumn = string.Empty;
-
-            bool bOwner = true;
-            bool bTable = true;
-
-            foreach (char c in strIn)
-            {
-                if (c == '.')
-                {
-                    if (bOwner)
-                        bOwner = false;
-                    else
-                        bTable = false;
-                }
-                else
-                {
-                    if (bOwner)
-                        strOwner += c;
-                    else if (bTable)
-                        strTable += c;
-                    else
-                        strColumn += c;
-                }
-            }
-        }
-        private int TableIndex()
-        {
-            System.Windows.Forms.ListView.SelectedIndexCollection Col = lvTables.SelectedIndices;
-            if (Col == null || Col.Count == 0)
-                return -1;
-            return Col[0];
-        }
-        private int ColumnIndex()
-        {
-            System.Windows.Forms.ListView.SelectedIndexCollection Col = lvColumns.SelectedIndices;
-            if (Col == null || Col.Count == 0)
-                return -1;
-            return Col[0];
-        }
-        private int AdjTablesIndex()
-        {
-            if (lvAdjTables.SelectedItems.Count > 0)
-                return lvAdjTables.SelectedItems[0].Index;
-            return -1;
-        }
-        private int JoinTablesIndex()
-        {
-            System.Windows.Forms.ListView.SelectedIndexCollection Col = lvJoinTables.SelectedIndices;
-            if (Col == null || Col.Count == 0)
-                return -1;
-            return Col[0];
-        }
-        private int ResultTableIndex()
-        {
-            if (lvResults.SelectedItems.Count > 0)
-                return lvResults.SelectedItems[0].Index;
-            return -1;
-        }
         private void SelectIndex()
         {
             Cursor.Current = Cursors.WaitCursor;
@@ -513,6 +314,7 @@ namespace D00B
                     // Colums
                     DBTable Table = g_TableMap[TableKey];
                     lvColumns.VirtualListSize = Table.Columns.Count;
+                    lvColumns.SelectedIndices.Clear();
 
                     // Update the current tables adjacent tables and find out where we can go
                     UpdateAdjTables(strOwner, strTable);
@@ -736,6 +538,199 @@ namespace D00B
                     UpdateJoinTable();
                 }
             }
+        }
+        private void UpdateAdjTables(string strOwner, string strTable)
+        {
+            lvAdjTables.Clear();
+            lvAdjTables.SelectedIndices.Clear();
+            lvAdjTables.Columns.Add("Owner");
+            lvAdjTables.Columns[0].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvAdjTables.Font).Width;
+            lvAdjTables.Columns.Add("Table");
+            lvAdjTables.Columns[1].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvAdjTables.Font).Width;
+            lvAdjTables.Columns.Add("Columns");
+            lvAdjTables.Columns[2].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXX", lvAdjTables.Font).Width;
+
+            DBTableKey TK = new DBTableKey(strOwner, strTable, string.Empty);
+            bool bInclude = g_TableMap.ContainsKey(TK) ? true : false;
+            if (bInclude)
+            {
+                DBTable Table = g_TableMap[TK];
+                foreach (DBColumn Column in Table.Columns)
+                {
+                    // Is it a key?
+                    string strColumn = Column.Name;
+                    if (Column.IsPrimaryKey)
+                    {
+                        // Get the column it goes by in the adjacent foreign table
+                        List<DBTableKey> FKeyList = Table.FKKeyList(strOwner, strTable, strColumn);
+                        if (FKeyList != null)
+                        {
+                            foreach (DBTableKey FK in FKeyList)
+                            {
+                                ListViewItem Item = new ListViewItem(FK.Key1);
+                                Item.UseItemStyleForSubItems = false;
+                                ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, FK.Key2);
+                                ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, FK.Key3);
+
+                                TK = new DBTableKey(strOwner, FK.Key2, string.Empty); // Essentially the parent function
+                                if (g_TableMap.ContainsKey(TK))
+                                {
+                                    Table = g_TableMap[TK];
+                                    if (Table.Rows == "0")
+                                        Item.BackColor = Color.Red;
+
+                                    // The case where the the foreign key is in the primary table
+                                    SubItem2.ForeColor = Color.DarkBlue;
+                                    SubItem2.BackColor = Color.Yellow;
+                                }
+                                else
+                                {
+                                    SubItem2.ForeColor = Color.DarkBlue;
+                                    SubItem2.BackColor = Color.Yellow;
+                                }
+
+                                Item.SubItems.Add(SubItem);
+                                Item.SubItems.Add(SubItem2);
+                                lvAdjTables.Items.Add(Item);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ListViewItem Item = new ListViewItem(strOwner);
+                        Item.UseItemStyleForSubItems = false;
+                        ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, strTable);
+                        ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, strColumn);
+
+                        TK = new DBTableKey(strOwner, strTable, strColumn);
+                        if (Table.HasKey(TK))
+                        {
+                            if (Table.Rows == "0")
+                            {
+                                Item.BackColor = Color.Red;
+                                SubItem.BackColor = Color.Red;
+                                SubItem2.BackColor = Color.Red;
+                            }
+
+                            SubItem2.ForeColor = Color.DarkBlue;
+                            SubItem2.BackColor = Color.Yellow;
+
+                            Item.SubItems.Add(SubItem);
+                            Item.SubItems.Add(SubItem2);
+                            lvAdjTables.Items.Add(Item);
+                        }
+                    }
+                }
+
+                // BackKeys
+                DBTableKey TableKey = new DBTableKey(strOwner, strTable, string.Empty);
+                if (g_TableMap.ContainsKey(TableKey))
+                {
+                    DBTable TableL = g_TableMap[TableKey];
+                    foreach (KeyValuePair<DBTableKey, DBTable> KVP2 in g_TableMap)
+                    {
+                        if (KVP2.Key == TableKey)
+                            continue;
+                        DBTable TableR = KVP2.Value;
+                        foreach (DBTableKey TK1 in TableL.Keys)
+                        {
+                            if (TableR.ContainsFK(TK1.Key1, TK1.Key2, TK1.Key3))
+                            {
+                                foreach (DBTableKey TK2 in TableR.Keys)
+                                {
+                                    if ((TableR.TableOwner == TK2.Key1) && (TableR.TableName == TK2.Key2))
+                                    {
+                                        //Console.WriteLine(string.Format("BackKey BK {0}->{1} to Table {2} do to Table {3}", TK2, TK1, TableL, TableR));
+                                        ListViewItem Item = new ListViewItem(TK2.Key1);
+                                        Item.UseItemStyleForSubItems = false;
+                                        ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, TK2.Key2);
+                                        ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, TK2.Key3);
+                                        TK = new DBTableKey(TK2.Key1, TK2.Key2, TK2.Key3);
+                                        if (Table.HasKey(TK))
+                                        {
+                                            if (Table.Rows == "0")
+                                            {
+                                                Item.BackColor = Color.Red;
+                                                SubItem.BackColor = Color.Red;
+                                                SubItem2.BackColor = Color.Red;
+                                            }
+                                        }
+                                        SubItem2.ForeColor = Color.Yellow;
+                                        SubItem2.BackColor = Color.DarkGreen;
+                                        Item.SubItems.Add(SubItem);
+                                        Item.SubItems.Add(SubItem2);
+                                        lvAdjTables.Items.Add(Item);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            UpdateUI(true);
+        }
+
+        private void ParseKey(string strIn, out string strOwner, out string strTable, out string strColumn)
+        {
+            strOwner = string.Empty;
+            strTable = string.Empty;
+            strColumn = string.Empty;
+
+            bool bOwner = true;
+            bool bTable = true;
+
+            foreach (char c in strIn)
+            {
+                if (c == '.')
+                {
+                    if (bOwner)
+                        bOwner = false;
+                    else
+                        bTable = false;
+                }
+                else
+                {
+                    if (bOwner)
+                        strOwner += c;
+                    else if (bTable)
+                        strTable += c;
+                    else
+                        strColumn += c;
+                }
+            }
+        }
+        private int TableIndex()
+        {
+            System.Windows.Forms.ListView.SelectedIndexCollection Col = lvTables.SelectedIndices;
+            if (Col == null || Col.Count == 0)
+                return -1;
+            return Col[0];
+        }
+        private int ColumnIndex()
+        {
+            System.Windows.Forms.ListView.SelectedIndexCollection Col = lvColumns.SelectedIndices;
+            if (Col == null || Col.Count == 0)
+                return -1;
+            return Col[0];
+        }
+        private int AdjTablesIndex()
+        {
+            if (lvAdjTables.SelectedItems.Count > 0)
+                return lvAdjTables.SelectedItems[0].Index;
+            return -1;
+        }
+        private int JoinTablesIndex()
+        {
+            System.Windows.Forms.ListView.SelectedIndexCollection Col = lvJoinTables.SelectedIndices;
+            if (Col == null || Col.Count == 0)
+                return -1;
+            return Col[0];
+        }
+        private int ResultTableIndex()
+        {
+            if (lvResults.SelectedItems.Count > 0)
+                return lvResults.SelectedItems[0].Index;
+            return -1;
         }
         private void BtnRefresh_Click(object sender, EventArgs e)
         {
