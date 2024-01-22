@@ -63,11 +63,11 @@
             // 
             // txtConnString
             // 
-            this.txtConnString.Location = new System.Drawing.Point(12, 79);
-            this.txtConnString.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.txtConnString.Location = new System.Drawing.Point(6, 43);
+            this.txtConnString.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtConnString.Multiline = true;
             this.txtConnString.Name = "txtConnString";
-            this.txtConnString.Size = new System.Drawing.Size(3222, 46);
+            this.txtConnString.Size = new System.Drawing.Size(1528, 27);
             this.txtConnString.TabIndex = 6;
             // 
             // lvQuery
@@ -77,11 +77,11 @@
             this.lvQuery.FullRowSelect = true;
             this.lvQuery.GridLines = true;
             this.lvQuery.HideSelection = false;
-            this.lvQuery.Location = new System.Drawing.Point(12, 643);
-            this.lvQuery.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.lvQuery.Location = new System.Drawing.Point(6, 348);
+            this.lvQuery.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvQuery.MultiSelect = false;
             this.lvQuery.Name = "lvQuery";
-            this.lvQuery.Size = new System.Drawing.Size(3636, 590);
+            this.lvQuery.Size = new System.Drawing.Size(1724, 321);
             this.lvQuery.TabIndex = 7;
             this.lvQuery.UseCompatibleStateImageBehavior = false;
             this.lvQuery.View = System.Windows.Forms.View.Details;
@@ -92,10 +92,10 @@
             // 
             // btnRefresh
             // 
-            this.btnRefresh.Location = new System.Drawing.Point(3413, 5);
-            this.btnRefresh.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.btnRefresh.Location = new System.Drawing.Point(1617, 3);
+            this.btnRefresh.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(240, 65);
+            this.btnRefresh.Size = new System.Drawing.Size(114, 35);
             this.btnRefresh.TabIndex = 8;
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = true;
@@ -104,10 +104,10 @@
             // btnExport
             // 
             this.btnExport.Enabled = false;
-            this.btnExport.Location = new System.Drawing.Point(2458, 560);
-            this.btnExport.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.btnExport.Location = new System.Drawing.Point(1164, 303);
+            this.btnExport.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(240, 65);
+            this.btnExport.Size = new System.Drawing.Size(114, 35);
             this.btnExport.TabIndex = 12;
             this.btnExport.Text = "Export";
             this.btnExport.UseVisualStyleBackColor = true;
@@ -119,10 +119,10 @@
             this.chkHdr.Checked = true;
             this.chkHdr.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkHdr.Enabled = false;
-            this.chkHdr.Location = new System.Drawing.Point(3455, 3626);
-            this.chkHdr.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.chkHdr.Location = new System.Drawing.Point(1637, 1960);
+            this.chkHdr.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkHdr.Name = "chkHdr";
-            this.chkHdr.Size = new System.Drawing.Size(278, 41);
+            this.chkHdr.Size = new System.Drawing.Size(144, 24);
             this.chkHdr.TabIndex = 13;
             this.chkHdr.Text = "Include Header";
             this.chkHdr.UseVisualStyleBackColor = true;
@@ -131,10 +131,10 @@
             // 
             this.chkPrevAll.AutoSize = true;
             this.chkPrevAll.Enabled = false;
-            this.chkPrevAll.Location = new System.Drawing.Point(879, 17);
-            this.chkPrevAll.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.chkPrevAll.Location = new System.Drawing.Point(416, 9);
+            this.chkPrevAll.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkPrevAll.Name = "chkPrevAll";
-            this.chkPrevAll.Size = new System.Drawing.Size(99, 41);
+            this.chkPrevAll.Size = new System.Drawing.Size(52, 24);
             this.chkPrevAll.TabIndex = 14;
             this.chkPrevAll.Text = "All";
             this.chkPrevAll.UseVisualStyleBackColor = true;
@@ -144,47 +144,47 @@
             // 
             this.cbSchema.Enabled = false;
             this.cbSchema.FormattingEnabled = true;
-            this.cbSchema.Location = new System.Drawing.Point(178, 17);
-            this.cbSchema.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.cbSchema.Location = new System.Drawing.Point(84, 9);
+            this.cbSchema.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.cbSchema.Name = "cbSchema";
-            this.cbSchema.Size = new System.Drawing.Size(372, 45);
+            this.cbSchema.Size = new System.Drawing.Size(178, 28);
             this.cbSchema.TabIndex = 15;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(14, 20);
-            this.label2.Margin = new System.Windows.Forms.Padding(12, 0, 12, 0);
+            this.label2.Location = new System.Drawing.Point(7, 11);
+            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(134, 37);
+            this.label2.Size = new System.Drawing.Size(68, 20);
             this.label2.TabIndex = 16;
             this.label2.Text = "Schema";
             // 
             // tbTables
             // 
-            this.tbTables.Location = new System.Drawing.Point(3261, 14);
-            this.tbTables.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.tbTables.Location = new System.Drawing.Point(1545, 8);
+            this.tbTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.tbTables.Name = "tbTables";
             this.tbTables.ReadOnly = true;
-            this.tbTables.Size = new System.Drawing.Size(125, 44);
+            this.tbTables.Size = new System.Drawing.Size(61, 26);
             this.tbTables.TabIndex = 18;
             // 
             // txtSearch
             // 
-            this.txtSearch.Location = new System.Drawing.Point(2710, 216);
-            this.txtSearch.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.txtSearch.Location = new System.Drawing.Point(1284, 117);
+            this.txtSearch.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(938, 44);
+            this.txtSearch.Size = new System.Drawing.Size(446, 26);
             this.txtSearch.TabIndex = 19;
             this.txtSearch.TextChanged += new System.EventHandler(this.BtnSearch_TextChanged);
             // 
             // btnSearch
             // 
             this.btnSearch.Enabled = false;
-            this.btnSearch.Location = new System.Drawing.Point(2458, 205);
-            this.btnSearch.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.btnSearch.Location = new System.Drawing.Point(1164, 111);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(240, 65);
+            this.btnSearch.Size = new System.Drawing.Size(114, 35);
             this.btnSearch.TabIndex = 20;
             this.btnSearch.Text = "Search";
             this.btnSearch.UseVisualStyleBackColor = true;
@@ -194,10 +194,10 @@
             // 
             this.chkTable.AutoSize = true;
             this.chkTable.Enabled = false;
-            this.chkTable.Location = new System.Drawing.Point(2629, 148);
-            this.chkTable.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.chkTable.Location = new System.Drawing.Point(1245, 80);
+            this.chkTable.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkTable.Name = "chkTable";
-            this.chkTable.Size = new System.Drawing.Size(143, 41);
+            this.chkTable.Size = new System.Drawing.Size(74, 24);
             this.chkTable.TabIndex = 23;
             this.chkTable.Text = "Table";
             this.chkTable.UseVisualStyleBackColor = true;
@@ -207,10 +207,10 @@
             // 
             this.chkData.AutoSize = true;
             this.chkData.Enabled = false;
-            this.chkData.Location = new System.Drawing.Point(2796, 148);
-            this.chkData.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.chkData.Location = new System.Drawing.Point(1324, 80);
+            this.chkData.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkData.Name = "chkData";
-            this.chkData.Size = new System.Drawing.Size(131, 41);
+            this.chkData.Size = new System.Drawing.Size(70, 24);
             this.chkData.TabIndex = 24;
             this.chkData.Text = "Data";
             this.chkData.UseVisualStyleBackColor = true;
@@ -219,27 +219,27 @@
             // txtData
             // 
             this.txtData.Enabled = false;
-            this.txtData.Location = new System.Drawing.Point(2945, 143);
-            this.txtData.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.txtData.Location = new System.Drawing.Point(1395, 77);
+            this.txtData.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtData.Name = "txtData";
-            this.txtData.Size = new System.Drawing.Size(704, 44);
+            this.txtData.Size = new System.Drawing.Size(336, 26);
             this.txtData.TabIndex = 25;
             // 
             // pbData
             // 
-            this.pbData.Location = new System.Drawing.Point(3265, 74);
-            this.pbData.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.pbData.Location = new System.Drawing.Point(1547, 40);
+            this.pbData.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.pbData.Name = "pbData";
-            this.pbData.Size = new System.Drawing.Size(387, 54);
+            this.pbData.Size = new System.Drawing.Size(183, 29);
             this.pbData.TabIndex = 26;
             // 
             // chkExact
             // 
             this.chkExact.AutoSize = true;
-            this.chkExact.Location = new System.Drawing.Point(2458, 148);
-            this.chkExact.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.chkExact.Location = new System.Drawing.Point(1164, 80);
+            this.chkExact.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkExact.Name = "chkExact";
-            this.chkExact.Size = new System.Drawing.Size(142, 41);
+            this.chkExact.Size = new System.Drawing.Size(75, 24);
             this.chkExact.TabIndex = 27;
             this.chkExact.Text = "Exact";
             this.chkExact.UseVisualStyleBackColor = true;
@@ -249,10 +249,10 @@
             // 
             this.lblPreview.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblPreview.AutoSize = true;
-            this.lblPreview.Location = new System.Drawing.Point(580, 20);
-            this.lblPreview.Margin = new System.Windows.Forms.Padding(12, 0, 12, 0);
+            this.lblPreview.Location = new System.Drawing.Point(275, 107);
+            this.lblPreview.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblPreview.Name = "lblPreview";
-            this.lblPreview.Size = new System.Drawing.Size(128, 37);
+            this.lblPreview.Size = new System.Drawing.Size(63, 20);
             this.lblPreview.TabIndex = 30;
             this.lblPreview.Text = "Preview";
             // 
@@ -260,10 +260,10 @@
             // 
             this.txtPreview.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtPreview.Enabled = false;
-            this.txtPreview.Location = new System.Drawing.Point(734, 16);
-            this.txtPreview.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.txtPreview.Location = new System.Drawing.Point(348, 105);
+            this.txtPreview.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtPreview.Name = "txtPreview";
-            this.txtPreview.Size = new System.Drawing.Size(106, 44);
+            this.txtPreview.Size = new System.Drawing.Size(52, 26);
             this.txtPreview.TabIndex = 29;
             this.txtPreview.Text = "100";
             this.txtPreview.Validating += new System.ComponentModel.CancelEventHandler(this.TxtPreview_Validating);
@@ -275,11 +275,11 @@
             this.lvTables.FullRowSelect = true;
             this.lvTables.GridLines = true;
             this.lvTables.HideSelection = false;
-            this.lvTables.Location = new System.Drawing.Point(12, 190);
-            this.lvTables.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.lvTables.Location = new System.Drawing.Point(6, 103);
+            this.lvTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvTables.MultiSelect = false;
             this.lvTables.Name = "lvTables";
-            this.lvTables.Size = new System.Drawing.Size(600, 431);
+            this.lvTables.Size = new System.Drawing.Size(286, 235);
             this.lvTables.TabIndex = 31;
             this.lvTables.UseCompatibleStateImageBehavior = false;
             this.lvTables.View = System.Windows.Forms.View.Details;
@@ -293,11 +293,11 @@
             this.lvColumns.FullRowSelect = true;
             this.lvColumns.GridLines = true;
             this.lvColumns.HideSelection = false;
-            this.lvColumns.Location = new System.Drawing.Point(622, 190);
-            this.lvColumns.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.lvColumns.Location = new System.Drawing.Point(295, 103);
+            this.lvColumns.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvColumns.MultiSelect = false;
             this.lvColumns.Name = "lvColumns";
-            this.lvColumns.Size = new System.Drawing.Size(600, 431);
+            this.lvColumns.Size = new System.Drawing.Size(286, 235);
             this.lvColumns.TabIndex = 34;
             this.lvColumns.UseCompatibleStateImageBehavior = false;
             this.lvColumns.View = System.Windows.Forms.View.Details;
@@ -310,11 +310,11 @@
             this.lvAdjTables.FullRowSelect = true;
             this.lvAdjTables.GridLines = true;
             this.lvAdjTables.HideSelection = false;
-            this.lvAdjTables.Location = new System.Drawing.Point(1235, 190);
-            this.lvAdjTables.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.lvAdjTables.Location = new System.Drawing.Point(585, 103);
+            this.lvAdjTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvAdjTables.MultiSelect = false;
             this.lvAdjTables.Name = "lvAdjTables";
-            this.lvAdjTables.Size = new System.Drawing.Size(600, 431);
+            this.lvAdjTables.Size = new System.Drawing.Size(286, 235);
             this.lvAdjTables.TabIndex = 35;
             this.lvAdjTables.UseCompatibleStateImageBehavior = false;
             this.lvAdjTables.View = System.Windows.Forms.View.Details;
@@ -327,11 +327,11 @@
             this.lvResults.FullRowSelect = true;
             this.lvResults.GridLines = true;
             this.lvResults.HideSelection = false;
-            this.lvResults.Location = new System.Drawing.Point(2710, 282);
-            this.lvResults.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.lvResults.Location = new System.Drawing.Point(1284, 152);
+            this.lvResults.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvResults.MultiSelect = false;
             this.lvResults.Name = "lvResults";
-            this.lvResults.Size = new System.Drawing.Size(938, 337);
+            this.lvResults.Size = new System.Drawing.Size(446, 184);
             this.lvResults.TabIndex = 36;
             this.lvResults.UseCompatibleStateImageBehavior = false;
             this.lvResults.View = System.Windows.Forms.View.Details;
@@ -341,19 +341,19 @@
             // 
             this.cbDataBases.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbDataBases.FormattingEnabled = true;
-            this.cbDataBases.Location = new System.Drawing.Point(985, 14);
-            this.cbDataBases.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.cbDataBases.Location = new System.Drawing.Point(467, 8);
+            this.cbDataBases.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.cbDataBases.Name = "cbDataBases";
-            this.cbDataBases.Size = new System.Drawing.Size(2220, 45);
+            this.cbDataBases.Size = new System.Drawing.Size(1054, 28);
             this.cbDataBases.TabIndex = 37;
             this.cbDataBases.SelectionChangeCommitted += new System.EventHandler(this.CbDataBases_SelectionChangeCommitted);
             // 
             // btnJoin
             // 
-            this.btnJoin.Location = new System.Drawing.Point(2458, 284);
-            this.btnJoin.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.btnJoin.Location = new System.Drawing.Point(1164, 154);
+            this.btnJoin.Margin = new System.Windows.Forms.Padding(1, 3, 1, 3);
             this.btnJoin.Name = "btnJoin";
-            this.btnJoin.Size = new System.Drawing.Size(240, 65);
+            this.btnJoin.Size = new System.Drawing.Size(114, 35);
             this.btnJoin.TabIndex = 38;
             this.btnJoin.Text = "Join";
             this.btnJoin.UseVisualStyleBackColor = true;
@@ -362,11 +362,11 @@
             // txtQuery
             // 
             this.txtQuery.Enabled = false;
-            this.txtQuery.Location = new System.Drawing.Point(12, 1247);
-            this.txtQuery.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.txtQuery.Location = new System.Drawing.Point(6, 674);
+            this.txtQuery.Margin = new System.Windows.Forms.Padding(1, 3, 1, 3);
             this.txtQuery.Multiline = true;
             this.txtQuery.Name = "txtQuery";
-            this.txtQuery.Size = new System.Drawing.Size(3640, 147);
+            this.txtQuery.Size = new System.Drawing.Size(1726, 81);
             this.txtQuery.TabIndex = 39;
             // 
             // lvJoinTables
@@ -375,11 +375,11 @@
             this.lvJoinTables.FullRowSelect = true;
             this.lvJoinTables.GridLines = true;
             this.lvJoinTables.HideSelection = false;
-            this.lvJoinTables.Location = new System.Drawing.Point(1846, 190);
-            this.lvJoinTables.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.lvJoinTables.Location = new System.Drawing.Point(874, 103);
+            this.lvJoinTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvJoinTables.MultiSelect = false;
             this.lvJoinTables.Name = "lvJoinTables";
-            this.lvJoinTables.Size = new System.Drawing.Size(600, 431);
+            this.lvJoinTables.Size = new System.Drawing.Size(286, 235);
             this.lvJoinTables.TabIndex = 40;
             this.lvJoinTables.UseCompatibleStateImageBehavior = false;
             this.lvJoinTables.View = System.Windows.Forms.View.Details;
@@ -389,49 +389,45 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 143);
-            this.label1.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
+            this.label1.Location = new System.Drawing.Point(7, 77);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(340, 37);
+            this.label1.Size = new System.Drawing.Size(179, 20);
             this.label1.TabIndex = 41;
-            this.label1.Text = "All Owners and Tables";
+            this.label1.Text = "All Schemas and Tables";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(620, 143);
-            this.label3.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
+            this.label3.Location = new System.Drawing.Point(294, 77);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(328, 37);
+            this.label3.Size = new System.Drawing.Size(161, 20);
             this.label3.TabIndex = 42;
             this.label3.Text = "Active Table Columns";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(1232, 143);
-            this.label4.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
+            this.label4.Location = new System.Drawing.Point(584, 77);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(583, 37);
+            this.label4.Size = new System.Drawing.Size(299, 20);
             this.label4.TabIndex = 43;
-            this.label4.Text = "Adjacent Owners, Tables, and Columns";
+            this.label4.Text = "Adjacent Schemas, Tables, and Columns";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(1836, 143);
-            this.label5.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
+            this.label5.Location = new System.Drawing.Point(870, 77);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(517, 37);
+            this.label5.Size = new System.Drawing.Size(265, 20);
             this.label5.TabIndex = 44;
-            this.label5.Text = "Join Owners, Tables, and Columns";
+            this.label5.Text = "Join Schemas, Tables, and Columns";
             // 
             // btnResetJoin
             // 
-            this.btnResetJoin.Location = new System.Drawing.Point(2458, 369);
-            this.btnResetJoin.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.btnResetJoin.Location = new System.Drawing.Point(1164, 199);
+            this.btnResetJoin.Margin = new System.Windows.Forms.Padding(1, 3, 1, 3);
             this.btnResetJoin.Name = "btnResetJoin";
-            this.btnResetJoin.Size = new System.Drawing.Size(240, 65);
+            this.btnResetJoin.Size = new System.Drawing.Size(114, 35);
             this.btnResetJoin.TabIndex = 45;
             this.btnResetJoin.Text = "Reset Join";
             this.btnResetJoin.UseVisualStyleBackColor = true;
@@ -439,9 +435,9 @@
             // 
             // D00B
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(19F, 37F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(3664, 1406);
+            this.ClientSize = new System.Drawing.Size(1737, 761);
             this.Controls.Add(this.btnResetJoin);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -474,7 +470,7 @@
             this.Controls.Add(this.lvQuery);
             this.Controls.Add(this.txtConnString);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(12, 9, 12, 9);
+            this.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "D00B";

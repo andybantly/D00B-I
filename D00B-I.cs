@@ -43,7 +43,7 @@ namespace D00B
         {
             // Output the licensing disclaimer
             Debug.WriteLine(@"D00B-I.exe Copyright (C) 2023-Present Andrew S. Bantly");
-            Debug.WriteLine("Andrew S. Bantly can be reached at andy.bantly@hotmail.com");
+            Debug.WriteLine("Andrew S. Bantly can be reached at andybantly@hotmail.com");
             Debug.WriteLine("D00B-I.exe comes with ABSOLUTELY NO WARRANTY");
             Debug.WriteLine("This is free software, and you are welcome to redistribute it");
             Debug.WriteLine("under of the GNU General Public License as published by");
