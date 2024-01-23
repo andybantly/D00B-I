@@ -4,7 +4,7 @@ namespace D00B
 {
     internal class Maze
     {
-        Dictionary<DBTableKey, DBTable> m_TableMap = new Dictionary<DBTableKey, DBTable>();
+        readonly Dictionary<DBTableKey, DBTable> m_TableMap;
         string m_strSrcSchema = string.Empty;
         string m_strSrcTable = string.Empty;
         string m_strSrcColumn = string.Empty;
@@ -54,7 +54,7 @@ namespace D00B
             {
                 Table.Visited = true;
 
-                System.Console.Write(string.Format("{0}:{1}", Key.Schema, Table.TableName));
+                System.Diagnostics.Debug.Write(string.Format("{0}.{1}", Key.Schema, Table.TableName));
                 m_TablePath.Add(new DBTableKey(Key.Schema, Table.TableName, string.Empty));
 
                 foreach (DBTableKey PK in Table.Keys)
@@ -63,7 +63,7 @@ namespace D00B
                     if (m_TableMap.ContainsKey(TK))
                     {
                         DBTable DestTable = m_TableMap[TK];
-                        System.Console.Write(string.Format("->{0}:{1}:{2}", PK.Schema, DestTable.TableName, PK.Column));
+                        System.Diagnostics.Debug.Write(string.Format("->{0}.{1}.{2}", PK.Schema, DestTable.TableName, PK.Column));
                         Walk(TK, DestTable);
                     }
                 }
@@ -72,17 +72,13 @@ namespace D00B
 
         public void DFS()
         {
-            DBTableKey Begin = new DBTableKey(SourceSchema, SourceTable, SourceColumn);
-            foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
-            {
-                if (KVP.Key == Begin)
-                {
-                    DBTable Table = KVP.Value;
-                    m_TablePath = new List<DBTableKey>();
-                    Walk(Begin, Table);
-                    System.Console.WriteLine();
-                }
-            }
+            DBTableKey Begin = new DBTableKey(SourceSchema, SourceTable, string.Empty);
+            DBTableKey End = new DBTableKey(JoinSchema, JoinTable, string.Empty);
+            DBTable BeginTable = m_TableMap[Begin];
+            DBTable EndTable = m_TableMap[End];
+            m_TablePath = new List<DBTableKey>();
+            Walk(Begin, BeginTable);
+            System.Diagnostics.Debug.WriteLine("");
         }
     }
 }

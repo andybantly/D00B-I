@@ -60,7 +60,7 @@ namespace D00B
             btnTestJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1 && JoinTablesIndex() != -1;
             btnJoin.Visible = false;
             btnResetJoin.Visible = false;
-            btnTestJoin.Visible = false;
+            btnTestJoin.Visible = true;
         }
 
         private void D00B_Load(object sender, EventArgs e)
@@ -636,9 +636,9 @@ namespace D00B
                                 SubItem.BackColor = Color.Red;
                                 SubItem2.BackColor = Color.Red;
                             }
-
+                            else
+                                SubItem2.BackColor = Color.Yellow;
                             SubItem2.ForeColor = Color.DarkBlue;
-                            SubItem2.BackColor = Color.Yellow;
 
                             Item.SubItems.Add(SubItem);
                             Item.SubItems.Add(SubItem2);
@@ -1422,7 +1422,13 @@ namespace D00B
                 if (!bJoin)
                 {
                     Maze Path = new Maze(g_TableMap);
-                    //Path.DFS();
+                    Path.SourceSchema = strSrcSchema;
+                    Path.SourceTable = strSrcTable;
+                    Path.SourceColumn = strSrcColumn;
+                    Path.JoinSchema = strJoinSchema;
+                    Path.JoinTable = strJoinTable;
+                    Path.JoinColumn = strJoinColumn;
+                    Path.DFS();
                 }
             }
             MessageBox.Show(bJoin ? "YES" : "NO");
