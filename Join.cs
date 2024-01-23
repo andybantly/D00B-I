@@ -25,10 +25,10 @@ namespace D00B
 {
     public partial class DlgJoin : Form
     {
-        private string m_strSrcOwner = string.Empty;
+        private string m_strSrcSchema = string.Empty;
         private string m_strSrcTable = string.Empty;
         private string m_strSrcColumn = string.Empty;
-        private string m_strJoinOwner = string.Empty;
+        private string m_strJoinSchema = string.Empty;
         private string m_strJoinTable = string.Empty;
         private string m_strJoinColumn = string.Empty;
         private Utility.Join m_Join;
@@ -38,8 +38,8 @@ namespace D00B
         }
         public string SourceSchema
         {
-            get { return m_strSrcOwner; }
-            set { if (!string.IsNullOrEmpty(value)) m_strSrcOwner = value; }
+            get { return m_strSrcSchema; }
+            set { if (!string.IsNullOrEmpty(value)) m_strSrcSchema = value; }
         }
         public string SourceTable
         {
@@ -53,8 +53,8 @@ namespace D00B
         }
         public string JoinSchema
         {
-            get { return m_strJoinOwner; }
-            set { if (!string.IsNullOrEmpty(value)) m_strJoinOwner = value; }
+            get { return m_strJoinSchema; }
+            set { if (!string.IsNullOrEmpty(value)) m_strJoinSchema = value; }
         }
         public string JoinTable
         {
@@ -74,7 +74,7 @@ namespace D00B
 
         private void DlgJoin_Load(object sender, EventArgs e)
         {
-            bool bRHS = m_strJoinOwner != string.Empty;
+            bool bRHS = m_strJoinSchema != string.Empty;
             optInner.Enabled = bRHS;
             optLeft.Enabled = bRHS;
             optRight.Enabled = bRHS;
@@ -118,11 +118,11 @@ namespace D00B
 
             if (m_Join != Utility.Join.Self)
                 txtJoin.Text = string.Format("Add a {0} JOIN from\r\n\r\n[{1}].[{2}].{3}\r\n\r\nTo\r\n\r\n[{4}].[{5}].{6}",
-                    strType, m_strSrcOwner, m_strSrcTable, m_strSrcColumn,
-                    m_strJoinOwner, m_strJoinTable, m_strJoinColumn);
+                    strType, m_strSrcSchema, m_strSrcTable, m_strSrcColumn,
+                    m_strJoinSchema, m_strJoinTable, m_strJoinColumn);
             else
                 txtJoin.Text = string.Format("Add a {0} JOIN from\r\n\r\n[{1}].[{2}].{3}\r\n\r\nTo\r\n\r\n[{1}].[{2}].{3}",
-                    strType, m_strSrcOwner, m_strSrcTable, m_strSrcColumn);
+                    strType, m_strSrcSchema, m_strSrcTable, m_strSrcColumn);
         }
     }
 }

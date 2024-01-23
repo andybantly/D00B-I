@@ -30,6 +30,36 @@ namespace D00B
         {
             InitializeComponent();
         }
+        void UpdateUI(bool bEnabled)
+        {
+            lvTables.Enabled = bEnabled;
+            lvAdjTables.Enabled = bEnabled;
+            lvJoinTables.Enabled = bEnabled;
+            txtConnString.Enabled = true;
+            lvQuery.Enabled = bEnabled;
+            btnRefresh.Enabled = true;
+            txtPreview.Enabled = bEnabled;
+            lblPreview.Enabled = bEnabled;
+            btnExport.Enabled = bEnabled;
+            chkHdr.Enabled = bEnabled;
+            chkPrevAll.Enabled = bEnabled;
+            cbSchema.Enabled = bEnabled;
+            label2.Enabled = bEnabled;
+            tbTables.Enabled = bEnabled;
+            txtSearch.Enabled = bEnabled;
+            btnSearch.Enabled = bEnabled;
+            lvResults.Enabled = bEnabled;
+            chkTable.Enabled = bEnabled;
+            chkData.Enabled = bEnabled;
+            txtData.Enabled = bEnabled;
+            pbData.Enabled = bEnabled;
+            chkExact.Enabled = bEnabled;
+            lvColumns.Enabled = bEnabled;
+            btnJoin.Enabled = bEnabled && ColumnIndex() != -1 && lvAdjTables.Items.Count > 0;
+            btnResetJoin.Enabled = bEnabled && m_JoinKeysFr.Count > 0;
+            btnTestJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1 && JoinTablesIndex() != -1;
+        }
+
         private void D00B_Load(object sender, EventArgs e)
         {
             // Output the licensing disclaimer
@@ -101,9 +131,11 @@ namespace D00B
                         DBTableKey TableKey = new DBTableKey(strSchema, strTable, strColumn);
                         if (!g_TableMap.ContainsKey(TableKey))
                         {
-                            DBTable Table = new DBTable(TableKey);
-                            Table.SelectedIndex = iSelectedIndex;
-                            Table.Rows = strRows;
+                            DBTable Table = new DBTable(TableKey)
+                            {
+                                SelectedIndex = iSelectedIndex,
+                                Rows = strRows
+                            };
                             g_TableMap.Add(TableKey, Table);
                             iSelectedIndex++;
                         }
@@ -770,37 +802,6 @@ namespace D00B
                 cbSchema.SelectedItem = strSchema;
         }
 
-        void UpdateUI(bool bEnabled)
-        {
-            btnJoin.Visible = false;
-            btnResetJoin.Visible = false;
-
-            lvTables.Enabled = bEnabled;
-            lvAdjTables.Enabled = bEnabled;
-            lvJoinTables.Enabled = bEnabled;
-            txtConnString.Enabled = true;
-            lvQuery.Enabled = bEnabled;
-            btnRefresh.Enabled = true;
-            txtPreview.Enabled = bEnabled;
-            lblPreview.Enabled = bEnabled;
-            btnExport.Enabled = bEnabled;
-            chkHdr.Enabled = bEnabled;
-            chkPrevAll.Enabled = bEnabled;
-            cbSchema.Enabled = bEnabled;
-            label2.Enabled = bEnabled;
-            tbTables.Enabled = bEnabled;
-            txtSearch.Enabled = bEnabled;
-            btnSearch.Enabled = bEnabled;
-            lvResults.Enabled = bEnabled;
-            chkTable.Enabled = bEnabled;
-            chkData.Enabled = bEnabled;
-            txtData.Enabled = bEnabled;
-            pbData.Enabled = bEnabled;
-            chkExact.Enabled = bEnabled;
-            lvColumns.Enabled = bEnabled;
-            btnJoin.Enabled = bEnabled && lvAdjTables.Items.Count > 0;
-        }
-
         private void BtnExport_Click(object sender, EventArgs e)
         {
             if (lvQuery.Items.Count > 0 && ExportListView.ExportToExcel(lvQuery, "Query Results"))
@@ -1157,6 +1158,14 @@ namespace D00B
             }
             finally { }
         }
+        private void LvJoinTables_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateUI(true);
+        }
+        private void LvColumns_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateUI(true);
+        }
         private void LvColumns_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             int iRow = e.ItemIndex;
@@ -1372,7 +1381,7 @@ namespace D00B
             finally { }
         }
 
-        private void btnResetJoin_Click(object sender, EventArgs e)
+        private void BtnResetJoin_Click(object sender, EventArgs e)
         {
             m_nCT = 0;
             m_TableKeys = new List<DBTableKey>();
@@ -1392,6 +1401,30 @@ namespace D00B
             // Select the table
             SelectIndex();
         }
+        private void BtnTestJoin_Click(object sender, EventArgs e)
+        {
+            bool bJoin = false;
+            if (TableIndex() != -1 && ColumnIndex() != -1 && JoinTablesIndex() != -1)
+            {
+                string strSrcSchema = lvTables.Items[TableIndex()].Text;
+                string strSrcTable = lvTables.Items[TableIndex()].SubItems[1].Text;
+                string strSrcColumn = lvColumns.Items[ColumnIndex()].Text;
+                string strJoinSchema = lvJoinTables.Items[JoinTablesIndex()].Text;
+                string strJoinTable = lvJoinTables.Items[JoinTablesIndex()].SubItems[1].Text;
+                string strJoinColumn = lvJoinTables.Items[JoinTablesIndex()].SubItems[2].Text;
+
+                bJoin = strSrcSchema == strJoinSchema &&
+                    strSrcTable == strJoinTable &&
+                    strSrcColumn == strJoinColumn;
+                if (!bJoin)
+                {
+                    Maze Path = new Maze(g_TableMap);
+                    //Path.DFS();
+                }
+            }
+            MessageBox.Show(bJoin ? "YES" : "NO");
+        }
+
         private void LvAdjTables_SelectedIndexChanged(object sender, EventArgs e)
         {
             int iAdjTableIndex = AdjTablesIndex();

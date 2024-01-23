@@ -59,6 +59,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.btnResetJoin = new System.Windows.Forms.Button();
+            this.btnTestJoin = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtConnString
@@ -303,6 +304,7 @@
             this.lvColumns.View = System.Windows.Forms.View.Details;
             this.lvColumns.VirtualMode = true;
             this.lvColumns.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.LvColumns_RetrieveVirtualItem);
+            this.lvColumns.SelectedIndexChanged += new System.EventHandler(this.LvColumns_SelectedIndexChanged);
             // 
             // lvAdjTables
             // 
@@ -385,6 +387,7 @@
             this.lvJoinTables.View = System.Windows.Forms.View.Details;
             this.lvJoinTables.VirtualMode = true;
             this.lvJoinTables.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.LvJoinTables_RetrieveVirtualItem);
+            this.lvJoinTables.SelectedIndexChanged += new System.EventHandler(this.LvJoinTables_SelectedIndexChanged);
             this.lvJoinTables.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.LvJoinTables_MouseDoubleClick);
             // 
             // label1
@@ -432,13 +435,25 @@
             this.btnResetJoin.TabIndex = 45;
             this.btnResetJoin.Text = "Reset Join";
             this.btnResetJoin.UseVisualStyleBackColor = true;
-            this.btnResetJoin.Click += new System.EventHandler(this.btnResetJoin_Click);
+            this.btnResetJoin.Click += new System.EventHandler(this.BtnResetJoin_Click);
+            // 
+            // btnTestJoin
+            // 
+            this.btnTestJoin.Location = new System.Drawing.Point(1164, 249);
+            this.btnTestJoin.Margin = new System.Windows.Forms.Padding(1, 3, 1, 3);
+            this.btnTestJoin.Name = "btnTestJoin";
+            this.btnTestJoin.Size = new System.Drawing.Size(114, 35);
+            this.btnTestJoin.TabIndex = 46;
+            this.btnTestJoin.Text = "Test Join";
+            this.btnTestJoin.UseVisualStyleBackColor = true;
+            this.btnTestJoin.Click += new System.EventHandler(this.BtnTestJoin_Click);
             // 
             // D00B
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1737, 761);
+            this.Controls.Add(this.btnTestJoin);
             this.Controls.Add(this.btnResetJoin);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -514,6 +529,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button btnResetJoin;
+        private System.Windows.Forms.Button btnTestJoin;
     }
 }
 
