@@ -58,6 +58,9 @@ namespace D00B
             btnJoin.Enabled = bEnabled && ColumnIndex() != -1 && lvAdjTables.Items.Count > 0;
             btnResetJoin.Enabled = bEnabled && m_JoinKeysFr.Count > 0;
             btnTestJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1 && JoinTablesIndex() != -1;
+            btnJoin.Visible = false;
+            btnResetJoin.Visible = false;
+            btnTestJoin.Visible = false;
         }
 
         private void D00B_Load(object sender, EventArgs e)
