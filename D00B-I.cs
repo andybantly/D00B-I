@@ -60,7 +60,7 @@ namespace D00B
             btnTestJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1 && JoinTablesIndex() != -1;
             btnJoin.Visible = false;
             btnResetJoin.Visible = false;
-            btnTestJoin.Visible = true;
+            btnTestJoin.Visible = false;
         }
 
         private void D00B_Load(object sender, EventArgs e)
