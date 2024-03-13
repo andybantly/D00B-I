@@ -60,6 +60,7 @@ namespace D00B
             btnTestJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1 && JoinTablesIndex() != -1;
             btnJoin.Visible = false;
             btnResetJoin.Visible = false;
+
             btnTestJoin.Visible = false;
         }
 
@@ -576,7 +577,7 @@ namespace D00B
             lvAdjTables.Columns[2].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXX", lvAdjTables.Font).Width;
 
             DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
-            bool bInclude = g_TableMap.ContainsKey(TK) ? true : false;
+            bool bInclude = g_TableMap.ContainsKey(TK);
             if (bInclude)
             {
                 DBTable Table = g_TableMap[TK];
@@ -695,34 +696,18 @@ namespace D00B
             UpdateUI(true);
         }
 
-        private void ParseKey(string strIn, out string strSchema, out string strTable, out string strColumn)
+        private void ParseKey(string strIn, out string strSchema, out string strTable)
         {
             strSchema = string.Empty;
             strTable = string.Empty;
-            strColumn = string.Empty;
+            if (string.IsNullOrEmpty(strIn))
+                return;
 
-            bool bSchema = true;
-            bool bTable = true;
-
-            foreach (char c in strIn)
-            {
-                if (c == '.')
-                {
-                    if (bSchema)
-                        bSchema = false;
-                    else
-                        bTable = false;
-                }
-                else
-                {
-                    if (bSchema)
-                        strSchema += c;
-                    else if (bTable)
-                        strTable += c;
-                    else
-                        strColumn += c;
-                }
-            }
+            string[] dbInfo = strIn.Split('.');
+            strSchema = dbInfo[0];
+            strTable = dbInfo[1];
+            for (int i = 2; i < dbInfo.Length; ++i)
+                strTable += "." + dbInfo[i];
         }
         private int TableIndex()
         {
@@ -760,6 +745,11 @@ namespace D00B
         private void BtnRefresh_Click(object sender, EventArgs e)
         {
             UpdateUI(false);
+            RefreshView();
+        }
+
+        private void RefreshView()
+        {
             ClearUI();
             ClearData();
             RefreshIndex();
@@ -817,7 +807,8 @@ namespace D00B
         {
             lblPreview.Enabled = !chkPrevAll.Checked;
             txtPreview.Enabled = !chkPrevAll.Checked;
-            RefreshIndex();
+            
+            RefreshView();
         }
 
         private void SetupSearchResults()
@@ -1075,10 +1066,10 @@ namespace D00B
 
         private void LvTables_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
+            string strCurSel = TableCurSel(e.ItemIndex);
+            ParseKey(strCurSel, out string strSchema, out string strTable);
             try
             {
-                string strCurSel = TableCurSel(e.ItemIndex);
-                ParseKey(strCurSel, out string strSchema, out string strTable, out string _);
                 DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
                 DBTable Table = g_TableMap[TK];
                 e.Item = new ListViewItem(strSchema);
@@ -1228,7 +1219,7 @@ namespace D00B
             m_JoinKeysTo = new List<DBJoinKey>();
 
             // Setup the first key in case this isn't a join
-            ParseKey(TableCurSel(TableIndex()), out string strSchema, out string strTable, out string _);
+            ParseKey(TableCurSel(TableIndex()), out string strSchema, out string strTable);
             if (string.IsNullOrEmpty(strSchema))
                 return;
             DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty)
@@ -1388,7 +1379,7 @@ namespace D00B
         {
             m_nCT = 0;
             m_TableKeys = new List<DBTableKey>();
-            ParseKey(TableCurSel(TableIndex()), out string strSchema, out string strTable, out string _);
+            ParseKey(TableCurSel(TableIndex()), out string strSchema, out string strTable);
             if (string.IsNullOrEmpty(strSchema))
                 return;
             DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty)

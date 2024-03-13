@@ -48,12 +48,22 @@ namespace D00B
             set { if (!string.IsNullOrEmpty(value)) m_strJoinColumn = value; }
         }
 
-        private void Walk(DBTableKey Key, DBTable Table)
+        private void Walk(DBTableKey TK)
         {
+            DBTable Table = m_TableMap[TK];
             if (!Table.Visited)
             {
                 Table.Visited = true;
+                foreach (DBColumn Column in Table.Columns)
+                {
+                    if (Column.IsPrimaryKey)
+                    {
+                        DBTableKey TKD = new DBTableKey(Table.TableSchema, Table.TableName, string.Empty);
+                        Walk(TKD);
+                    }
+                }
 
+                /*
                 System.Diagnostics.Debug.Write(string.Format("{0}.{1}", Key.Schema, Table.TableName));
                 m_TablePath.Add(new DBTableKey(Key.Schema, Table.TableName, string.Empty));
 
@@ -67,18 +77,25 @@ namespace D00B
                         Walk(TK, DestTable);
                     }
                 }
+                */
             }
         }
 
         public void DFS()
         {
+            foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
+                KVP.Value.Visited = false;
+
             DBTableKey Begin = new DBTableKey(SourceSchema, SourceTable, string.Empty);
             DBTableKey End = new DBTableKey(JoinSchema, JoinTable, string.Empty);
-            DBTable BeginTable = m_TableMap[Begin];
-            DBTable EndTable = m_TableMap[End];
+//            DBTable BeginTable = m_TableMap[Begin];
+//            DBTable EndTable = m_TableMap[End];
             m_TablePath = new List<DBTableKey>();
-            Walk(Begin, BeginTable);
+            Walk(Begin);
             System.Diagnostics.Debug.WriteLine("");
+
+            foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
+                KVP.Value.Visited = false;
         }
     }
 }
