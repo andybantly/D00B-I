@@ -22,6 +22,7 @@ namespace D00B
 
         readonly List<bool> m_Ascending = new List<bool>();
         string[][] m_oArr;
+        string[][] m_oNewArr;
         KeyRow[] m_oIdx;
         int[] m_oWidth;
         int m_nColumns = -1;
@@ -506,9 +507,10 @@ namespace D00B
                     {
                         txtQuery.Text = strQueryString;
 
+                        int iRow;
                         m_nColumns = Sql.Columns.Count; // should be the same as the sum of all columns in the collective table list
-                        for (int i = 0; i < m_nCount; i++)
-                            m_oArr[i] = new string[m_nColumns];
+                        for (iRow = 0; iRow < m_nCount; ++iRow)
+                            m_oArr[iRow] = new string[m_nColumns];
                         m_oWidth = new int[m_nColumns];
 
                         // Column headers
@@ -523,7 +525,7 @@ namespace D00B
                             iField++;
                         }
 
-                        int iRow = 0;
+                        iRow = 0;
                         while (Sql.Read())
                         {
                             for (iField = 0; iField < m_nColumns; ++iField)
@@ -763,6 +765,7 @@ namespace D00B
             // Clear storages used for UI
             m_oArr = null;
             m_oIdx = null;
+            m_oNewArr = null;
             m_oWidth = null;
         }
 
@@ -943,14 +946,23 @@ namespace D00B
             // Sort using the classes comparer            
             Array.Sort(m_oIdx);
 
+            // Rearrange based on sort
+            m_oNewArr = new string[m_nCount][];
+            for (int iRow = 0; iRow < m_nCount; ++iRow)
+            {
+                m_oNewArr[iRow] = new string[m_nColumns];
+                m_oNewArr[iRow][e.Column] = m_oIdx[iRow].Key;
+                for (int iCol = 0; iCol < e.Column; ++iCol)
+                    m_oNewArr[iRow][iCol] = m_oArr[m_oIdx[iRow].Row][iCol];
+                for (int iCol = e.Column + 1; iCol < m_nColumns; ++iCol)
+                    m_oNewArr[iRow][iCol] = m_oArr[m_oIdx[iRow].Row][iCol];
+            }
+
             // Update the results with the sorted data
             for (int iRow = 0; iRow < m_nCount; ++iRow)
             {
-                m_oArr[iRow][e.Column] = m_oIdx[iRow].Key;
-                for (int iCol = 0; iCol < e.Column; ++iCol)
-                    m_oArr[iRow][iCol] = m_oArr[m_oIdx[iRow].Row][iCol];
-                for (int iCol = e.Column + 1; iCol < m_nColumns; ++iCol)
-                    m_oArr[iRow][iCol] = m_oArr[m_oIdx[iRow].Row][iCol];
+                for (int iCol = 0; iCol < m_nColumns; ++iCol)
+                    m_oArr[iRow][iCol] = m_oNewArr[iRow][iCol];
             }
 
             m_Ascending[e.Column] = !m_Ascending[e.Column];
