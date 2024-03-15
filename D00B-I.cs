@@ -21,7 +21,8 @@ namespace D00B
         float g_nFontHeight = 0;
 
         readonly List<bool> m_Ascending = new List<bool>();
-        string[][] m_oArray;
+        string[][] m_oArr;
+        KeyRow[] m_oIdx;
         int[] m_oWidth;
         int m_nColumns = -1;
         int m_nCount = -1;
@@ -432,7 +433,7 @@ namespace D00B
                     m_nCount = chkPrevAll.Checked ? nCount : Math.Min(nCount, m_nPreview);
 
                     // Set up the backing for the virtual list view
-                    m_oArray = new string[m_nCount + 1][];
+                    m_oArr = new string[m_nCount][];
 
                     // Search criteria
                     strColumn = string.Empty;
@@ -506,8 +507,8 @@ namespace D00B
                         txtQuery.Text = strQueryString;
 
                         m_nColumns = Sql.Columns.Count; // should be the same as the sum of all columns in the collective table list
-                        for (int i = 0; i < m_nCount + 1; i++)
-                            m_oArray[i] = new string[m_nColumns];
+                        for (int i = 0; i < m_nCount; i++)
+                            m_oArr[i] = new string[m_nColumns];
                         m_oWidth = new int[m_nColumns];
 
                         // Column headers
@@ -528,7 +529,7 @@ namespace D00B
                             for (iField = 0; iField < m_nColumns; ++iField)
                             {
                                 string strField = Sql.GetValue(iField);
-                                m_oArray[iRow][iField] = strField;
+                                m_oArr[iRow][iField] = strField;
                                 if (iRow < 1000) // TODO - Make this a constant
                                 {
                                     Size sz = TextRenderer.MeasureText(strField, lvQuery.Font);
@@ -760,7 +761,8 @@ namespace D00B
         void ClearData()
         {
             // Clear storages used for UI
-            m_oArray = null;
+            m_oArr = null;
+            m_oIdx = null;
             m_oWidth = null;
         }
 
@@ -933,28 +935,24 @@ namespace D00B
         }
         private void LvQuery_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            string strTemp;
-            for (int i = 1; i < m_nCount; i++)
+            // Set up the sort structure
+            m_oIdx = new KeyRow[m_nCount];
+            for (int iRow = 0; iRow < m_nCount; ++iRow)
+                m_oIdx[iRow] = new KeyRow(m_oArr[iRow][e.Column], iRow, m_Ascending[e.Column]);
+
+            // Sort using the classes comparer            
+            Array.Sort(m_oIdx);
+
+            // Update the results with the sorted data
+            for (int iRow = 0; iRow < m_nCount; ++iRow)
             {
-                var LHS = m_oArray[i][e.Column];
-                bool bFlag = false;
-                for (int j = i - 1; j >= 0 && !bFlag;)
-                {
-                    var RHS = m_oArray[j][e.Column];
-                    if (Compare(m_Ascending[e.Column], LHS, RHS) > 0)
-                    {
-                        for (int iCol = 0; iCol < m_nColumns; iCol++)
-                        {
-                            strTemp = m_oArray[j + 1][iCol];
-                            m_oArray[j + 1][iCol] = m_oArray[j][iCol];
-                            m_oArray[j][iCol] = strTemp;
-                        }
-                        j--;
-                    }
-                    else
-                        bFlag = true;
-                }
+                m_oArr[iRow][e.Column] = m_oIdx[iRow].Key;
+                for (int iCol = 0; iCol < e.Column; ++iCol)
+                    m_oArr[iRow][iCol] = m_oArr[m_oIdx[iRow].Row][iCol];
+                for (int iCol = e.Column + 1; iCol < m_nColumns; ++iCol)
+                    m_oArr[iRow][iCol] = m_oArr[m_oIdx[iRow].Row][iCol];
             }
+
             m_Ascending[e.Column] = !m_Ascending[e.Column];
             lvQuery.Invalidate();
         }
@@ -996,19 +994,19 @@ namespace D00B
             int iRow = e.ItemIndex;
             try
             {
-                if (m_oArray != null && iRow <= m_oArray.Length)
+                if (m_oArr != null && iRow <= m_oArr.Length)
                 {
                     // Fill the grid with the basic values
                     for (int idx = 0; idx < m_nColumns; ++idx)
                     {
                         if (idx == 0)
                         {
-                            e.Item = new ListViewItem(m_oArray != null ? m_oArray[iRow][idx] : string.Empty);
+                            e.Item = new ListViewItem(m_oArr != null ? m_oArr[iRow][idx] : string.Empty);
                             e.Item.UseItemStyleForSubItems = false;
                         }
                         else
                         {
-                            ListViewItem.ListViewSubItem lvSubItem = new ListViewItem.ListViewSubItem(e.Item, m_oArray != null ? m_oArray[iRow][idx] : string.Empty);
+                            ListViewItem.ListViewSubItem lvSubItem = new ListViewItem.ListViewSubItem(e.Item, m_oArr != null ? m_oArr[iRow][idx] : string.Empty);
                             e.Item.SubItems.Add(lvSubItem);
                         }
                     }
@@ -1165,7 +1163,7 @@ namespace D00B
             int iRow = e.ItemIndex;
             try
             {
-                if (m_oArray != null)
+                if (m_oArr != null)
                 {
                     DBTableKey TableKey = m_TableKeys[0];
                     string strSchema = TableKey.Schema;

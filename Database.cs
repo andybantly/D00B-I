@@ -61,17 +61,17 @@ namespace D00B
                 throw new InvalidOperationException("CompareTo: Not a DB Table Key");
             return CompareTo((DBTableKey)rhs);
         }
-        public static bool operator < (DBTableKey lhs, DBTableKey rhs) => lhs.CompareTo(rhs) < 0;
-        public static bool operator > (DBTableKey lhs, DBTableKey rhs) => lhs.CompareTo(rhs) > 0;
-        public bool Equals (DBTableKey rhs) => ToString() == rhs.ToString();
+        public static bool operator <(DBTableKey lhs, DBTableKey rhs) => lhs.CompareTo(rhs) < 0;
+        public static bool operator >(DBTableKey lhs, DBTableKey rhs) => lhs.CompareTo(rhs) > 0;
+        public bool Equals(DBTableKey rhs) => ToString() == rhs.ToString();
         public override bool Equals(object rhs)
         {
             if (!(rhs is DBTableKey))
                 return false;
             return Equals((DBTableKey)rhs);
         }
-        public static bool operator == (DBTableKey lhs, DBTableKey rhs) => lhs.Equals(rhs);
-        public static bool operator != (DBTableKey lhs, DBTableKey rhs) => !(lhs == rhs);
+        public static bool operator ==(DBTableKey lhs, DBTableKey rhs) => lhs.Equals(rhs);
+        public static bool operator !=(DBTableKey lhs, DBTableKey rhs) => !(lhs == rhs);
     }
     public class DBJoinKey : DBTableKey
     {
@@ -113,9 +113,9 @@ namespace D00B
             Column = strK3;
             m_Join = Join;
         }
-        public Utility.Join JoinType 
+        public Utility.Join JoinType
         {
-            get { return m_Join; } 
+            get { return m_Join; }
         }
     }
 
@@ -146,8 +146,8 @@ namespace D00B
                 throw new InvalidOperationException("CompareTo: Not a Column");
             return CompareTo((DBColumn)rhs);
         }
-        public static bool operator < (DBColumn lhs, DBColumn rhs) => lhs.CompareTo(rhs) < 0;
-        public static bool operator > (DBColumn lhs, DBColumn rhs) => lhs.CompareTo(rhs) > 0;
+        public static bool operator <(DBColumn lhs, DBColumn rhs) => lhs.CompareTo(rhs) < 0;
+        public static bool operator >(DBColumn lhs, DBColumn rhs) => lhs.CompareTo(rhs) > 0;
         public bool Equals(DBColumn rhs) => ToString() == rhs.ToString();
         public override bool Equals(object rhs)
         {
@@ -155,8 +155,8 @@ namespace D00B
                 return false;
             return Equals((DBColumn)rhs);
         }
-        public static bool operator == (DBColumn lhs, DBColumn rhs) => lhs.Equals(rhs);
-        public static bool operator != (DBColumn lhs, DBColumn rhs) => !(lhs == rhs);
+        public static bool operator ==(DBColumn lhs, DBColumn rhs) => lhs.Equals(rhs);
+        public static bool operator !=(DBColumn lhs, DBColumn rhs) => !(lhs == rhs);
 
         public DBColumn()
         {
@@ -341,6 +341,82 @@ namespace D00B
         {
             get { return m_iSelectedIndex; }
             set { m_iSelectedIndex = value; }
+        }
+    }
+
+    public class KeyRow : IComparable<KeyRow>, IEquatable<KeyRow>, IComparable
+    {
+        private string m_strKey;
+        private int m_iRow;
+        private bool m_bAsc;
+
+        public KeyRow()
+        {
+            m_strKey = string.Empty;
+            m_iRow = -1;
+            m_bAsc = false;
+        }
+        public KeyRow(string strKey, int iRow, bool bAsc) : this()
+        {
+            m_strKey = strKey;
+            m_iRow = iRow;
+            m_bAsc = bAsc;
+        }
+        public override string ToString()
+        {
+            return string.Format("{0}->{1}", m_strKey, m_iRow);
+        }
+        public override int GetHashCode()
+        {
+            return Utility.GetHashCode(ToString());
+        }
+        public int CompareTo(KeyRow rhs)
+        {
+            bool bLhsNum = int.TryParse(m_strKey, out int iLhs);
+            bool bRhsNum = int.TryParse(rhs.m_strKey, out int iRhs);
+
+            bool bNumber = (bLhsNum && bRhsNum) ? true : false;
+            if (bNumber)
+                return m_bAsc ? (iLhs < iRhs ? -1 : (iLhs == iRhs ? 0 : 1)) : (iLhs < iRhs ? 1 : (iLhs == iRhs ? 0 : -1));
+            else
+                return m_bAsc ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
+        }
+        int IComparable.CompareTo(object rhs)
+        {
+            if (!(rhs is KeyRow))
+                throw new InvalidOperationException("CompareTo: Not a KeyRow");
+            return CompareTo((KeyRow)rhs);
+        }
+        public static bool operator <(KeyRow lhs, KeyRow rhs) => lhs.CompareTo(rhs) < 0;
+        public static bool operator >(KeyRow lhs, KeyRow rhs) => lhs.CompareTo(rhs) > 0;
+        public bool Equals(KeyRow rhs)
+        {
+            return CompareTo(rhs) == 0;
+        }
+        public override bool Equals(object rhs)
+        {
+            if (!(rhs is KeyRow))
+                return false;
+            return Equals((KeyRow)rhs);
+        }
+        public static bool operator ==(KeyRow lhs, KeyRow rhs) => lhs.Equals(rhs);
+        public static bool operator !=(KeyRow lhs, KeyRow rhs) => !(lhs == rhs);
+
+        public bool Asc
+        {
+            get { return m_bAsc; }
+            set { m_bAsc = value; }
+        }
+        public string Key
+        {
+            get { return m_strKey; }
+            set { m_strKey = value; }
+        }
+
+        public int Row
+        {
+            get { return m_iRow; }
+            set { m_iRow = value; }
         }
     }
 }
