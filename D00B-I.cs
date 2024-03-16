@@ -83,10 +83,10 @@ namespace D00B
             UpdateUI(false);
 
             string strUserID = WindowsIdentity.GetCurrent().Name;
-            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=AdventureWorks2022;Integrated Security=True;User ID={0};", strUserID));
-            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=master;Integrated Security=True;User ID={0};", strUserID));  // accidentally installed this to master, if you install it properly then you will need to change the catalog
-            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=WideWorldImporters;Integrated Security=True;User ID={0};", strUserID));
-            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=pubs;Integrated Security=True;User ID={0};", strUserID));
+            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=AdventureWorks2022;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID));
+            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=master;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID));  // accidentally installed this to master, if you install it properly then you will need to change the catalog
+            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=WideWorldImporters;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID));
+            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=pubs;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID));
             cbDataBases.SelectedIndex = 0;
 
             txtConnString.Text = cbDataBases.Text;
@@ -528,6 +528,7 @@ namespace D00B
                             iField++;
                         }
 
+                        Size szExtra = TextRenderer.MeasureText("XXXXX", lvQuery.Font);
                         iRow = 0;
                         while (Sql.Read())
                         {
@@ -537,7 +538,7 @@ namespace D00B
                                 m_oArr[iRow][iField] = strField;
                                 if (iRow < 1000) // TODO - Make this a constant
                                 {
-                                    Size sz = TextRenderer.MeasureText(strField, lvQuery.Font);
+                                    Size sz = szExtra + TextRenderer.MeasureText(strField, lvQuery.Font);
                                     if (sz.Width > m_oWidth[iField])
                                         m_oWidth[iField] = sz.Width;
                                 }
