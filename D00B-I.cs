@@ -21,11 +21,13 @@ namespace D00B
         float g_nFontHeight = 0;
 
         readonly List<bool> m_Ascending = new List<bool>();
+        readonly List<Type> m_ColTypes = new List<Type>();
+
         string[][] m_oArr;
         string[][] m_oNewArr;
         KeyRow[] m_oIdx;
         int[] m_oWidth;
-        readonly List<Type> m_ColTypes = new List<Type>();
+
         int m_nColumns = -1;
         int m_nCount = -1;
         int m_nPreview = 100;
@@ -945,9 +947,11 @@ namespace D00B
             // Set up the sort structure
             m_oIdx = new KeyRow[m_nCount];
             for (int iRow = 0; iRow < m_nCount; ++iRow)
-                m_oIdx[iRow] = new KeyRow(m_oArr[iRow][e.Column], iRow, m_Ascending[e.Column], m_ColTypes[e.Column]);
+                m_oIdx[iRow] = new KeyRow(m_oArr[iRow][e.Column], iRow);
 
-            // Sort using the classes comparer            
+            // Sort using the classes comparer
+            Global.g_bSortOrder = m_Ascending[e.Column];
+            Global.g_bColType = m_ColTypes[e.Column];
             Array.Sort(m_oIdx);
 
             // Rearrange based on sort

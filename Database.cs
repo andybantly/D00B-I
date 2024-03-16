@@ -348,22 +348,16 @@ namespace D00B
     {
         private string m_strKey;
         private int m_iRow;
-        private bool m_bAsc;
-        private Type m_KeyType;
 
         public KeyRow()
         {
             m_strKey = string.Empty;
             m_iRow = -1;
-            m_bAsc = false;
-            m_KeyType = typeof(int);
         }
-        public KeyRow(string strKey, int iRow, bool bAsc, Type KeyType) : this()
+        public KeyRow(string strKey, int iRow) : this()
         {
             m_strKey = strKey;
             m_iRow = iRow;
-            m_bAsc = bAsc;
-            m_KeyType = KeyType;
         }
         public override string ToString()
         {
@@ -376,7 +370,7 @@ namespace D00B
         public int CompareTo(KeyRow rhs)
         {
             int iRet;
-            TypeCode TypeCode = Type.GetTypeCode(m_KeyType);
+            TypeCode TypeCode = Type.GetTypeCode(Global.g_bColType);
             bool bLhs, bRhs, bType;
             switch (TypeCode)
             {
@@ -385,30 +379,30 @@ namespace D00B
                     bRhs = double.TryParse(!string.IsNullOrEmpty(rhs.m_strKey) ? rhs.m_strKey : "0.0", out double dRhs);
                     bType = (bLhs && bRhs) ? true : false;
                     if (bType)
-                        iRet = m_bAsc ? (dLhs < dRhs ? -1 : (dLhs == dRhs ? 0 : 1)) : (dLhs < dRhs ? 1 : (dLhs == dRhs ? 0 : -1));
+                        iRet = Global.g_bSortOrder ? (dLhs < dRhs ? -1 : (dLhs == dRhs ? 0 : 1)) : (dLhs < dRhs ? 1 : (dLhs == dRhs ? 0 : -1));
                     else // fall back to string
-                        iRet = m_bAsc ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
+                        iRet = Global.g_bSortOrder ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
                     break;
                 case TypeCode.DateTime:
                     bLhs = DateTime.TryParse(!string.IsNullOrEmpty(m_strKey) ? m_strKey : "0", out DateTime dtLhs);
                     bRhs = DateTime.TryParse(!string.IsNullOrEmpty(rhs.m_strKey) ? rhs.m_strKey : "0", out DateTime dtRhs);
                     bType = (bLhs && bRhs) ? true : false;
                     if (bType)
-                        iRet = m_bAsc ? (dtLhs < dtRhs ? -1 : (dtLhs == dtRhs ? 0 : 1)) : (dtLhs < dtRhs ? 1 : (dtLhs == dtRhs ? 0 : -1));
+                        iRet = Global.g_bSortOrder ? (dtLhs < dtRhs ? -1 : (dtLhs == dtRhs ? 0 : 1)) : (dtLhs < dtRhs ? 1 : (dtLhs == dtRhs ? 0 : -1));
                     else // fall back to string
-                        iRet = m_bAsc ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
+                        iRet = Global.g_bSortOrder ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
                     break;
                 case TypeCode.String:
-                    iRet = m_bAsc ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
+                    iRet = Global.g_bSortOrder ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
                     break;
                 default:
                     bool bLhsNum = Int64.TryParse(!string.IsNullOrEmpty(m_strKey) ? m_strKey : "0", out Int64 iLhs);
                     bool bRhsNum = Int64.TryParse(!string.IsNullOrEmpty(rhs.m_strKey) ? rhs.m_strKey : "0", out Int64 iRhs);
                     bool bNumber = (bLhsNum && bRhsNum) ? true : false;
                     if (bNumber)
-                        iRet = m_bAsc ? (iLhs < iRhs ? -1 : (iLhs == iRhs ? 0 : 1)) : (iLhs < iRhs ? 1 : (iLhs == iRhs ? 0 : -1));
+                        iRet = Global.g_bSortOrder ? (iLhs < iRhs ? -1 : (iLhs == iRhs ? 0 : 1)) : (iLhs < iRhs ? 1 : (iLhs == iRhs ? 0 : -1));
                     else // fallback to string
-                        iRet = m_bAsc ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
+                        iRet = Global.g_bSortOrder ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
                     break;
             }
             return iRet;
@@ -434,11 +428,6 @@ namespace D00B
         public static bool operator ==(KeyRow lhs, KeyRow rhs) => lhs.Equals(rhs);
         public static bool operator !=(KeyRow lhs, KeyRow rhs) => !(lhs == rhs);
 
-        public bool Asc
-        {
-            get { return m_bAsc; }
-            set { m_bAsc = value; }
-        }
         public string Key
         {
             get { return m_strKey; }

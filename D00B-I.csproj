@@ -92,6 +92,7 @@
     </Compile>
     <Compile Include="ExportListView.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Global.cs" />
     <Compile Include="Join.cs">
       <SubType>Form</SubType>
     </Compile>
