@@ -344,30 +344,30 @@ namespace D00B
         }
     }
 
-    public class KeyRow : IComparable<KeyRow>, IEquatable<KeyRow>, IComparable
+    public class ValRow : IComparable<ValRow>, IEquatable<ValRow>, IComparable
     {
-        private string m_strKey;
+        private string m_strVal;
         private int m_iRow;
 
-        public KeyRow()
+        public ValRow()
         {
-            m_strKey = string.Empty;
+            m_strVal = string.Empty;
             m_iRow = -1;
         }
-        public KeyRow(string strKey, int iRow) : this()
+        public ValRow(string strVal, int iRow) : this()
         {
-            m_strKey = strKey;
+            m_strVal = strVal;
             m_iRow = iRow;
         }
         public override string ToString()
         {
-            return string.Format("{0}->{1}", m_strKey, m_iRow);
+            return string.Format("{0}->{1}", m_strVal, m_iRow);
         }
         public override int GetHashCode()
         {
             return Utility.GetHashCode(ToString());
         }
-        public int CompareTo(KeyRow rhs)
+        public int CompareTo(ValRow rhs)
         {
             int iRet;
             TypeCode TypeCode = Type.GetTypeCode(Global.g_bColType);
@@ -375,63 +375,63 @@ namespace D00B
             switch (TypeCode)
             {
                 case TypeCode.Double:
-                    bLhs = double.TryParse(!string.IsNullOrEmpty(m_strKey) ? m_strKey : "0.0", out double dLhs);
-                    bRhs = double.TryParse(!string.IsNullOrEmpty(rhs.m_strKey) ? rhs.m_strKey : "0.0", out double dRhs);
+                    bLhs = double.TryParse(!string.IsNullOrEmpty(m_strVal) ? m_strVal : "0.0", out double dLhs);
+                    bRhs = double.TryParse(!string.IsNullOrEmpty(rhs.m_strVal) ? rhs.m_strVal : "0.0", out double dRhs);
                     bType = (bLhs && bRhs) ? true : false;
                     if (bType)
                         iRet = Global.g_bSortOrder ? (dLhs < dRhs ? -1 : (dLhs == dRhs ? 0 : 1)) : (dLhs < dRhs ? 1 : (dLhs == dRhs ? 0 : -1));
                     else // fall back to string
-                        iRet = Global.g_bSortOrder ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
+                        iRet = Global.g_bSortOrder ? string.Compare(m_strVal, rhs.m_strVal) : string.Compare(rhs.m_strVal, m_strVal);
                     break;
                 case TypeCode.DateTime:
-                    bLhs = DateTime.TryParse(!string.IsNullOrEmpty(m_strKey) ? m_strKey : "0", out DateTime dtLhs);
-                    bRhs = DateTime.TryParse(!string.IsNullOrEmpty(rhs.m_strKey) ? rhs.m_strKey : "0", out DateTime dtRhs);
+                    bLhs = DateTime.TryParse(!string.IsNullOrEmpty(m_strVal) ? m_strVal : "0", out DateTime dtLhs);
+                    bRhs = DateTime.TryParse(!string.IsNullOrEmpty(rhs.m_strVal) ? rhs.m_strVal : "0", out DateTime dtRhs);
                     bType = (bLhs && bRhs) ? true : false;
                     if (bType)
                         iRet = Global.g_bSortOrder ? (dtLhs < dtRhs ? -1 : (dtLhs == dtRhs ? 0 : 1)) : (dtLhs < dtRhs ? 1 : (dtLhs == dtRhs ? 0 : -1));
                     else // fall back to string
-                        iRet = Global.g_bSortOrder ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
+                        iRet = Global.g_bSortOrder ? string.Compare(m_strVal, rhs.m_strVal) : string.Compare(rhs.m_strVal, m_strVal);
                     break;
                 case TypeCode.String:
-                    iRet = Global.g_bSortOrder ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
+                    iRet = Global.g_bSortOrder ? string.Compare(m_strVal, rhs.m_strVal) : string.Compare(rhs.m_strVal, m_strVal);
                     break;
                 default:
-                    bool bLhsNum = Int64.TryParse(!string.IsNullOrEmpty(m_strKey) ? m_strKey : "0", out Int64 iLhs);
-                    bool bRhsNum = Int64.TryParse(!string.IsNullOrEmpty(rhs.m_strKey) ? rhs.m_strKey : "0", out Int64 iRhs);
+                    bool bLhsNum = Int64.TryParse(!string.IsNullOrEmpty(m_strVal) ? m_strVal : "0", out Int64 iLhs);
+                    bool bRhsNum = Int64.TryParse(!string.IsNullOrEmpty(rhs.m_strVal) ? rhs.m_strVal : "0", out Int64 iRhs);
                     bool bNumber = (bLhsNum && bRhsNum) ? true : false;
                     if (bNumber)
                         iRet = Global.g_bSortOrder ? (iLhs < iRhs ? -1 : (iLhs == iRhs ? 0 : 1)) : (iLhs < iRhs ? 1 : (iLhs == iRhs ? 0 : -1));
                     else // fallback to string
-                        iRet = Global.g_bSortOrder ? string.Compare(m_strKey, rhs.m_strKey) : string.Compare(rhs.m_strKey, m_strKey);
+                        iRet = Global.g_bSortOrder ? string.Compare(m_strVal, rhs.m_strVal) : string.Compare(rhs.m_strVal, m_strVal);
                     break;
             }
             return iRet;
         }
         int IComparable.CompareTo(object rhs)
         {
-            if (!(rhs is KeyRow))
-                throw new InvalidOperationException("CompareTo: Not a KeyRow");
-            return CompareTo((KeyRow)rhs);
+            if (!(rhs is ValRow))
+                throw new InvalidOperationException("CompareTo: Not a ValRow");
+            return CompareTo((ValRow)rhs);
         }
-        public static bool operator <(KeyRow lhs, KeyRow rhs) => lhs.CompareTo(rhs) < 0;
-        public static bool operator >(KeyRow lhs, KeyRow rhs) => lhs.CompareTo(rhs) > 0;
-        public bool Equals(KeyRow rhs)
+        public static bool operator <(ValRow lhs, ValRow rhs) => lhs.CompareTo(rhs) < 0;
+        public static bool operator >(ValRow lhs, ValRow rhs) => lhs.CompareTo(rhs) > 0;
+        public bool Equals(ValRow rhs)
         {
             return CompareTo(rhs) == 0;
         }
         public override bool Equals(object rhs)
         {
-            if (!(rhs is KeyRow))
+            if (!(rhs is ValRow))
                 return false;
-            return Equals((KeyRow)rhs);
+            return Equals((ValRow)rhs);
         }
-        public static bool operator ==(KeyRow lhs, KeyRow rhs) => lhs.Equals(rhs);
-        public static bool operator !=(KeyRow lhs, KeyRow rhs) => !(lhs == rhs);
+        public static bool operator ==(ValRow lhs, ValRow rhs) => lhs.Equals(rhs);
+        public static bool operator !=(ValRow lhs, ValRow rhs) => !(lhs == rhs);
 
-        public string Key
+        public string Value
         {
-            get { return m_strKey; }
-            set { m_strKey = value; }
+            get { return m_strVal; }
+            set { m_strVal = value; }
         }
 
         public int Row

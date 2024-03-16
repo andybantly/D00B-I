@@ -25,7 +25,7 @@ namespace D00B
 
         string[][] m_oArr;
         string[][] m_oNewArr;
-        KeyRow[] m_oIdx;
+        ValRow[] m_oIdx;
         int[] m_oWidth;
 
         int m_nColumns = -1;
@@ -945,9 +945,9 @@ namespace D00B
         private void LvQuery_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             // Set up the sort structure
-            m_oIdx = new KeyRow[m_nCount];
+            m_oIdx = new ValRow[m_nCount];
             for (int iRow = 0; iRow < m_nCount; ++iRow)
-                m_oIdx[iRow] = new KeyRow(m_oArr[iRow][e.Column], iRow);
+                m_oIdx[iRow] = new ValRow(m_oArr[iRow][e.Column], iRow);
 
             // Sort using the classes comparer
             Global.g_bSortOrder = m_Ascending[e.Column];
@@ -959,7 +959,7 @@ namespace D00B
             for (int iRow = 0; iRow < m_nCount; ++iRow)
             {
                 m_oNewArr[iRow] = new string[m_nColumns];
-                m_oNewArr[iRow][e.Column] = m_oIdx[iRow].Key;
+                m_oNewArr[iRow][e.Column] = m_oIdx[iRow].Value;
                 for (int iCol = 0; iCol < e.Column; ++iCol)
                     m_oNewArr[iRow][iCol] = m_oArr[m_oIdx[iRow].Row][iCol];
                 for (int iCol = e.Column + 1; iCol < m_nColumns; ++iCol)
