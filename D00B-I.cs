@@ -25,6 +25,7 @@ namespace D00B
         string[][] m_oNewArr;
         KeyRow[] m_oIdx;
         int[] m_oWidth;
+        readonly List<Type> m_ColTypes = new List<Type>();
         int m_nColumns = -1;
         int m_nCount = -1;
         int m_nPreview = 100;
@@ -349,6 +350,7 @@ namespace D00B
 
                     // Count the columns
                     m_Ascending.Clear();
+                    m_ColTypes.Clear();
 
                     // Count the result tables data
                     string strError = string.Empty;
@@ -519,6 +521,7 @@ namespace D00B
                         {
                             lvQuery.Columns.Add(strColHdr);
                             m_Ascending.Add(true);
+                            m_ColTypes.Add(Sql.ColumnTypes[iField]);
                             Size sz = TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), lvQuery.Font);
                             if (sz.Width > m_oWidth[iField])
                                 m_oWidth[iField] = sz.Width;
@@ -941,7 +944,7 @@ namespace D00B
             // Set up the sort structure
             m_oIdx = new KeyRow[m_nCount];
             for (int iRow = 0; iRow < m_nCount; ++iRow)
-                m_oIdx[iRow] = new KeyRow(m_oArr[iRow][e.Column], iRow, m_Ascending[e.Column]);
+                m_oIdx[iRow] = new KeyRow(m_oArr[iRow][e.Column], iRow, m_Ascending[e.Column], m_ColTypes[e.Column]);
 
             // Sort using the classes comparer            
             Array.Sort(m_oIdx);

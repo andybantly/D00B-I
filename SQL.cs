@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.SqlClient;
@@ -18,6 +19,7 @@ namespace D00B
 
         private readonly StringCollection m_Columns = new StringCollection();
         private readonly StringCollection m_CurrentRow = new StringCollection();
+        private List<Type> m_ColTypes = new List<Type>();
 
         public SQL()
         {
@@ -111,6 +113,7 @@ namespace D00B
                 {
                     string strColumnName = m_Reader.GetName(iField);
                     m_Columns.Add(strColumnName);
+                    m_ColTypes.Add(m_Reader.GetFieldType(iField));
                 }
             }
             catch (Exception ex)
@@ -150,7 +153,7 @@ namespace D00B
             return true;
         }
 
-        public void AddWithValue(string strKey, string strValue, System.Data.SqlDbType Type = SqlDbType.Int)
+        public void AddWithValue(string strKey, string strValue, SqlDbType Type = SqlDbType.Int)
         {
             if (m_Command == null)
             {
@@ -260,6 +263,11 @@ namespace D00B
         public StringCollection Columns
         {
             get { return m_Columns; }
+        }
+
+        public List<Type> ColumnTypes
+        {
+            get { return m_ColTypes; }
         }
 
         private void Cleanup()
