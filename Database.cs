@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.ExceptionServices;
 
 namespace D00B
 {
@@ -344,25 +346,29 @@ namespace D00B
         }
     }
 
-    public class ValRow : IComparable<ValRow>, IEquatable<ValRow>, IComparable
+    public class CValue : IComparable<CValue>, IEquatable<CValue>, IComparable
     {
         private string m_strVal;
+        private string m_strVal2;
         private int m_iRow;
+        private int m_iRow2;
 
-        public ValRow(string strVal, int iRow)
+        public CValue(string strVal, int iRow)
         {
             m_strVal = strVal;
+            m_strVal2 = strVal;
             m_iRow = iRow;
+            m_iRow2 = iRow;
         }
         public override string ToString()
         {
-            return string.Format("{0}->{1}", m_strVal, m_iRow);
+            return string.Format("[{0}]={1}", m_iRow, m_strVal);
         }
         public override int GetHashCode()
         {
             return Utility.GetHashCode(ToString());
         }
-        public int CompareTo(ValRow rhs)
+        public int CompareTo(CValue rhs)
         {
             int iRet;
             TypeCode TypeCode = Type.GetTypeCode(Global.g_bColType);
@@ -404,24 +410,24 @@ namespace D00B
         }
         int IComparable.CompareTo(object rhs)
         {
-            if (!(rhs is ValRow))
-                throw new InvalidOperationException("CompareTo: Not a ValRow");
-            return CompareTo((ValRow)rhs);
+            if (!(rhs is CValue))
+                throw new InvalidOperationException("CompareTo: Not a CValue");
+            return CompareTo((CValue)rhs);
         }
-        public static bool operator <(ValRow lhs, ValRow rhs) => lhs.CompareTo(rhs) < 0;
-        public static bool operator >(ValRow lhs, ValRow rhs) => lhs.CompareTo(rhs) > 0;
-        public bool Equals(ValRow rhs)
+        public static bool operator <(CValue lhs, CValue rhs) => lhs.CompareTo(rhs) < 0;
+        public static bool operator >(CValue lhs, CValue rhs) => lhs.CompareTo(rhs) > 0;
+        public bool Equals(CValue rhs)
         {
             return CompareTo(rhs) == 0;
         }
         public override bool Equals(object rhs)
         {
-            if (!(rhs is ValRow))
+            if (!(rhs is CValue))
                 return false;
-            return Equals((ValRow)rhs);
+            return Equals((CValue)rhs);
         }
-        public static bool operator ==(ValRow lhs, ValRow rhs) => lhs.Equals(rhs);
-        public static bool operator !=(ValRow lhs, ValRow rhs) => !(lhs == rhs);
+        public static bool operator ==(CValue lhs, CValue rhs) => lhs.Equals(rhs);
+        public static bool operator !=(CValue lhs, CValue rhs) => !(lhs == rhs);
 
         public string Value
         {
@@ -429,10 +435,74 @@ namespace D00B
             set { m_strVal = value; }
         }
 
+        public string Value2
+        {
+            get { return m_strVal2; }
+            set { m_strVal2 = value; }
+        }
+
         public int Row
         {
             get { return m_iRow; }
             set { m_iRow = value; }
+        }
+
+        public int Row2
+        {
+            get { return m_iRow2; }
+            set { m_iRow2 = value; }
+        }
+    }
+    class CArray
+    {
+        private readonly CValue[][] m_oData;
+        public readonly int m_nRows;
+        public readonly int m_nCols;
+        public CArray(int nRows, int nCols)
+        {
+            m_oData = new CValue[nCols][];
+            for (int iCol = 0; iCol < nCols; ++iCol)
+                m_oData[iCol] = new CValue[nRows];
+            m_nRows = nRows;
+            m_nCols = nCols;
+        }
+        public CValue[] this[int iCol]
+        {
+            get { return m_oData[iCol]; }
+        }
+
+        public void Sort(int iCol)
+        {
+            Array.Sort(m_oData[iCol]);
+
+            for (int i = 0; i < m_nCols; ++i)
+            {
+                if (i == iCol)
+                    continue;
+
+                for (int j = 0, j2; j < m_nRows; ++j)
+                {
+                    j2 = m_oData[iCol][j].Row;
+                    if (j == j2)
+                        continue;
+                    m_oData[i][j].Row2 = m_oData[i][j2].Row;
+                    m_oData[i][j].Value2 = m_oData[i][j2].Value;
+                }
+
+                for (int j = 0; j < m_nRows; ++j)
+                {
+                    m_oData[i][j].Row = m_oData[i][j].Row2;
+                    m_oData[i][j].Value = m_oData[i][j].Value2;
+                }
+            }
+            for (int j = 0; j < m_nRows; ++j)
+                for (int i = 0; i < m_nCols; ++i)
+                    m_oData[i][j].Row = j;
+        }
+
+        public int Length
+        {
+            get { return m_nRows; }
         }
     }
 }

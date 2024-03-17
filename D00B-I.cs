@@ -7,7 +7,6 @@ using System.Security.Principal;
 using System.Windows.Forms;
 using SortOrder = System.Windows.Forms.SortOrder;
 using System.Diagnostics;
-using Microsoft.Office.Interop.Excel;
 
 namespace D00B
 {
@@ -24,9 +23,7 @@ namespace D00B
         readonly List<bool> m_Ascending = new List<bool>();
         readonly List<Type> m_ColTypes = new List<Type>();
 
-        ValRow[,] m_oArr;
-        ValRow[,] m_oNewArr;
-        ValRow[] m_oIdx;
+        CArray m_Arr;
         int[] m_oWidth;
 
         int m_nColumns = -1;
@@ -513,7 +510,7 @@ namespace D00B
                         m_nColumns = Sql.Columns.Count; // should be the same as the sum of all columns in the collective table list
 
                         // Set up the backing for the virtual list view
-                        m_oArr = new ValRow[m_nCount, m_nColumns];
+                        m_Arr = new CArray(m_nCount, m_nColumns);
                         m_oWidth = new int[m_nColumns];
 
                         // Column headers
@@ -536,7 +533,8 @@ namespace D00B
                             for (iField = 0; iField < m_nColumns; ++iField)
                             {
                                 string strField = Sql.GetValue(iField);
-                                m_oArr[iRow, iField] = new ValRow(strField, iRow);
+                                m_Arr[iField][iRow] = new CValue(strField, iRow);
+                                
                                 if (iRow < 1000) // TODO - Make this a constant
                                 {
                                     Size sz = szExtra + TextRenderer.MeasureText(strField, lvQuery.Font);
@@ -768,9 +766,7 @@ namespace D00B
         void ClearData()
         {
             // Clear storages used for UI
-            m_oArr = null;
-            m_oIdx = null;
-            m_oNewArr = null;
+            m_Arr = null;
             m_oWidth = null;
         }
 
@@ -943,33 +939,12 @@ namespace D00B
         }
         private void LvQuery_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            // Set up the sort structure
-            m_oIdx = new ValRow[m_nCount];
-            for (int iRow = 0; iRow < m_nCount; ++iRow)
-                m_oIdx[iRow] = new ValRow(m_oArr[iRow, e.Column].Value, iRow);
-
             // Sort using the classes comparer
             Global.g_bSortOrder = m_Ascending[e.Column];
             Global.g_bColType = m_ColTypes[e.Column];
-            Array.Sort(m_oIdx);
 
-            // Rearrange based on sort
-            m_oNewArr = new ValRow[m_nCount, m_nColumns];
-            for (int iRow = 0; iRow < m_nCount; ++iRow)
-            {
-                m_oNewArr[iRow, e.Column] = new ValRow(m_oIdx[iRow].Value, iRow);
-                for (int iCol = 0; iCol < e.Column; ++iCol)
-                    m_oNewArr[iRow, iCol] = new ValRow(m_oArr[m_oIdx[iRow].Row, iCol].Value, iRow);
-                for (int iCol = e.Column + 1; iCol < m_nColumns; ++iCol)
-                    m_oNewArr[iRow, iCol] = new ValRow(m_oArr[m_oIdx[iRow].Row, iCol].Value, iRow);
-            }
-
-            // Update the results with the sorted data
-            for (int iRow = 0; iRow < m_nCount; ++iRow)
-            {
-                for (int iCol = 0; iCol < m_nColumns; ++iCol)
-                  m_oArr[iRow, iCol] = m_oNewArr[iRow, iCol];
-            }
+            // Sort the indexed column and rearrange
+            m_Arr.Sort(e.Column);
 
             m_Ascending[e.Column] = !m_Ascending[e.Column];
             lvQuery.Invalidate();
@@ -1012,19 +987,19 @@ namespace D00B
             int iRow = e.ItemIndex;
             try
             {
-                if (m_oArr != null && iRow <= m_oArr.Length)
+                if (m_Arr != null && iRow <= m_Arr.Length)
                 {
                     // Fill the grid with the basic values
                     for (int idx = 0; idx < m_nColumns; ++idx)
                     {
                         if (idx == 0)
                         {
-                            e.Item = new ListViewItem(m_oArr != null ? m_oArr[iRow, idx].Value : string.Empty);
+                            e.Item = new ListViewItem(m_Arr[idx][iRow].Value);
                             e.Item.UseItemStyleForSubItems = false;
                         }
                         else
                         {
-                            ListViewItem.ListViewSubItem lvSubItem = new ListViewItem.ListViewSubItem(e.Item, m_oArr != null ? m_oArr[iRow, idx].Value : string.Empty);
+                            ListViewItem.ListViewSubItem lvSubItem = new ListViewItem.ListViewSubItem(e.Item, m_Arr[idx][iRow].Value);
                             e.Item.SubItems.Add(lvSubItem);
                         }
                     }
@@ -1181,7 +1156,7 @@ namespace D00B
             int iRow = e.ItemIndex;
             try
             {
-                if (m_oArr != null)
+                if (m_Arr != null)
                 {
                     DBTableKey TableKey = m_TableKeys[0];
                     string strSchema = TableKey.Schema;
