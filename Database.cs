@@ -349,12 +349,7 @@ namespace D00B
         private string m_strVal;
         private int m_iRow;
 
-        public ValRow()
-        {
-            m_strVal = string.Empty;
-            m_iRow = -1;
-        }
-        public ValRow(string strVal, int iRow) : this()
+        public ValRow(string strVal, int iRow)
         {
             m_strVal = strVal;
             m_iRow = iRow;

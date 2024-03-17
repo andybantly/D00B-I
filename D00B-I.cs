@@ -7,6 +7,7 @@ using System.Security.Principal;
 using System.Windows.Forms;
 using SortOrder = System.Windows.Forms.SortOrder;
 using System.Diagnostics;
+using Microsoft.Office.Interop.Excel;
 
 namespace D00B
 {
@@ -23,8 +24,8 @@ namespace D00B
         readonly List<bool> m_Ascending = new List<bool>();
         readonly List<Type> m_ColTypes = new List<Type>();
 
-        string[][] m_oArr;
-        string[][] m_oNewArr;
+        string[,] m_oArr;
+        string[,] m_oNewArr;
         ValRow[] m_oIdx;
         int[] m_oWidth;
 
@@ -437,9 +438,6 @@ namespace D00B
                     // Set the final count of rows in the view
                     m_nCount = chkPrevAll.Checked ? nCount : Math.Min(nCount, m_nPreview);
 
-                    // Set up the backing for the virtual list view
-                    m_oArr = new string[m_nCount][];
-
                     // Search criteria
                     strColumn = string.Empty;
                     if (ColumnIndex() != -1)
@@ -513,8 +511,9 @@ namespace D00B
 
                         int iRow;
                         m_nColumns = Sql.Columns.Count; // should be the same as the sum of all columns in the collective table list
-                        for (iRow = 0; iRow < m_nCount; ++iRow)
-                            m_oArr[iRow] = new string[m_nColumns];
+
+                        // Set up the backing for the virtual list view
+                        m_oArr = new string[m_nCount, m_nColumns];
                         m_oWidth = new int[m_nColumns];
 
                         // Column headers
@@ -537,7 +536,7 @@ namespace D00B
                             for (iField = 0; iField < m_nColumns; ++iField)
                             {
                                 string strField = Sql.GetValue(iField);
-                                m_oArr[iRow][iField] = strField;
+                                m_oArr[iRow, iField] = strField;
                                 if (iRow < 1000) // TODO - Make this a constant
                                 {
                                     Size sz = szExtra + TextRenderer.MeasureText(strField, lvQuery.Font);
@@ -947,7 +946,7 @@ namespace D00B
             // Set up the sort structure
             m_oIdx = new ValRow[m_nCount];
             for (int iRow = 0; iRow < m_nCount; ++iRow)
-                m_oIdx[iRow] = new ValRow(m_oArr[iRow][e.Column], iRow);
+                m_oIdx[iRow] = new ValRow(m_oArr[iRow, e.Column], iRow);
 
             // Sort using the classes comparer
             Global.g_bSortOrder = m_Ascending[e.Column];
@@ -955,22 +954,21 @@ namespace D00B
             Array.Sort(m_oIdx);
 
             // Rearrange based on sort
-            m_oNewArr = new string[m_nCount][];
+            m_oNewArr = new string[m_nCount, m_nColumns];
             for (int iRow = 0; iRow < m_nCount; ++iRow)
             {
-                m_oNewArr[iRow] = new string[m_nColumns];
-                m_oNewArr[iRow][e.Column] = m_oIdx[iRow].Value;
+                m_oNewArr[iRow, e.Column] = m_oIdx[iRow].Value;
                 for (int iCol = 0; iCol < e.Column; ++iCol)
-                    m_oNewArr[iRow][iCol] = m_oArr[m_oIdx[iRow].Row][iCol];
+                    m_oNewArr[iRow, iCol] = m_oArr[m_oIdx[iRow].Row, iCol];
                 for (int iCol = e.Column + 1; iCol < m_nColumns; ++iCol)
-                    m_oNewArr[iRow][iCol] = m_oArr[m_oIdx[iRow].Row][iCol];
+                    m_oNewArr[iRow, iCol] = m_oArr[m_oIdx[iRow].Row, iCol];
             }
 
             // Update the results with the sorted data
             for (int iRow = 0; iRow < m_nCount; ++iRow)
             {
                 for (int iCol = 0; iCol < m_nColumns; ++iCol)
-                    m_oArr[iRow][iCol] = m_oNewArr[iRow][iCol];
+                  m_oArr[iRow, iCol] = m_oNewArr[iRow, iCol];
             }
 
             m_Ascending[e.Column] = !m_Ascending[e.Column];
@@ -1021,12 +1019,12 @@ namespace D00B
                     {
                         if (idx == 0)
                         {
-                            e.Item = new ListViewItem(m_oArr != null ? m_oArr[iRow][idx] : string.Empty);
+                            e.Item = new ListViewItem(m_oArr != null ? m_oArr[iRow, idx] : string.Empty);
                             e.Item.UseItemStyleForSubItems = false;
                         }
                         else
                         {
-                            ListViewItem.ListViewSubItem lvSubItem = new ListViewItem.ListViewSubItem(e.Item, m_oArr != null ? m_oArr[iRow][idx] : string.Empty);
+                            ListViewItem.ListViewSubItem lvSubItem = new ListViewItem.ListViewSubItem(e.Item, m_oArr != null ? m_oArr[iRow, idx] : string.Empty);
                             e.Item.SubItems.Add(lvSubItem);
                         }
                     }
