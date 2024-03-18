@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 
 namespace D00B
 {
@@ -500,6 +501,37 @@ namespace D00B
                     m_oData[i][j].Row = j;
         }
 
+        public void ParallelSort(int iCol)
+        {
+            Array.Sort(m_oData[iCol]);
+
+            Parallel.For(0, m_nCols, i =>
+            {
+                if (i != iCol)
+                {
+                    for (int j = 0, j2; j < m_nRows; ++j)
+                    {
+                        j2 = m_oData[iCol][j].Row;
+                        if (j == j2)
+                            continue;
+                        m_oData[i][j].Row2 = m_oData[i][j2].Row;
+                        m_oData[i][j].Value2 = m_oData[i][j2].Value;
+                    }
+
+                    for (int j = 0; j < m_nRows; ++j)
+                    {
+                        m_oData[i][j].Row = m_oData[i][j].Row2;
+                        m_oData[i][j].Value = m_oData[i][j].Value2;
+                    }
+                }
+            });
+
+            Parallel.For(0, m_nCols, i =>
+            {
+                for (int j = 0; j < m_nRows; ++j)
+                    m_oData[i][j].Row = j;
+            });
+        }
         public int Length
         {
             get { return m_nRows; }

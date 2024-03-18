@@ -944,7 +944,7 @@ namespace D00B
             Global.g_bColType = m_ColTypes[e.Column];
 
             // Sort the indexed column and rearrange
-            m_Arr.Sort(e.Column);
+            m_Arr.ParallelSort(e.Column);
 
             m_Ascending[e.Column] = !m_Ascending[e.Column];
             lvQuery.Invalidate();
