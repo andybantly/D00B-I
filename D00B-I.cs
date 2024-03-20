@@ -533,7 +533,7 @@ namespace D00B
                             for (iField = 0; iField < m_nColumns; ++iField)
                             {
                                 string strField = Sql.GetValue(iField);
-                                m_Arr[iField][iRow] = new CValue(strField, iRow);
+                                m_Arr[iField][iRow] = new CVariant(strField, iRow);
                                 
                                 if (iRow < 1000) // TODO - Make this a constant
                                 {

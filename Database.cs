@@ -347,29 +347,25 @@ namespace D00B
         }
     }
 
-    public class CValue : IComparable<CValue>, IEquatable<CValue>, IComparable
+    public class CVariant : IComparable<CVariant>, IEquatable<CVariant>, IComparable
     {
-        private string m_strVal;
-        private string m_strVal2;
-        private int m_iRow;
-        private int m_iRow2;
+        private string[] m_arrStr;
+        private int[] m_arrRow;
 
-        public CValue(string strVal, int iRow)
+        public CVariant(string strVal, int iRow)
         {
-            m_strVal = strVal;
-            m_strVal2 = strVal;
-            m_iRow = iRow;
-            m_iRow2 = iRow;
+            m_arrStr = new string[] { strVal, strVal };
+            m_arrRow = new int[] { iRow, iRow };
         }
         public override string ToString()
         {
-            return string.Format("[{0}]={1}", m_iRow, m_strVal);
+            return string.Format("[{0}]={1}", m_arrRow[0], m_arrStr[0]);
         }
         public override int GetHashCode()
         {
             return Utility.GetHashCode(ToString());
         }
-        public int CompareTo(CValue rhs)
+        public int CompareTo(CVariant rhs)
         {
             int iRet;
             TypeCode TypeCode = Type.GetTypeCode(Global.g_bColType);
@@ -377,99 +373,99 @@ namespace D00B
             switch (TypeCode)
             {
                 case TypeCode.Double:
-                    bLhs = double.TryParse(!string.IsNullOrEmpty(m_strVal) ? m_strVal : "0.0", out double dLhs);
-                    bRhs = double.TryParse(!string.IsNullOrEmpty(rhs.m_strVal) ? rhs.m_strVal : "0.0", out double dRhs);
+                    bLhs = double.TryParse(!string.IsNullOrEmpty(m_arrStr[0]) ? m_arrStr[0] : "0.0", out double dLhs);
+                    bRhs = double.TryParse(!string.IsNullOrEmpty(rhs.m_arrStr[0]) ? rhs.m_arrStr[0] : "0.0", out double dRhs);
                     bType = (bLhs && bRhs) ? true : false;
                     if (bType)
                         iRet = Global.g_bSortOrder ? (dLhs < dRhs ? -1 : (dLhs == dRhs ? 0 : 1)) : (dLhs < dRhs ? 1 : (dLhs == dRhs ? 0 : -1));
                     else // fall back to string
-                        iRet = Global.g_bSortOrder ? string.Compare(m_strVal, rhs.m_strVal) : string.Compare(rhs.m_strVal, m_strVal);
+                        iRet = Global.g_bSortOrder ? string.Compare(m_arrStr[0], rhs.m_arrStr[0]) : string.Compare(rhs.m_arrStr[0], m_arrStr[0]);
                     break;
                 case TypeCode.DateTime:
-                    bLhs = DateTime.TryParse(!string.IsNullOrEmpty(m_strVal) ? m_strVal : "0", out DateTime dtLhs);
-                    bRhs = DateTime.TryParse(!string.IsNullOrEmpty(rhs.m_strVal) ? rhs.m_strVal : "0", out DateTime dtRhs);
+                    bLhs = DateTime.TryParse(!string.IsNullOrEmpty(m_arrStr[0]) ? m_arrStr[0] : "0", out DateTime dtLhs);
+                    bRhs = DateTime.TryParse(!string.IsNullOrEmpty(rhs.m_arrStr[0]) ? rhs.m_arrStr[0] : "0", out DateTime dtRhs);
                     bType = (bLhs && bRhs) ? true : false;
                     if (bType)
                         iRet = Global.g_bSortOrder ? (dtLhs < dtRhs ? -1 : (dtLhs == dtRhs ? 0 : 1)) : (dtLhs < dtRhs ? 1 : (dtLhs == dtRhs ? 0 : -1));
                     else // fall back to string
-                        iRet = Global.g_bSortOrder ? string.Compare(m_strVal, rhs.m_strVal) : string.Compare(rhs.m_strVal, m_strVal);
+                        iRet = Global.g_bSortOrder ? string.Compare(m_arrStr[0], rhs.m_arrStr[0]) : string.Compare(rhs.m_arrStr[0], m_arrStr[0]);
                     break;
                 case TypeCode.String:
-                    iRet = Global.g_bSortOrder ? string.Compare(m_strVal, rhs.m_strVal) : string.Compare(rhs.m_strVal, m_strVal);
+                    iRet = Global.g_bSortOrder ? string.Compare(m_arrStr[0], rhs.m_arrStr[0]) : string.Compare(rhs.m_arrStr[0], m_arrStr[0]);
                     break;
                 default:
-                    bool bLhsNum = Int64.TryParse(!string.IsNullOrEmpty(m_strVal) ? m_strVal : "0", out Int64 iLhs);
-                    bool bRhsNum = Int64.TryParse(!string.IsNullOrEmpty(rhs.m_strVal) ? rhs.m_strVal : "0", out Int64 iRhs);
+                    bool bLhsNum = Int64.TryParse(!string.IsNullOrEmpty(m_arrStr[0]) ? m_arrStr[0] : "0", out Int64 iLhs);
+                    bool bRhsNum = Int64.TryParse(!string.IsNullOrEmpty(rhs.m_arrStr[0]) ? rhs.m_arrStr[0] : "0", out Int64 iRhs);
                     bool bNumber = (bLhsNum && bRhsNum) ? true : false;
                     if (bNumber)
                         iRet = Global.g_bSortOrder ? (iLhs < iRhs ? -1 : (iLhs == iRhs ? 0 : 1)) : (iLhs < iRhs ? 1 : (iLhs == iRhs ? 0 : -1));
                     else // fallback to string
-                        iRet = Global.g_bSortOrder ? string.Compare(m_strVal, rhs.m_strVal) : string.Compare(rhs.m_strVal, m_strVal);
+                        iRet = Global.g_bSortOrder ? string.Compare(m_arrStr[0], rhs.m_arrStr[0]) : string.Compare(rhs.m_arrStr[0], m_arrStr[0]);
                     break;
             }
             return iRet;
         }
         int IComparable.CompareTo(object rhs)
         {
-            if (!(rhs is CValue))
-                throw new InvalidOperationException("CompareTo: Not a CValue");
-            return CompareTo((CValue)rhs);
+            if (!(rhs is CVariant))
+                throw new InvalidOperationException("CompareTo: Not a CVariant");
+            return CompareTo((CVariant)rhs);
         }
-        public static bool operator <(CValue lhs, CValue rhs) => lhs.CompareTo(rhs) < 0;
-        public static bool operator >(CValue lhs, CValue rhs) => lhs.CompareTo(rhs) > 0;
-        public bool Equals(CValue rhs)
+        public static bool operator <(CVariant lhs, CVariant rhs) => lhs.CompareTo(rhs) < 0;
+        public static bool operator >(CVariant lhs, CVariant rhs) => lhs.CompareTo(rhs) > 0;
+        public bool Equals(CVariant rhs)
         {
             return CompareTo(rhs) == 0;
         }
         public override bool Equals(object rhs)
         {
-            if (!(rhs is CValue))
+            if (!(rhs is CVariant))
                 return false;
-            return Equals((CValue)rhs);
+            return Equals((CVariant)rhs);
         }
-        public static bool operator ==(CValue lhs, CValue rhs) => lhs.Equals(rhs);
-        public static bool operator !=(CValue lhs, CValue rhs) => !(lhs == rhs);
+        public static bool operator ==(CVariant lhs, CVariant rhs) => lhs.Equals(rhs);
+        public static bool operator !=(CVariant lhs, CVariant rhs) => !(lhs == rhs);
 
         public string Value
         {
-            get { return m_strVal; }
-            set { m_strVal = value; }
+            get { return m_arrStr[0]; }
+            set { m_arrStr[0] = value; }
         }
 
         public string Value2
         {
-            get { return m_strVal2; }
-            set { m_strVal2 = value; }
+            get { return m_arrStr[1]; }
+            set { m_arrStr[1] = value; }
         }
 
         public int Row
         {
-            get { return m_iRow; }
-            set { m_iRow = value; }
+            get { return m_arrRow[0]; }
+            set { m_arrRow[0] = value; }
         }
 
         public int Row2
         {
-            get { return m_iRow2; }
-            set { m_iRow2 = value; }
+            get { return m_arrRow[1]; }
+            set { m_arrRow[1] = value; }
         }
     }
     class CArray
     {
-        private readonly CValue[][] m_oData;
+        private readonly CVariant[][] m_oData;
         public readonly int m_nRows;
         public readonly int m_nCols;
         public CArray(int nRows, int nCols)
         {
-            m_oData = new CValue[nCols][];
+            m_oData = new CVariant[nCols][];
             for (int iCol = 0; iCol < nCols; ++iCol)
-                m_oData[iCol] = new CValue[nRows];
+                m_oData[iCol] = new CVariant[nRows];
             m_nRows = nRows;
             m_nCols = nCols;
         }
-        public CValue[] this[int iCol]
+        public ref CVariant[] this[int iCol]
         {
-            get { return m_oData[iCol]; }
+            get { return ref m_oData[iCol]; }
         }
 
         public void Sort(int iCol)
@@ -478,27 +474,30 @@ namespace D00B
 
             for (int i = 0; i < m_nCols; ++i)
             {
-                if (i == iCol)
-                    continue;
-
-                for (int j = 0, j2; j < m_nRows; ++j)
+                if (i != iCol)
                 {
-                    j2 = m_oData[iCol][j].Row;
-                    if (j == j2)
-                        continue;
-                    m_oData[i][j].Row2 = m_oData[i][j2].Row;
-                    m_oData[i][j].Value2 = m_oData[i][j2].Value;
-                }
+                    for (int j = 0, j2; j < m_nRows; ++j)
+                    {
+                        j2 = m_oData[iCol][j].Row;
+                        if (j == j2)
+                            continue;
+                        m_oData[i][j].Row2 = m_oData[i][j2].Row;
+                        m_oData[i][j].Value2 = m_oData[i][j2].Value;
+                    }
 
-                for (int j = 0; j < m_nRows; ++j)
-                {
-                    m_oData[i][j].Row = m_oData[i][j].Row2;
-                    m_oData[i][j].Value = m_oData[i][j].Value2;
+                    for (int j = 0; j < m_nRows; ++j)
+                    {
+                        m_oData[i][j].Row = m_oData[i][j].Row2;
+                        m_oData[i][j].Value = m_oData[i][j].Value2;
+                    }
                 }
             }
             for (int j = 0; j < m_nRows; ++j)
                 for (int i = 0; i < m_nCols; ++i)
+                {
                     m_oData[i][j].Row = j;
+                    m_oData[i][j].Row2 = j;
+                }
         }
 
         public void ParallelSort(int iCol)
@@ -529,7 +528,10 @@ namespace D00B
             Parallel.For(0, m_nCols, i =>
             {
                 for (int j = 0; j < m_nRows; ++j)
+                {
                     m_oData[i][j].Row = j;
+                    m_oData[i][j].Row2 = j;
+                }
             });
         }
         public int Length
