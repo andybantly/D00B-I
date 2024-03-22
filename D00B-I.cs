@@ -945,6 +945,7 @@ namespace D00B
 
             // Sort the indexed column and rearrange
             m_Arr.ParallelSort(e.Column);
+//            m_Arr.Sort(e.Column);
 
             m_Ascending[e.Column] = !m_Ascending[e.Column];
             lvQuery.Invalidate();

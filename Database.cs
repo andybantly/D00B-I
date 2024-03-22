@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 namespace D00B
@@ -349,11 +347,13 @@ namespace D00B
 
     public class CVariant : IComparable<CVariant>, IEquatable<CVariant>, IComparable
     {
+        private TypeCode m_TypeCode = TypeCode.Empty;
         private string[] m_arrStr;
         private int[] m_arrRow;
 
         public CVariant(string strVal, int iRow)
         {
+            m_TypeCode = TypeCode.String;
             m_arrStr = new string[] { strVal, strVal };
             m_arrRow = new int[] { iRow, iRow };
         }
@@ -426,28 +426,34 @@ namespace D00B
         public static bool operator ==(CVariant lhs, CVariant rhs) => lhs.Equals(rhs);
         public static bool operator !=(CVariant lhs, CVariant rhs) => !(lhs == rhs);
 
+        public void Copy(CVariant rhs, int iFrom, int iTo)
+        {
+            // Main to Swap
+            switch (rhs.m_TypeCode)
+            {
+                case TypeCode.String:
+                    m_arrStr[iTo] = rhs.m_arrStr[iFrom];
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        public void UpdateRow(int iRow)
+        {
+            m_arrRow[0] = iRow;
+            m_arrRow[1] = iRow;
+        }
+
         public string Value
         {
             get { return m_arrStr[0]; }
-            set { m_arrStr[0] = value; }
-        }
-
-        public string Value2
-        {
-            get { return m_arrStr[1]; }
-            set { m_arrStr[1] = value; }
         }
 
         public int Row
         {
             get { return m_arrRow[0]; }
-            set { m_arrRow[0] = value; }
-        }
-
-        public int Row2
-        {
-            get { return m_arrRow[1]; }
-            set { m_arrRow[1] = value; }
         }
     }
     class CArray
@@ -463,9 +469,9 @@ namespace D00B
             m_nRows = nRows;
             m_nCols = nCols;
         }
-        public ref CVariant[] this[int iCol]
+        public CVariant[] this[int iCol]
         {
-            get { return ref m_oData[iCol]; }
+            get { return m_oData[iCol]; }
         }
 
         public void Sort(int iCol)
@@ -481,23 +487,19 @@ namespace D00B
                         j2 = m_oData[iCol][j].Row;
                         if (j == j2)
                             continue;
-                        m_oData[i][j].Row2 = m_oData[i][j2].Row;
-                        m_oData[i][j].Value2 = m_oData[i][j2].Value;
+                        m_oData[i][j].Copy(m_oData[i][j2], 0, 1);
                     }
 
                     for (int j = 0; j < m_nRows; ++j)
                     {
-                        m_oData[i][j].Row = m_oData[i][j].Row2;
-                        m_oData[i][j].Value = m_oData[i][j].Value2;
+                        m_oData[i][j].Copy(m_oData[i][j], 1, 0);
+                        m_oData[i][j].UpdateRow(j);
                     }
                 }
             }
+
             for (int j = 0; j < m_nRows; ++j)
-                for (int i = 0; i < m_nCols; ++i)
-                {
-                    m_oData[i][j].Row = j;
-                    m_oData[i][j].Row2 = j;
-                }
+                m_oData[iCol][j].UpdateRow(j);
         }
 
         public void ParallelSort(int iCol)
@@ -513,26 +515,19 @@ namespace D00B
                         j2 = m_oData[iCol][j].Row;
                         if (j == j2)
                             continue;
-                        m_oData[i][j].Row2 = m_oData[i][j2].Row;
-                        m_oData[i][j].Value2 = m_oData[i][j2].Value;
+                        m_oData[i][j].Copy(m_oData[i][j2], 0, 1);
                     }
 
                     for (int j = 0; j < m_nRows; ++j)
                     {
-                        m_oData[i][j].Row = m_oData[i][j].Row2;
-                        m_oData[i][j].Value = m_oData[i][j].Value2;
+                        m_oData[i][j].Copy(m_oData[i][j], 1, 0);
+                        m_oData[i][j].UpdateRow(j);
                     }
                 }
             });
 
-            Parallel.For(0, m_nCols, i =>
-            {
-                for (int j = 0; j < m_nRows; ++j)
-                {
-                    m_oData[i][j].Row = j;
-                    m_oData[i][j].Row2 = j;
-                }
-            });
+            for (int j = 0; j < m_nRows; ++j)
+                m_oData[iCol][j].UpdateRow(j);
         }
         public int Length
         {
