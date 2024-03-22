@@ -10,6 +10,5 @@ namespace D00B
     public static class Global
     {
         static public bool g_bSortOrder;
-        static public Type g_bColType;
     }
 }

@@ -941,7 +941,6 @@ namespace D00B
         {
             // Sort using the classes comparer
             Global.g_bSortOrder = m_Ascending[e.Column];
-            Global.g_bColType = m_ColTypes[e.Column];
 
             // Sort the indexed column and rearrange
             m_Arr.ParallelSort(e.Column);
@@ -990,17 +989,16 @@ namespace D00B
             {
                 if (m_Arr != null && iRow <= m_Arr.Length)
                 {
-                    // Fill the grid with the basic values
                     for (int idx = 0; idx < m_nColumns; ++idx)
                     {
                         if (idx == 0)
                         {
-                            e.Item = new ListViewItem(m_Arr[idx][iRow].Value);
+                            e.Item = new ListViewItem(m_Arr[idx][iRow].CellValue);
                             e.Item.UseItemStyleForSubItems = false;
                         }
                         else
                         {
-                            ListViewItem.ListViewSubItem lvSubItem = new ListViewItem.ListViewSubItem(e.Item, m_Arr[idx][iRow].Value);
+                            ListViewItem.ListViewSubItem lvSubItem = new ListViewItem.ListViewSubItem(e.Item, m_Arr[idx][iRow].CellValue);
                             e.Item.SubItems.Add(lvSubItem);
                         }
                     }

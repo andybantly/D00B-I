@@ -347,19 +347,40 @@ namespace D00B
 
     public class CVariant : IComparable<CVariant>, IEquatable<CVariant>, IComparable
     {
-        private TypeCode m_TypeCode = TypeCode.Empty;
-        private string[] m_arrStr;
-        private int[] m_arrRow;
+        private readonly TypeCode m_TypeCode = TypeCode.Empty;
+        private readonly String[] m_arrStr = null;
+        private readonly Int32[] m_arriVal = null;
+        private readonly Double[] m_arrdVal = null;
+        private readonly DateTime[] m_arrdtVal = null;
+        private readonly int[] m_arrRow = null;
 
-        public CVariant(string strVal, int iRow)
+        public CVariant(String strVal, int iRow)
         {
             m_TypeCode = TypeCode.String;
-            m_arrStr = new string[] { strVal, strVal };
+            m_arrStr = new String[] { strVal, strVal };
+            m_arrRow = new int[] { iRow, iRow };
+        }
+        public CVariant(Int32 iVal, int iRow)
+        {
+            m_TypeCode = TypeCode.Int32;
+            m_arriVal = new Int32[] { iVal, iVal };
+            m_arrRow = new int[] { iRow, iRow };
+        }
+        public CVariant(Double dVal, int iRow)
+        {
+            m_TypeCode = TypeCode.Double;
+            m_arrdVal = new Double[] { dVal, dVal };
+            m_arrRow = new int[] { iRow, iRow };
+        }
+        public CVariant(DateTime dtVal, int iRow)
+        {
+            m_TypeCode = TypeCode.DateTime;
+            m_arrdtVal = new DateTime[] { dtVal, dtVal };
             m_arrRow = new int[] { iRow, iRow };
         }
         public override string ToString()
         {
-            return string.Format("[{0}]={1}", m_arrRow[0], m_arrStr[0]);
+            return string.Format("[{0}]={1}", m_arrRow[0], CellValue);
         }
         public override int GetHashCode()
         {
@@ -367,40 +388,34 @@ namespace D00B
         }
         public int CompareTo(CVariant rhs)
         {
-            int iRet;
-            TypeCode TypeCode = Type.GetTypeCode(Global.g_bColType);
-            bool bLhs, bRhs, bType;
-            switch (TypeCode)
+            int iRet = 0;
+            switch (m_TypeCode)
             {
-                case TypeCode.Double:
-                    bLhs = double.TryParse(!string.IsNullOrEmpty(m_arrStr[0]) ? m_arrStr[0] : "0.0", out double dLhs);
-                    bRhs = double.TryParse(!string.IsNullOrEmpty(rhs.m_arrStr[0]) ? rhs.m_arrStr[0] : "0.0", out double dRhs);
-                    bType = (bLhs && bRhs) ? true : false;
-                    if (bType)
-                        iRet = Global.g_bSortOrder ? (dLhs < dRhs ? -1 : (dLhs == dRhs ? 0 : 1)) : (dLhs < dRhs ? 1 : (dLhs == dRhs ? 0 : -1));
-                    else // fall back to string
-                        iRet = Global.g_bSortOrder ? string.Compare(m_arrStr[0], rhs.m_arrStr[0]) : string.Compare(rhs.m_arrStr[0], m_arrStr[0]);
-                    break;
-                case TypeCode.DateTime:
-                    bLhs = DateTime.TryParse(!string.IsNullOrEmpty(m_arrStr[0]) ? m_arrStr[0] : "0", out DateTime dtLhs);
-                    bRhs = DateTime.TryParse(!string.IsNullOrEmpty(rhs.m_arrStr[0]) ? rhs.m_arrStr[0] : "0", out DateTime dtRhs);
-                    bType = (bLhs && bRhs) ? true : false;
-                    if (bType)
-                        iRet = Global.g_bSortOrder ? (dtLhs < dtRhs ? -1 : (dtLhs == dtRhs ? 0 : 1)) : (dtLhs < dtRhs ? 1 : (dtLhs == dtRhs ? 0 : -1));
-                    else // fall back to string
-                        iRet = Global.g_bSortOrder ? string.Compare(m_arrStr[0], rhs.m_arrStr[0]) : string.Compare(rhs.m_arrStr[0], m_arrStr[0]);
-                    break;
                 case TypeCode.String:
-                    iRet = Global.g_bSortOrder ? string.Compare(m_arrStr[0], rhs.m_arrStr[0]) : string.Compare(rhs.m_arrStr[0], m_arrStr[0]);
+                    ref string strLhs = ref m_arrStr[0];
+                    ref string strRhs = ref rhs.m_arrStr[0];
+                    iRet = Global.g_bSortOrder ? string.Compare(strLhs, strRhs, false) : string.Compare(strRhs, strLhs, false);
                     break;
+
+                case TypeCode.Int32:
+                    ref Int32 iLhs = ref m_arriVal[0];
+                    ref Int32 iRhs = ref rhs.m_arriVal[0];
+                    iRet = Global.g_bSortOrder ? (iLhs < iRhs ? -1 : (iLhs == iRhs ? 0 : 1)) : (iLhs < iRhs ? 1 : (iLhs == iRhs ? 0 : -1));
+                    break;
+
+                case TypeCode.Double:
+                    ref double dLhs = ref m_arrdVal[0];
+                    ref double dRhs = ref rhs.m_arrdVal[0];
+                    iRet = Global.g_bSortOrder ? (dLhs < dRhs ? -1 : (dLhs == dRhs ? 0 : 1)) : (dLhs < dRhs ? 1 : (dLhs == dRhs ? 0 : -1));
+                    break;
+
+                case TypeCode.DateTime:
+                    ref DateTime dtLhs = ref m_arrdtVal[0];
+                    ref DateTime dtRhs = ref rhs.m_arrdtVal[0];
+                    iRet = Global.g_bSortOrder ? (dtLhs < dtRhs ? -1 : (dtLhs == dtRhs ? 0 : 1)) : (dtLhs < dtRhs ? 1 : (dtLhs == dtRhs ? 0 : -1));
+                    break;
+
                 default:
-                    bool bLhsNum = Int64.TryParse(!string.IsNullOrEmpty(m_arrStr[0]) ? m_arrStr[0] : "0", out Int64 iLhs);
-                    bool bRhsNum = Int64.TryParse(!string.IsNullOrEmpty(rhs.m_arrStr[0]) ? rhs.m_arrStr[0] : "0", out Int64 iRhs);
-                    bool bNumber = (bLhsNum && bRhsNum) ? true : false;
-                    if (bNumber)
-                        iRet = Global.g_bSortOrder ? (iLhs < iRhs ? -1 : (iLhs == iRhs ? 0 : 1)) : (iLhs < iRhs ? 1 : (iLhs == iRhs ? 0 : -1));
-                    else // fallback to string
-                        iRet = Global.g_bSortOrder ? string.Compare(m_arrStr[0], rhs.m_arrStr[0]) : string.Compare(rhs.m_arrStr[0], m_arrStr[0]);
                     break;
             }
             return iRet;
@@ -428,27 +443,79 @@ namespace D00B
 
         public void Copy(CVariant rhs, int iFrom, int iTo)
         {
-            // Main to Swap
-            switch (rhs.m_TypeCode)
+            switch (m_TypeCode)
             {
                 case TypeCode.String:
                     m_arrStr[iTo] = rhs.m_arrStr[iFrom];
+                    break;
+
+                case TypeCode.Int32:
+                    m_arriVal[iTo] = rhs.m_arriVal[iFrom];
+                    break;
+
+                case TypeCode.Double:
+                    m_arrdVal[iTo] = rhs.m_arrdVal[iFrom];
+                    break;
+
+                case TypeCode.DateTime:
+                    m_arrdtVal[iTo] = rhs.m_arrdtVal[iFrom];
                     break;
 
                 default:
                     break;
             }
         }
-
         public void UpdateRow(int iRow)
         {
             m_arrRow[0] = iRow;
             m_arrRow[1] = iRow;
         }
 
-        public string Value
+        protected void Value(out String strVal)
         {
-            get { return m_arrStr[0]; }
+            strVal = m_arrStr[0];
+        }
+
+        protected void Value(out Int32 iVal)
+        {
+            iVal = m_arriVal[0];
+        }
+        protected void Value(out Double dVal)
+        {
+            dVal = m_arrdVal[0];
+        }
+        protected void Value(out DateTime dtVal)
+        {
+            dtVal = m_arrdtVal[0];
+        }
+        public string CellValue
+        {
+            get
+            {
+                string strCellValue = string.Empty;
+                switch (m_TypeCode)
+                {
+                    case TypeCode.String:
+                        strCellValue = m_arrStr[0];
+                        break;
+
+                    case TypeCode.Int32:
+                        strCellValue = m_arriVal[0].ToString();
+                        break;
+
+                    case TypeCode.Double:
+                        strCellValue = m_arrdVal[0].ToString();
+                        break;
+
+                    case TypeCode.DateTime:
+                        strCellValue = m_arrdtVal[0].ToString();
+                        break;
+
+                    default:
+                        break;
+                }
+                return strCellValue;
+            }
         }
 
         public int Row
