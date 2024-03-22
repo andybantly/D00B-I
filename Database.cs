@@ -348,76 +348,76 @@ namespace D00B
     public class CVariant : IComparable<CVariant>, IEquatable<CVariant>, IComparable
     {
         private readonly TypeCode m_TypeCode = TypeCode.Empty;
-        private readonly String[] m_arrStr = null;
-        private readonly Byte[] m_arrbVal = null;
-        private readonly Int32[] m_arri32Val = null;
-        private readonly UInt32[] m_arrui32Val = null;
-        private readonly Int64[] m_arri64Val = null;
-        private readonly UInt64[] m_arrui64Val = null;
-        private readonly Single[] m_arrfVal = null;
-        private readonly Double[] m_arrdVal = null;
-        private readonly Decimal[] m_arrdecVal = null;
-        private readonly DateTime[] m_arrdtVal = null;
+        private readonly String[] m_StrVal = null;
+        private readonly Byte[] m_ByteVal = null;
+        private readonly Int32[] m_Int32Val = null;
+        private readonly UInt32[] m_UInt32Val = null;
+        private readonly Int64[] m_Int64Val = null;
+        private readonly UInt64[] m_UInt64Val = null;
+        private readonly Single[] m_SngVal = null;
+        private readonly Double[] m_DblVal = null;
+        private readonly Decimal[] m_DecVal = null;
+        private readonly DateTime[] m_DateTimeVal = null;
         private readonly int[] m_arrRow = null;
 
         public CVariant(String strVal, int iRow)
         {
             m_TypeCode = TypeCode.String;
-            m_arrStr = new String[] { strVal, strVal };
+            m_StrVal = new String[] { strVal, strVal };
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(Byte bVal, int iRow)
         {
             m_TypeCode = TypeCode.Byte;
-            m_arrbVal = new Byte[] { bVal, bVal };
+            m_ByteVal = new Byte[] { bVal, bVal };
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(Int32 i32Val, int iRow)
         {
             m_TypeCode = TypeCode.Int32;
-            m_arri32Val = new Int32[] { i32Val, i32Val };
+            m_Int32Val = new Int32[] { i32Val, i32Val };
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(UInt32 ui32Val, int iRow)
         {
             m_TypeCode = TypeCode.UInt32;
-            m_arrui32Val = new UInt32[] { ui32Val, ui32Val };
+            m_UInt32Val = new UInt32[] { ui32Val, ui32Val };
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(Int64 i64Val, int iRow)
         {
             m_TypeCode = TypeCode.Int64;
-            m_arri64Val = new Int64[] { i64Val, i64Val };
+            m_Int64Val = new Int64[] { i64Val, i64Val };
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(UInt64 ui64Val, int iRow)
         {
             m_TypeCode = TypeCode.UInt64;
-            m_arrui64Val = new UInt64[] { ui64Val, ui64Val };
+            m_UInt64Val = new UInt64[] { ui64Val, ui64Val };
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(Single fVal, int iRow)
         {
             m_TypeCode = TypeCode.Single;
-            m_arrfVal = new Single[] { fVal, fVal };
+            m_SngVal = new Single[] { fVal, fVal };
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(Double dVal, int iRow)
         {
             m_TypeCode = TypeCode.Double;
-            m_arrdVal = new Double[] { dVal, dVal };
+            m_DblVal = new Double[] { dVal, dVal };
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(Decimal decVal, int iRow)
         {
             m_TypeCode = TypeCode.Decimal;
-            m_arrdecVal = new Decimal[] { decVal, decVal };
+            m_DecVal = new Decimal[] { decVal, decVal };
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(DateTime dtVal, int iRow)
         {
             m_TypeCode = TypeCode.DateTime;
-            m_arrdtVal = new DateTime[] { dtVal, dtVal };
+            m_DateTimeVal = new DateTime[] { dtVal, dtVal };
             m_arrRow = new int[] { iRow, iRow };
         }
         public override string ToString()
@@ -434,62 +434,62 @@ namespace D00B
             switch (m_TypeCode)
             {
                 case TypeCode.String:
-                    ref string strLhs = ref m_arrStr[0];
-                    ref string strRhs = ref rhs.m_arrStr[0];
+                    ref string strLhs = ref m_StrVal[0];
+                    ref string strRhs = ref rhs.m_StrVal[0];
                     iRet = Global.g_bSortOrder ? string.Compare(strLhs, strRhs, false) : string.Compare(strRhs, strLhs, false);
                     break;
 
                 case TypeCode.Byte:
-                    ref Byte bLhs = ref m_arrbVal[0];
-                    ref Byte bRhs = ref rhs.m_arrbVal[0];
+                    ref Byte bLhs = ref m_ByteVal[0];
+                    ref Byte bRhs = ref rhs.m_ByteVal[0];
                     iRet = Global.g_bSortOrder ? (bLhs < bRhs ? -1 : (bLhs == bRhs ? 0 : 1)) : (bLhs < bRhs ? 1 : (bLhs == bRhs ? 0 : -1));
                     break;
 
                 case TypeCode.Int32:
-                    ref Int32 iLhs = ref m_arri32Val[0];
-                    ref Int32 iRhs = ref rhs.m_arri32Val[0];
+                    ref Int32 iLhs = ref m_Int32Val[0];
+                    ref Int32 iRhs = ref rhs.m_Int32Val[0];
                     iRet = Global.g_bSortOrder ? (iLhs < iRhs ? -1 : (iLhs == iRhs ? 0 : 1)) : (iLhs < iRhs ? 1 : (iLhs == iRhs ? 0 : -1));
                     break;
 
                 case TypeCode.UInt32:
-                    ref UInt32 ui32Lhs = ref m_arrui32Val[0];
-                    ref UInt32 ui32Rhs = ref rhs.m_arrui32Val[0];
+                    ref UInt32 ui32Lhs = ref m_UInt32Val[0];
+                    ref UInt32 ui32Rhs = ref rhs.m_UInt32Val[0];
                     iRet = Global.g_bSortOrder ? (ui32Lhs < ui32Rhs ? -1 : (ui32Lhs == ui32Rhs ? 0 : 1)) : (ui32Lhs < ui32Rhs ? 1 : (ui32Lhs == ui32Rhs ? 0 : -1));
                     break;
 
                 case TypeCode.Int64:
-                    ref Int64 i64Lhs = ref m_arri64Val[0];
-                    ref Int64 i64Rhs = ref rhs.m_arri64Val[0];
+                    ref Int64 i64Lhs = ref m_Int64Val[0];
+                    ref Int64 i64Rhs = ref rhs.m_Int64Val[0];
                     iRet = Global.g_bSortOrder ? (i64Lhs < i64Rhs ? -1 : (i64Lhs == i64Rhs ? 0 : 1)) : (i64Lhs < i64Rhs ? 1 : (i64Lhs == i64Rhs ? 0 : -1));
                     break;
 
                 case TypeCode.UInt64:
-                    ref UInt64 ui64Lhs = ref m_arrui64Val[0];
-                    ref UInt64 ui64Rhs = ref rhs.m_arrui64Val[0];
+                    ref UInt64 ui64Lhs = ref m_UInt64Val[0];
+                    ref UInt64 ui64Rhs = ref rhs.m_UInt64Val[0];
                     iRet = Global.g_bSortOrder ? (ui64Lhs < ui64Rhs ? -1 : (ui64Lhs == ui64Rhs ? 0 : 1)) : (ui64Lhs < ui64Rhs ? 1 : (ui64Lhs == ui64Rhs ? 0 : -1));
                     break;
 
                 case TypeCode.Single:
-                    ref Single fLhs = ref m_arrfVal[0];
-                    ref Single fRhs = ref rhs.m_arrfVal[0];
+                    ref Single fLhs = ref m_SngVal[0];
+                    ref Single fRhs = ref rhs.m_SngVal[0];
                     iRet = Global.g_bSortOrder ? (fLhs < fRhs ? -1 : (fLhs == fRhs ? 0 : 1)) : (fLhs < fRhs ? 1 : (fLhs == fRhs ? 0 : -1));
                     break;
 
                 case TypeCode.Double:
-                    ref Double dLhs = ref m_arrdVal[0];
-                    ref Double dRhs = ref rhs.m_arrdVal[0];
+                    ref Double dLhs = ref m_DblVal[0];
+                    ref Double dRhs = ref rhs.m_DblVal[0];
                     iRet = Global.g_bSortOrder ? (dLhs < dRhs ? -1 : (dLhs == dRhs ? 0 : 1)) : (dLhs < dRhs ? 1 : (dLhs == dRhs ? 0 : -1));
                     break;
 
                 case TypeCode.Decimal:
-                    ref Decimal decLhs = ref m_arrdecVal[0];
-                    ref Decimal decRhs = ref rhs.m_arrdecVal[0];
+                    ref Decimal decLhs = ref m_DecVal[0];
+                    ref Decimal decRhs = ref rhs.m_DecVal[0];
                     iRet = Global.g_bSortOrder ? (decLhs < decRhs ? -1 : (decLhs == decRhs ? 0 : 1)) : (decLhs < decRhs ? 1 : (decLhs == decRhs ? 0 : -1));
                     break;
 
                 case TypeCode.DateTime:
-                    ref DateTime dtLhs = ref m_arrdtVal[0];
-                    ref DateTime dtRhs = ref rhs.m_arrdtVal[0];
+                    ref DateTime dtLhs = ref m_DateTimeVal[0];
+                    ref DateTime dtRhs = ref rhs.m_DateTimeVal[0];
                     iRet = Global.g_bSortOrder ? (dtLhs < dtRhs ? -1 : (dtLhs == dtRhs ? 0 : 1)) : (dtLhs < dtRhs ? 1 : (dtLhs == dtRhs ? 0 : -1));
                     break;
 
@@ -524,43 +524,43 @@ namespace D00B
             switch (m_TypeCode)
             {
                 case TypeCode.String:
-                    m_arrStr[iTo] = rhs.m_arrStr[iFrom];
+                    m_StrVal[iTo] = rhs.m_StrVal[iFrom];
                     break;
 
                 case TypeCode.Byte:
-                    m_arrbVal[iTo] = rhs.m_arrbVal[iFrom];
+                    m_ByteVal[iTo] = rhs.m_ByteVal[iFrom];
                     break;
 
                 case TypeCode.Int32:
-                    m_arri32Val[iTo] = rhs.m_arri32Val[iFrom];
+                    m_Int32Val[iTo] = rhs.m_Int32Val[iFrom];
                     break;
 
                 case TypeCode.UInt32:
-                    m_arrui32Val[iTo] = rhs.m_arrui32Val[iFrom];
+                    m_UInt32Val[iTo] = rhs.m_UInt32Val[iFrom];
                     break;
 
                 case TypeCode.Int64:
-                    m_arri64Val[iTo] = rhs.m_arri64Val[iFrom];
+                    m_Int64Val[iTo] = rhs.m_Int64Val[iFrom];
                     break;
 
                 case TypeCode.UInt64:
-                    m_arrui64Val[iTo] = rhs.m_arrui64Val[iFrom];
+                    m_UInt64Val[iTo] = rhs.m_UInt64Val[iFrom];
                     break;
 
                 case TypeCode.Single:
-                    m_arrfVal[iTo] = rhs.m_arrfVal[iFrom];
+                    m_SngVal[iTo] = rhs.m_SngVal[iFrom];
                     break;
 
                 case TypeCode.Double:
-                    m_arrdVal[iTo] = rhs.m_arrdVal[iFrom];
+                    m_DblVal[iTo] = rhs.m_DblVal[iFrom];
                     break;
 
                 case TypeCode.Decimal:
-                    m_arrdecVal[iTo] = rhs.m_arrdecVal[iFrom];
+                    m_DecVal[iTo] = rhs.m_DecVal[iFrom];
                     break;
 
                 case TypeCode.DateTime:
-                    m_arrdtVal[iTo] = rhs.m_arrdtVal[iFrom];
+                    m_DateTimeVal[iTo] = rhs.m_DateTimeVal[iFrom];
                     break;
 
                 default:
@@ -575,44 +575,44 @@ namespace D00B
 
         protected void Value(out String strVal)
         {
-            strVal = m_arrStr[0];
+            strVal = m_StrVal[0];
         }
 
         protected void Value(out Byte bVal)
         {
-            bVal = m_arrbVal[0];
+            bVal = m_ByteVal[0];
         }
         protected void Value(out Int32 i32Val)
         {
-            i32Val = m_arri32Val[0];
+            i32Val = m_Int32Val[0];
         }
         protected void Value(out UInt32 ui32Val)
         {
-            ui32Val = m_arrui32Val[0];
+            ui32Val = m_UInt32Val[0];
         }
         protected void Value(out Int64 i64Val)
         {
-            i64Val = m_arri64Val[0];
+            i64Val = m_Int64Val[0];
         }
         protected void Value(out UInt64 ui64Val)
         {
-            ui64Val = m_arrui64Val[0];
+            ui64Val = m_UInt64Val[0];
         }
         protected void Value(out Single fVal)
         {
-            fVal = m_arrfVal[0];
+            fVal = m_SngVal[0];
         }
         protected void Value(out Double dVal)
         {
-            dVal = m_arrdVal[0];
+            dVal = m_DblVal[0];
         }
         protected void Value(out Decimal decVal)
         {
-            decVal = m_arrdecVal[0];
+            decVal = m_DecVal[0];
         }
         protected void Value(out DateTime dtVal)
         {
-            dtVal = m_arrdtVal[0];
+            dtVal = m_DateTimeVal[0];
         }
         public string CellValue
         {
@@ -622,43 +622,43 @@ namespace D00B
                 switch (m_TypeCode)
                 {
                     case TypeCode.String:
-                        strCellValue = m_arrStr[0];
+                        strCellValue = m_StrVal[0];
                         break;
 
                     case TypeCode.Byte:
-                        strCellValue = m_arrbVal[0].ToString();
+                        strCellValue = m_ByteVal[0].ToString();
                         break;
 
                     case TypeCode.Int32:
-                        strCellValue = m_arri32Val[0].ToString();
+                        strCellValue = m_Int32Val[0].ToString();
                         break;
 
                     case TypeCode.UInt32:
-                        strCellValue = m_arrui32Val[0].ToString();
+                        strCellValue = m_UInt32Val[0].ToString();
                         break;
 
                     case TypeCode.Int64:
-                        strCellValue = m_arri64Val[0].ToString();
+                        strCellValue = m_Int64Val[0].ToString();
                         break;
 
                     case TypeCode.UInt64:
-                        strCellValue = m_arrui64Val[0].ToString();
+                        strCellValue = m_UInt64Val[0].ToString();
                         break;
 
                     case TypeCode.Single:
-                        strCellValue = m_arrfVal[0].ToString();
+                        strCellValue = m_SngVal[0].ToString();
                         break;
 
                     case TypeCode.Double:
-                        strCellValue = m_arrdVal[0].ToString();
+                        strCellValue = m_DblVal[0].ToString();
                         break;
 
                     case TypeCode.Decimal:
-                        strCellValue = m_arrdecVal[0].ToString();
+                        strCellValue = m_DecVal[0].ToString();
                         break;
 
                     case TypeCode.DateTime:
-                        strCellValue = m_arrdtVal[0].ToString();
+                        strCellValue = m_DateTimeVal[0].ToString();
                         break;
 
                     default:
