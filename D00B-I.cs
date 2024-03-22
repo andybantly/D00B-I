@@ -128,11 +128,13 @@ namespace D00B
                 g_TableMap = new Dictionary<DBTableKey, DBTable>();
                 if (SqlTables.ExecuteReader(out string strError))
                 {
+                    if (!string.IsNullOrEmpty(strError))
+                        throw new Exception(strError);
                     while (SqlTables.Read())
                     {
-                        string strSchema = SqlTables.GetValue(0);
-                        string strTable = SqlTables.GetValue(1);
-                        string strRows = SqlTables.GetValue(2);
+                        SqlTables.GetValue(0, out string strSchema);
+                        SqlTables.GetValue(1, out string strTable);
+                        SqlTables.GetValue(2, out string strRows);
                         string strColumn = string.Empty;
 
                         DBTableKey TableKey = new DBTableKey(strSchema, strTable, strColumn);
@@ -161,9 +163,14 @@ namespace D00B
                     SqlPK.AddWithValue("@table_owner", Table.TableSchema, SqlDbType.NVarChar);
                     if (SqlPK.ExecuteReader(out strError))
                     {
+                        if (!string.IsNullOrEmpty(strError))
+                            throw new Exception(strError);
                         while (SqlPK.Read())
                         {
-                            DBTableKey TK = new DBTableKey(SqlPK.GetValue("TABLE_OWNER"), SqlPK.GetValue("TABLE_NAME"), SqlPK.GetValue("COLUMN_NAME"));
+                            SqlPK.GetValue("TABLE_OWNER", out string strTableOwner);
+                            SqlPK.GetValue("TABLE_NAME", out string strTableName);
+                            SqlPK.GetValue("COLUMN_NAME", out string strColumnName);
+                            DBTableKey TK = new DBTableKey(strTableOwner, strTableName, strColumnName);
                             Table.AddPK(TK);
                         }
                     }
@@ -186,14 +193,16 @@ namespace D00B
                     SqlFK.AddWithValue("@pktable_owner", Table.TableSchema, SqlDbType.NVarChar);
                     if (SqlFK.ExecuteReader(out strError))
                     {
+                        if (!string.IsNullOrEmpty(strError))
+                            throw new Exception(strError);
                         while (SqlFK.Read())
                         {
-                            string strPKOwn = SqlFK.GetValue("PKTABLE_OWNER");
-                            string strPKTab = SqlFK.GetValue("PKTABLE_NAME");
-                            string strPKCol = SqlFK.GetValue("PKCOLUMN_NAME");
-                            string strFKOwn = SqlFK.GetValue("FKTABLE_OWNER");
-                            string strFKTab = SqlFK.GetValue("FKTABLE_NAME");
-                            string strFKCol = SqlFK.GetValue("FKCOLUMN_NAME");
+                            SqlFK.GetValue("PKTABLE_OWNER", out string strPKOwn);
+                            SqlFK.GetValue("PKTABLE_NAME", out string strPKTab);
+                            SqlFK.GetValue("PKCOLUMN_NAME", out string strPKCol);
+                            SqlFK.GetValue("FKTABLE_OWNER", out string strFKOwn);
+                            SqlFK.GetValue("FKTABLE_NAME", out string strFKTab);
+                            SqlFK.GetValue("FKCOLUMN_NAME", out string strFKCol);
 
                             // Keys
                             Table.AddKeyMap(strPKOwn, strPKTab, strPKCol, strFKOwn, strFKTab, strFKCol);
@@ -208,12 +217,15 @@ namespace D00B
                     SqlCol.AddWithValue("@table_owner", Table.TableSchema, SqlDbType.NVarChar);
                     if (SqlCol.ExecuteReader(out strError))
                     {
+                        if (!string.IsNullOrEmpty(strError))
+                            throw new Exception(strError);
                         List<DBColumn> Columns = new List<DBColumn>();
                         while (SqlCol.Read())
                         {
-                            string strCol = SqlCol.GetValue("COLUMN_NAME");
-                            DBTableKey TK = new DBTableKey(SqlCol.GetValue("TABLE_OWNER"), Table.TableName, strCol);
-                            Columns.Add(new DBColumn(strCol, Table.ContainsPK(SqlCol.GetValue("TABLE_OWNER"), Table.TableName, strCol)));
+                            SqlCol.GetValue("COLUMN_NAME", out string strCol);
+                            SqlCol.GetValue("TABLE_OWNER", out string strTableOwner);
+                            DBTableKey TK = new DBTableKey(strTableOwner, Table.TableName, strCol);
+                            Columns.Add(new DBColumn(strCol, Table.ContainsPK(strTableOwner, Table.TableName, strCol)));
                         }
                         Table.Columns = Columns;
                         SqlCol.Close();
@@ -504,6 +516,8 @@ namespace D00B
                     Sql = new SQL(connectionString, strQueryString);
                     if (Sql.ExecuteReader(out strError))
                     {
+                        if (!string.IsNullOrEmpty(strError))
+                            throw new Exception(strError);
                         txtQuery.Text = strQueryString;
 
                         int iRow;
@@ -532,7 +546,14 @@ namespace D00B
                         {
                             for (iField = 0; iField < m_nColumns; ++iField)
                             {
-                                string strField = Sql.GetValue(iField);
+                                Type Type = Sql.GetType();
+                                switch (Type)
+                                {
+                                    default:
+                                        break;
+                                }
+
+                                Sql.GetValue(iField, out string strField);
                                 m_Arr[iField][iRow] = new CVariant(strField, iRow);
                                 
                                 if (iRow < 1000) // TODO - Make this a constant
@@ -789,9 +810,11 @@ namespace D00B
             SQL Sql = new SQL(connectionString, queryString);
             if (Sql.ExecuteReader(out string strError))
             {
+                if (!string.IsNullOrEmpty(strError))
+                    throw new Exception(strError);
                 while (Sql.Read())
                 {
-                    string strItem = Sql.GetValue(0);
+                    Sql.GetValue(0, out string strItem);
                     if (!string.IsNullOrEmpty(strItem))
                         cbSchema.Items.Add(strItem);
                 }

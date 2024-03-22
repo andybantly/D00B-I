@@ -246,18 +246,14 @@ namespace D00B
             }
         }
 
-        public string GetValue(int iCol)
+        public void GetValue(int iCol, out string strValue)
         {
-            if (iCol < m_CurrentRow.Count)
-                return m_CurrentRow[iCol];
-            return string.Empty;
+            strValue = iCol < m_CurrentRow.Count ? m_CurrentRow[iCol] : string.Empty;
         }
 
-        public string GetValue(string strColumnName)
+        public void GetValue(string strColumnName, out string strValue)
         {
-            if (Columns.Contains(strColumnName))
-                return m_CurrentRow[Columns.IndexOf(strColumnName)];
-            return string.Empty;
+            strValue = Columns.Contains(strColumnName) ? m_CurrentRow[Columns.IndexOf(strColumnName)] : string.Empty;
         }
 
         public StringCollection Columns

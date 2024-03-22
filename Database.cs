@@ -349,8 +349,13 @@ namespace D00B
     {
         private readonly TypeCode m_TypeCode = TypeCode.Empty;
         private readonly String[] m_arrStr = null;
-        private readonly Int32[] m_arriVal = null;
+        private readonly Int32[] m_arri32Val = null;
+        private readonly UInt32[] m_arrui32Val = null;
+        private readonly Int64[] m_arri64Val = null;
+        private readonly UInt64[] m_arrui64Val = null;
+        private readonly Single[] m_arrfVal = null;
         private readonly Double[] m_arrdVal = null;
+        private readonly Decimal[] m_arrdecVal = null;
         private readonly DateTime[] m_arrdtVal = null;
         private readonly int[] m_arrRow = null;
 
@@ -360,16 +365,46 @@ namespace D00B
             m_arrStr = new String[] { strVal, strVal };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(Int32 iVal, int iRow)
+        public CVariant(Int32 i32Val, int iRow)
         {
             m_TypeCode = TypeCode.Int32;
-            m_arriVal = new Int32[] { iVal, iVal };
+            m_arri32Val = new Int32[] { i32Val, i32Val };
+            m_arrRow = new int[] { iRow, iRow };
+        }
+        public CVariant(UInt32 ui32Val, int iRow)
+        {
+            m_TypeCode = TypeCode.UInt32;
+            m_arrui32Val = new UInt32[] { ui32Val, ui32Val };
+            m_arrRow = new int[] { iRow, iRow };
+        }
+        public CVariant(Int64 i64Val, int iRow)
+        {
+            m_TypeCode = TypeCode.Int64;
+            m_arri64Val = new Int64[] { i64Val, i64Val };
+            m_arrRow = new int[] { iRow, iRow };
+        }
+        public CVariant(UInt64 ui64Val, int iRow)
+        {
+            m_TypeCode = TypeCode.UInt64;
+            m_arrui64Val = new UInt64[] { ui64Val, ui64Val };
+            m_arrRow = new int[] { iRow, iRow };
+        }
+        public CVariant(Single fVal, int iRow)
+        {
+            m_TypeCode = TypeCode.Single;
+            m_arrfVal = new Single[] { fVal, fVal };
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(Double dVal, int iRow)
         {
             m_TypeCode = TypeCode.Double;
             m_arrdVal = new Double[] { dVal, dVal };
+            m_arrRow = new int[] { iRow, iRow };
+        }
+        public CVariant(Decimal decVal, int iRow)
+        {
+            m_TypeCode = TypeCode.Decimal;
+            m_arrdecVal = new Decimal[] { decVal, decVal };
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(DateTime dtVal, int iRow)
@@ -398,15 +433,45 @@ namespace D00B
                     break;
 
                 case TypeCode.Int32:
-                    ref Int32 iLhs = ref m_arriVal[0];
-                    ref Int32 iRhs = ref rhs.m_arriVal[0];
+                    ref Int32 iLhs = ref m_arri32Val[0];
+                    ref Int32 iRhs = ref rhs.m_arri32Val[0];
                     iRet = Global.g_bSortOrder ? (iLhs < iRhs ? -1 : (iLhs == iRhs ? 0 : 1)) : (iLhs < iRhs ? 1 : (iLhs == iRhs ? 0 : -1));
                     break;
 
+                case TypeCode.UInt32:
+                    ref UInt32 ui32Lhs = ref m_arrui32Val[0];
+                    ref UInt32 ui32Rhs = ref rhs.m_arrui32Val[0];
+                    iRet = Global.g_bSortOrder ? (ui32Lhs < ui32Rhs ? -1 : (ui32Lhs == ui32Rhs ? 0 : 1)) : (ui32Lhs < ui32Rhs ? 1 : (ui32Lhs == ui32Rhs ? 0 : -1));
+                    break;
+
+                case TypeCode.Int64:
+                    ref Int64 i64Lhs = ref m_arri64Val[0];
+                    ref Int64 i64Rhs = ref rhs.m_arri64Val[0];
+                    iRet = Global.g_bSortOrder ? (i64Lhs < i64Rhs ? -1 : (i64Lhs == i64Rhs ? 0 : 1)) : (i64Lhs < i64Rhs ? 1 : (i64Lhs == i64Rhs ? 0 : -1));
+                    break;
+
+                case TypeCode.UInt64:
+                    ref UInt64 ui64Lhs = ref m_arrui64Val[0];
+                    ref UInt64 ui64Rhs = ref rhs.m_arrui64Val[0];
+                    iRet = Global.g_bSortOrder ? (ui64Lhs < ui64Rhs ? -1 : (ui64Lhs == ui64Rhs ? 0 : 1)) : (ui64Lhs < ui64Rhs ? 1 : (ui64Lhs == ui64Rhs ? 0 : -1));
+                    break;
+
+                case TypeCode.Single:
+                    ref Single fLhs = ref m_arrfVal[0];
+                    ref Single fRhs = ref rhs.m_arrfVal[0];
+                    iRet = Global.g_bSortOrder ? (fLhs < fRhs ? -1 : (fLhs == fRhs ? 0 : 1)) : (fLhs < fRhs ? 1 : (fLhs == fRhs ? 0 : -1));
+                    break;
+
                 case TypeCode.Double:
-                    ref double dLhs = ref m_arrdVal[0];
-                    ref double dRhs = ref rhs.m_arrdVal[0];
+                    ref Double dLhs = ref m_arrdVal[0];
+                    ref Double dRhs = ref rhs.m_arrdVal[0];
                     iRet = Global.g_bSortOrder ? (dLhs < dRhs ? -1 : (dLhs == dRhs ? 0 : 1)) : (dLhs < dRhs ? 1 : (dLhs == dRhs ? 0 : -1));
+                    break;
+
+                case TypeCode.Decimal:
+                    ref Decimal decLhs = ref m_arrdecVal[0];
+                    ref Decimal decRhs = ref rhs.m_arrdecVal[0];
+                    iRet = Global.g_bSortOrder ? (decLhs < decRhs ? -1 : (decLhs == decRhs ? 0 : 1)) : (decLhs < decRhs ? 1 : (decLhs == decRhs ? 0 : -1));
                     break;
 
                 case TypeCode.DateTime:
@@ -450,11 +515,31 @@ namespace D00B
                     break;
 
                 case TypeCode.Int32:
-                    m_arriVal[iTo] = rhs.m_arriVal[iFrom];
+                    m_arri32Val[iTo] = rhs.m_arri32Val[iFrom];
+                    break;
+
+                case TypeCode.UInt32:
+                    m_arrui32Val[iTo] = rhs.m_arrui32Val[iFrom];
+                    break;
+
+                case TypeCode.Int64:
+                    m_arri64Val[iTo] = rhs.m_arri64Val[iFrom];
+                    break;
+
+                case TypeCode.UInt64:
+                    m_arrui64Val[iTo] = rhs.m_arrui64Val[iFrom];
+                    break;
+
+                case TypeCode.Single:
+                    m_arrfVal[iTo] = rhs.m_arrfVal[iFrom];
                     break;
 
                 case TypeCode.Double:
                     m_arrdVal[iTo] = rhs.m_arrdVal[iFrom];
+                    break;
+
+                case TypeCode.Decimal:
+                    m_arrdecVal[iTo] = rhs.m_arrdecVal[iFrom];
                     break;
 
                 case TypeCode.DateTime:
@@ -476,13 +561,33 @@ namespace D00B
             strVal = m_arrStr[0];
         }
 
-        protected void Value(out Int32 iVal)
+        protected void Value(out Int32 i32Val)
         {
-            iVal = m_arriVal[0];
+            i32Val = m_arri32Val[0];
+        }
+        protected void Value(out UInt32 ui32Val)
+        {
+            ui32Val = m_arrui32Val[0];
+        }
+        protected void Value(out Int64 i64Val)
+        {
+            i64Val = m_arri64Val[0];
+        }
+        protected void Value(out UInt64 ui64Val)
+        {
+            ui64Val = m_arrui64Val[0];
+        }
+        protected void Value(out Single fVal)
+        {
+            fVal = m_arrfVal[0];
         }
         protected void Value(out Double dVal)
         {
             dVal = m_arrdVal[0];
+        }
+        protected void Value(out Decimal decVal)
+        {
+            decVal = m_arrdecVal[0];
         }
         protected void Value(out DateTime dtVal)
         {
@@ -500,11 +605,31 @@ namespace D00B
                         break;
 
                     case TypeCode.Int32:
-                        strCellValue = m_arriVal[0].ToString();
+                        strCellValue = m_arri32Val[0].ToString();
+                        break;
+
+                    case TypeCode.UInt32:
+                        strCellValue = m_arrui32Val[0].ToString();
+                        break;
+
+                    case TypeCode.Int64:
+                        strCellValue = m_arri64Val[0].ToString();
+                        break;
+
+                    case TypeCode.UInt64:
+                        strCellValue = m_arrui64Val[0].ToString();
+                        break;
+
+                    case TypeCode.Single:
+                        strCellValue = m_arrfVal[0].ToString();
                         break;
 
                     case TypeCode.Double:
                         strCellValue = m_arrdVal[0].ToString();
+                        break;
+
+                    case TypeCode.Decimal:
+                        strCellValue = m_arrdecVal[0].ToString();
                         break;
 
                     case TypeCode.DateTime:
