@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Excel;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
@@ -19,7 +20,7 @@ namespace D00B
 
         private readonly StringCollection m_Columns = new StringCollection();
         private readonly StringCollection m_CurrentRow = new StringCollection();
-        private List<Type> m_ColTypes = new List<Type>();
+        private List<TypeCode> m_ColTypes = new List<TypeCode>();
 
         public SQL()
         {
@@ -113,7 +114,9 @@ namespace D00B
                 {
                     string strColumnName = m_Reader.GetName(iField);
                     m_Columns.Add(strColumnName);
-                    m_ColTypes.Add(m_Reader.GetFieldType(iField));
+                    Type Type = m_Reader.GetFieldType(iField);
+                    TypeCode TypeCode = Type.GetTypeCode(Type);
+                    m_ColTypes.Add(TypeCode);
                 }
             }
             catch (Exception ex)
@@ -215,8 +218,8 @@ namespace D00B
                     {
                         if (!m_Reader.IsDBNull(iField))
                         {
-                            Type type = m_Reader.GetFieldType(iField);
-                            if (type != null)
+                            Type Type = m_Reader.GetFieldType(iField);
+                            if (Type != null)
                             {
                                 object objValue = m_Reader.GetValue(iField);
                                 if (objValue != null)
@@ -261,7 +264,7 @@ namespace D00B
             get { return m_Columns; }
         }
 
-        public List<Type> ColumnTypes
+        public List<TypeCode> ColumnTypes
         {
             get { return m_ColTypes; }
         }

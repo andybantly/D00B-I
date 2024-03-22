@@ -21,7 +21,7 @@ namespace D00B
         float g_nFontHeight = 0;
 
         readonly List<bool> m_Ascending = new List<bool>();
-        readonly List<Type> m_ColTypes = new List<Type>();
+        readonly List<TypeCode> m_ColTypes = new List<TypeCode>();
 
         CArray m_Arr;
         int[] m_oWidth;
@@ -546,16 +546,84 @@ namespace D00B
                         {
                             for (iField = 0; iField < m_nColumns; ++iField)
                             {
-                                Type Type = Sql.GetType();
-                                switch (Type)
+                                Sql.GetValue(iField, out string strField);
+
+                                bool bDefault = false;
+                                TypeCode TypeCode = Sql.ColumnTypes[iField];
+                                switch (TypeCode)
                                 {
+                                    case TypeCode.Byte:
+                                        if (Byte.TryParse(strField, out Byte bVal))
+                                            m_Arr[iField][iRow] = new CVariant(bVal, iRow);
+                                        else
+                                            bDefault = true;
+                                        break;
+
+                                    case TypeCode.Int32:
+                                        if (Int32.TryParse(strField, out Int32 i32))
+                                            m_Arr[iField][iRow] = new CVariant(i32, iRow);
+                                        else
+                                            bDefault = true;
+                                        break;
+
+                                    case TypeCode.UInt32:
+                                        if (UInt32.TryParse(strField, out UInt32 ui32))
+                                            m_Arr[iField][iRow] = new CVariant(ui32, iRow);
+                                        else
+                                            bDefault = true;
+                                        break;
+
+                                    case TypeCode.Int64:
+                                        if (Int64.TryParse(strField, out Int64 i64))
+                                            m_Arr[iField][iRow] = new CVariant(i64, iRow);
+                                        else
+                                            bDefault = true;
+                                        break;
+
+                                    case TypeCode.UInt64:
+                                        if (UInt64.TryParse(strField, out UInt64 ui64))
+                                            m_Arr[iField][iRow] = new CVariant(ui64, iRow);
+                                        else
+                                            bDefault = true;
+                                        break;
+
+                                    case TypeCode.Single:
+                                        if (Single.TryParse(strField, out Single fVal))
+                                            m_Arr[iField][iRow] = new CVariant(fVal, iRow);
+                                        else
+                                            bDefault = true;
+                                        break;
+
+                                    case TypeCode.Double:
+                                        if (Double.TryParse(strField, out Double dVal))
+                                            m_Arr[iField][iRow] = new CVariant(dVal, iRow);
+                                        else
+                                            bDefault = true;
+                                        break;
+
+                                    case TypeCode.Decimal:
+                                        if (Decimal.TryParse(strField, out Decimal decVal))
+                                            m_Arr[iField][iRow] = new CVariant(decVal, iRow);
+                                        else
+                                            bDefault = true;
+                                        break;
+
+                                    case TypeCode.DateTime:
+                                        if (DateTime.TryParse(strField, out DateTime dtVal))
+                                            m_Arr[iField][iRow] = new CVariant(dtVal, iRow);
+                                        else
+                                            bDefault = true;
+                                        break;
+
+                                    case TypeCode.String:
                                     default:
+                                        m_Arr[iField][iRow] = new CVariant(strField, iRow);
                                         break;
                                 }
 
-                                Sql.GetValue(iField, out string strField);
-                                m_Arr[iField][iRow] = new CVariant(strField, iRow);
-                                
+                                if (bDefault)
+                                    m_Arr[iField][iRow] = new CVariant(strField, iRow);
+
                                 if (iRow < 1000) // TODO - Make this a constant
                                 {
                                     Size sz = szExtra + TextRenderer.MeasureText(strField, lvQuery.Font);

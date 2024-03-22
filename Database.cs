@@ -349,6 +349,7 @@ namespace D00B
     {
         private readonly TypeCode m_TypeCode = TypeCode.Empty;
         private readonly String[] m_arrStr = null;
+        private readonly Byte[] m_arrbVal = null;
         private readonly Int32[] m_arri32Val = null;
         private readonly UInt32[] m_arrui32Val = null;
         private readonly Int64[] m_arri64Val = null;
@@ -363,6 +364,12 @@ namespace D00B
         {
             m_TypeCode = TypeCode.String;
             m_arrStr = new String[] { strVal, strVal };
+            m_arrRow = new int[] { iRow, iRow };
+        }
+        public CVariant(Byte bVal, int iRow)
+        {
+            m_TypeCode = TypeCode.Byte;
+            m_arrbVal = new Byte[] { bVal, bVal };
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(Int32 i32Val, int iRow)
@@ -430,6 +437,12 @@ namespace D00B
                     ref string strLhs = ref m_arrStr[0];
                     ref string strRhs = ref rhs.m_arrStr[0];
                     iRet = Global.g_bSortOrder ? string.Compare(strLhs, strRhs, false) : string.Compare(strRhs, strLhs, false);
+                    break;
+
+                case TypeCode.Byte:
+                    ref Byte bLhs = ref m_arrbVal[0];
+                    ref Byte bRhs = ref rhs.m_arrbVal[0];
+                    iRet = Global.g_bSortOrder ? (bLhs < bRhs ? -1 : (bLhs == bRhs ? 0 : 1)) : (bLhs < bRhs ? 1 : (bLhs == bRhs ? 0 : -1));
                     break;
 
                 case TypeCode.Int32:
@@ -514,6 +527,10 @@ namespace D00B
                     m_arrStr[iTo] = rhs.m_arrStr[iFrom];
                     break;
 
+                case TypeCode.Byte:
+                    m_arrbVal[iTo] = rhs.m_arrbVal[iFrom];
+                    break;
+
                 case TypeCode.Int32:
                     m_arri32Val[iTo] = rhs.m_arri32Val[iFrom];
                     break;
@@ -561,6 +578,10 @@ namespace D00B
             strVal = m_arrStr[0];
         }
 
+        protected void Value(out Byte bVal)
+        {
+            bVal = m_arrbVal[0];
+        }
         protected void Value(out Int32 i32Val)
         {
             i32Val = m_arri32Val[0];
@@ -602,6 +623,10 @@ namespace D00B
                 {
                     case TypeCode.String:
                         strCellValue = m_arrStr[0];
+                        break;
+
+                    case TypeCode.Byte:
+                        strCellValue = m_arrbVal[0].ToString();
                         break;
 
                     case TypeCode.Int32:
