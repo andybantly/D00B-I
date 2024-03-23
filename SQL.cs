@@ -1,10 +1,11 @@
-﻿using Microsoft.Office.Interop.Excel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Runtime;
+using System.Windows.Forms;
 
 namespace D00B
 {
@@ -19,8 +20,8 @@ namespace D00B
         private bool m_bStoredProcedure = false;
 
         private readonly StringCollection m_Columns = new StringCollection();
-        private readonly StringCollection m_CurrentRow = new StringCollection();
-        private List<TypeCode> m_ColTypes = new List<TypeCode>();
+        private readonly List<object> m_CurrentRow = new List<object>();
+        private readonly List<TypeCode> m_ColTypes = new List<TypeCode>();
 
         public SQL()
         {
@@ -116,6 +117,8 @@ namespace D00B
                     m_Columns.Add(strColumnName);
                     Type Type = m_Reader.GetFieldType(iField);
                     TypeCode TypeCode = Type.GetTypeCode(Type);
+                    if (TypeCode == TypeCode.Object || TypeCode == TypeCode.DBNull || TypeCode == TypeCode.Empty)
+                        TypeCode = TypeCode.String;
                     m_ColTypes.Add(TypeCode);
                 }
             }
@@ -213,24 +216,20 @@ namespace D00B
                 m_CurrentRow.Clear();
                 for (int iField = 0; iField < m_Reader.FieldCount; iField++)
                 {
-                    string strValue = string.Empty;
-                    try
+                    object oValue = null;
+                    if (!m_Reader.IsDBNull(iField))
                     {
-                        if (!m_Reader.IsDBNull(iField))
+                        try
                         {
-                            Type Type = m_Reader.GetFieldType(iField);
-                            if (Type != null)
-                            {
-                                object objValue = m_Reader.GetValue(iField);
-                                if (objValue != null)
-                                    strValue = objValue.ToString();
-                            }
+                            oValue = m_Reader.GetValue(iField);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine(e.Message);
+                            oValue = null;
                         }
                     }
-                    catch (Exception)
-                    {
-                    }
-                    m_CurrentRow.Add(strValue);
+                    m_CurrentRow.Add(oValue);
                 }
             }
             else
@@ -249,14 +248,14 @@ namespace D00B
             }
         }
 
-        public void GetValue(int iCol, out string strValue)
+        public object GetValue(int iCol)
         {
-            strValue = iCol < m_CurrentRow.Count ? m_CurrentRow[iCol] : string.Empty;
+            return iCol < m_CurrentRow.Count ? m_CurrentRow[iCol] : null;
         }
 
-        public void GetValue(string strColumnName, out string strValue)
+        public object GetValue(string strColumnName)
         {
-            strValue = Columns.Contains(strColumnName) ? m_CurrentRow[Columns.IndexOf(strColumnName)] : string.Empty;
+            return Columns.Contains(strColumnName) ? m_CurrentRow[Columns.IndexOf(strColumnName)] : null;
         }
 
         public StringCollection Columns

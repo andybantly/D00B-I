@@ -132,9 +132,9 @@ namespace D00B
                         throw new Exception(strError);
                     while (SqlTables.Read())
                     {
-                        SqlTables.GetValue(0, out string strSchema);
-                        SqlTables.GetValue(1, out string strTable);
-                        SqlTables.GetValue(2, out string strRows);
+                        string strSchema = SqlTables.GetValue(0).ToString();
+                        string strTable = SqlTables.GetValue(1).ToString();
+                        string strRows = SqlTables.GetValue(2).ToString();
                         string strColumn = string.Empty;
 
                         DBTableKey TableKey = new DBTableKey(strSchema, strTable, strColumn);
@@ -167,9 +167,9 @@ namespace D00B
                             throw new Exception(strError);
                         while (SqlPK.Read())
                         {
-                            SqlPK.GetValue("TABLE_OWNER", out string strTableOwner);
-                            SqlPK.GetValue("TABLE_NAME", out string strTableName);
-                            SqlPK.GetValue("COLUMN_NAME", out string strColumnName);
+                            string strTableOwner = SqlPK.GetValue("TABLE_OWNER").ToString();
+                            string strTableName = SqlPK.GetValue("TABLE_NAME").ToString();
+                            string strColumnName = SqlPK.GetValue("COLUMN_NAME").ToString();
                             DBTableKey TK = new DBTableKey(strTableOwner, strTableName, strColumnName);
                             Table.AddPK(TK);
                         }
@@ -197,12 +197,12 @@ namespace D00B
                             throw new Exception(strError);
                         while (SqlFK.Read())
                         {
-                            SqlFK.GetValue("PKTABLE_OWNER", out string strPKOwn);
-                            SqlFK.GetValue("PKTABLE_NAME", out string strPKTab);
-                            SqlFK.GetValue("PKCOLUMN_NAME", out string strPKCol);
-                            SqlFK.GetValue("FKTABLE_OWNER", out string strFKOwn);
-                            SqlFK.GetValue("FKTABLE_NAME", out string strFKTab);
-                            SqlFK.GetValue("FKCOLUMN_NAME", out string strFKCol);
+                            string strPKOwn = SqlFK.GetValue("PKTABLE_OWNER").ToString();
+                            string strPKTab = SqlFK.GetValue("PKTABLE_NAME").ToString();
+                            string strPKCol = SqlFK.GetValue("PKCOLUMN_NAME").ToString();
+                            string strFKOwn = SqlFK.GetValue("FKTABLE_OWNER").ToString();
+                            string strFKTab = SqlFK.GetValue("FKTABLE_NAME").ToString();
+                            string strFKCol = SqlFK.GetValue("FKCOLUMN_NAME").ToString();
 
                             // Keys
                             Table.AddKeyMap(strPKOwn, strPKTab, strPKCol, strFKOwn, strFKTab, strFKCol);
@@ -222,8 +222,8 @@ namespace D00B
                         List<DBColumn> Columns = new List<DBColumn>();
                         while (SqlCol.Read())
                         {
-                            SqlCol.GetValue("COLUMN_NAME", out string strCol);
-                            SqlCol.GetValue("TABLE_OWNER", out string strTableOwner);
+                            string strCol = SqlCol.GetValue("COLUMN_NAME").ToString();
+                            string strTableOwner = SqlCol.GetValue("TABLE_OWNER").ToString();
                             DBTableKey TK = new DBTableKey(strTableOwner, Table.TableName, strCol);
                             Columns.Add(new DBColumn(strCol, Table.ContainsPK(strTableOwner, Table.TableName, strCol)));
                         }
@@ -520,8 +520,8 @@ namespace D00B
                             throw new Exception(strError);
                         txtQuery.Text = strQueryString;
 
-                        int iRow;
-                        m_nColumns = Sql.Columns.Count; // should be the same as the sum of all columns in the collective table list
+                        // should be the same as the sum of all columns in the collective table list
+                        m_nColumns = Sql.Columns.Count;
 
                         // Set up the backing for the virtual list view
                         m_Arr = new CArray(m_nCount, m_nColumns);
@@ -540,98 +540,87 @@ namespace D00B
                             iField++;
                         }
 
+                        // Extra column width
                         Size szExtra = TextRenderer.MeasureText("XXXXX", lvQuery.Font);
-                        iRow = 0;
-                        while (Sql.Read())
+                        for (int iRow = 0; Sql.Read(); ++iRow)
                         {
                             for (iField = 0; iField < m_nColumns; ++iField)
                             {
-                                Sql.GetValue(iField, out string strField);
-
-                                bool bDefault = false;
+                                object oField = Sql.GetValue(iField);
                                 TypeCode TypeCode = Sql.ColumnTypes[iField];
                                 switch (TypeCode)
                                 {
+                                    case TypeCode.Boolean:
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToBoolean(oField), iRow);
+                                        break;
+
+                                    case TypeCode.Char:
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToChar(oField), iRow);
+                                        break;
+
                                     case TypeCode.Byte:
-                                        if (Byte.TryParse(strField, out Byte bVal))
-                                            m_Arr[iField][iRow] = new CVariant(bVal, iRow);
-                                        else
-                                            bDefault = true;
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToByte(oField), iRow);
+                                        break;
+
+                                    case TypeCode.SByte:
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToSByte(oField), iRow);
+                                        break;
+
+                                    case TypeCode.Int16:
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToInt16(oField), iRow);
+                                        break;
+
+                                    case TypeCode.UInt16:
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToUInt16(oField), iRow);
                                         break;
 
                                     case TypeCode.Int32:
-                                        if (Int32.TryParse(strField, out Int32 i32))
-                                            m_Arr[iField][iRow] = new CVariant(i32, iRow);
-                                        else
-                                            bDefault = true;
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToInt32(oField), iRow);
                                         break;
 
                                     case TypeCode.UInt32:
-                                        if (UInt32.TryParse(strField, out UInt32 ui32))
-                                            m_Arr[iField][iRow] = new CVariant(ui32, iRow);
-                                        else
-                                            bDefault = true;
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToUInt32(oField), iRow);
                                         break;
 
                                     case TypeCode.Int64:
-                                        if (Int64.TryParse(strField, out Int64 i64))
-                                            m_Arr[iField][iRow] = new CVariant(i64, iRow);
-                                        else
-                                            bDefault = true;
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToInt64(oField), iRow);
                                         break;
 
                                     case TypeCode.UInt64:
-                                        if (UInt64.TryParse(strField, out UInt64 ui64))
-                                            m_Arr[iField][iRow] = new CVariant(ui64, iRow);
-                                        else
-                                            bDefault = true;
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToUInt64(oField), iRow);
                                         break;
 
                                     case TypeCode.Single:
-                                        if (Single.TryParse(strField, out Single fVal))
-                                            m_Arr[iField][iRow] = new CVariant(fVal, iRow);
-                                        else
-                                            bDefault = true;
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToSingle(oField), iRow);
                                         break;
 
                                     case TypeCode.Double:
-                                        if (Double.TryParse(strField, out Double dVal))
-                                            m_Arr[iField][iRow] = new CVariant(dVal, iRow);
-                                        else
-                                            bDefault = true;
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToDouble(oField), iRow);
                                         break;
 
                                     case TypeCode.Decimal:
-                                        if (Decimal.TryParse(strField, out Decimal decVal))
-                                            m_Arr[iField][iRow] = new CVariant(decVal, iRow);
-                                        else
-                                            bDefault = true;
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToDecimal(oField), iRow);
                                         break;
 
                                     case TypeCode.DateTime:
-                                        if (DateTime.TryParse(strField, out DateTime dtVal))
-                                            m_Arr[iField][iRow] = new CVariant(dtVal, iRow);
-                                        else
-                                            bDefault = true;
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToDateTime(oField), iRow);
                                         break;
 
                                     case TypeCode.String:
-                                    default:
-                                        m_Arr[iField][iRow] = new CVariant(strField, iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToString(oField), iRow);
                                         break;
-                                }
 
-                                if (bDefault)
-                                    m_Arr[iField][iRow] = new CVariant(strField, iRow);
+                                    default:
+                                        throw new Exception("Invalid TypeCode");
+                                }
 
                                 if (iRow < 1000) // TODO - Make this a constant
                                 {
-                                    Size sz = szExtra + TextRenderer.MeasureText(strField, lvQuery.Font);
+                                    Size sz = szExtra + TextRenderer.MeasureText(m_Arr[iField][iRow].CellValue, lvQuery.Font);
                                     if (sz.Width > m_oWidth[iField])
                                         m_oWidth[iField] = sz.Width;
                                 }
                             }
-                            iRow++;
                         }
 
                         // Set the widths
@@ -761,7 +750,6 @@ namespace D00B
                                 {
                                     if ((TableR.TableSchema == TK2.Schema) && (TableR.TableName == TK2.Table))
                                     {
-                                        //Console.WriteLine(string.Format("BackKey BK {0}->{1} to Table {2} do to Table {3}", TK2, TK1, TableL, TableR));
                                         ListViewItem Item = new ListViewItem(TK2.Schema);
                                         Item.UseItemStyleForSubItems = false;
                                         ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, TK2.Table);
@@ -882,7 +870,7 @@ namespace D00B
                     throw new Exception(strError);
                 while (Sql.Read())
                 {
-                    Sql.GetValue(0, out string strItem);
+                    string strItem = Sql.GetValue(0).ToString();
                     if (!string.IsNullOrEmpty(strItem))
                         cbSchema.Items.Add(strItem);
                 }
