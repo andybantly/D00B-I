@@ -21,10 +21,12 @@ namespace D00B
         private object[] m_CurrentRow = null;
         private readonly List<TypeCode> m_ColTypes = new List<TypeCode>();
         private int m_nFieldCount = 0;
+        private bool m_bReadRow;
 
         public SQL()
         {
             m_Connection = new SqlConnection();
+            m_bReadRow = true;
         }
 
         ~SQL()
@@ -117,7 +119,10 @@ namespace D00B
                     Type Type = m_Reader.GetFieldType(iField);
                     TypeCode TypeCode = Type.GetTypeCode(Type);
                     if (TypeCode == TypeCode.Object || TypeCode == TypeCode.DBNull)
+                    {
                         TypeCode = TypeCode.Empty;
+                        m_bReadRow = false;
+                    }
                     m_ColTypes.Add(TypeCode);
                 }
             }
@@ -215,14 +220,7 @@ namespace D00B
                 m_nFieldCount = m_Reader.FieldCount;
                 m_CurrentRow = new object[m_nFieldCount];
 
-                bool bReadRow = true;
-                for (int iField = 0; bReadRow && iField < m_nFieldCount; iField++)
-                {
-                    if (m_ColTypes[iField] == TypeCode.Empty)
-                        bReadRow = false;
-                }
-
-                if (bReadRow)
+                if (m_bReadRow)
                     m_Reader.GetValues(m_CurrentRow);
                 else
                 {

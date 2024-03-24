@@ -369,6 +369,12 @@ namespace D00B
             m_TypeCode = TypeCode.Empty;
             m_arrRow = new int[] { iRow, iRow };
         }
+
+        public CVariant(TypeCode TypeCode, int iRow)
+        {
+            m_TypeCode = TypeCode;
+            m_arrRow = new int[] { iRow, iRow };
+        }
         public CVariant(Boolean boolVal, int iRow)
         {
             m_TypeCode = TypeCode.Boolean;

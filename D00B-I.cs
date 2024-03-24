@@ -532,7 +532,7 @@ namespace D00B
                         foreach (string strColHdr in Sql.Columns)
                         {
                             lvQuery.Columns.Add(strColHdr);
-                            m_Ascending.Add(true);
+                            m_Ascending.Add(false);
                             m_ColTypes.Add(Sql.ColumnTypes[iField]);
                             Size sz = TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), lvQuery.Font);
                             if (sz.Width > m_oWidth[iField])
