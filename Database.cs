@@ -363,79 +363,81 @@ namespace D00B
         private readonly DateTime[] m_dtVal = null;
         private readonly String[] m_strVal = null;
         private readonly int[] m_arrRow = null;
-        private bool m_bNull = false;
+        private bool[] m_bNull = null;
 
-        public CVariant(int iRow) 
+        public CVariant(bool bNull)
         {
-            m_bNull = true;
+            m_bNull = new bool[] { bNull, bNull };
+        }
+        public CVariant(int iRow) : this(true)
+        {
             m_TypeCode = TypeCode.Empty;
             m_arrRow = new int[] { iRow, iRow };
         }
 
-        public CVariant(TypeCode TypeCode, int iRow)
+        public CVariant(TypeCode TypeCode, int iRow) : this(true)
         {
-            m_bNull = true;
             m_TypeCode = TypeCode;
             switch (TypeCode)
             {
                 case TypeCode.Boolean:
-                    m_boolVal = new Boolean[2];
+                    m_boolVal = new Boolean[] { false, false } ;
                     break;
 
                 case TypeCode.Char:
-                    m_cVal = new Char[2];
+                    m_cVal = new Char[] { Char.MinValue, Char.MinValue };
                     break;
 
                 case TypeCode.Byte:
-                    m_byteVal = new Byte[2];
+                    m_byteVal = new Byte[] { Byte.MinValue, Byte.MinValue };
                     break;
 
                 case TypeCode.SByte:
-                    m_sbyteVal = new SByte[2];
+                    m_sbyteVal = new SByte[] { SByte.MinValue, SByte.MinValue };
                     break;
 
                 case TypeCode.Int16:
-                    m_int16Val = new Int16[2];
+                    m_int16Val = new Int16[] { Int16.MinValue, Int16.MinValue };
                     break;
 
                 case TypeCode.UInt16:
-                    m_uint16Val = new UInt16[2];
+                    m_uint16Val = new UInt16[] { UInt16.MinValue, UInt16.MinValue };
                     break;
 
                 case TypeCode.Int32:
-                    m_int32Val = new Int32[2];
+                    m_int32Val = new Int32[] { Int32.MinValue, Int32.MinValue };
                     break;
 
                 case TypeCode.UInt32:
-                    m_uint32Val = new UInt32[2];
+                    m_uint32Val = new UInt32[] { UInt32.MinValue, UInt32.MinValue };
                     break;
 
                 case TypeCode.Int64:
-                    m_int64Val = new Int64[2];
+                    m_int64Val = new Int64[] { Int64.MinValue, Int64.MinValue };
                     break;
 
                 case TypeCode.UInt64:
-                    m_uint64Val = new UInt64[2];
+                    m_uint64Val = new UInt64[] { UInt64.MinValue, UInt64.MinValue };
                     break;
 
                 case TypeCode.Single:
-                    m_fVal = new Single[2];
+                    m_fVal = new Single[] { Single.MinValue, Single.MinValue };
                     break;
 
                 case TypeCode.Double:
-                    m_dVal = new Double[2];
+                    m_dVal = new Double[] { Double.MinValue, Double.MinValue };
                     break;
 
                 case TypeCode.Decimal:
-                    m_decVal = new Decimal[2];
+                    m_decVal = new Decimal[] { Decimal.MinValue, Decimal.MinValue };
                     break;
 
                 case TypeCode.DateTime:
-                    m_dtVal = new DateTime[2];
+                    m_dtVal = new DateTime[] { DateTime.MinValue, DateTime.MinValue };
                     break;
 
                 case TypeCode.String:
-                    m_strVal = new String[2];
+                    m_strVal = new String[] { string.Empty, string.Empty };
                     break;
 
                 default:
@@ -443,93 +445,93 @@ namespace D00B
             }
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(Boolean boolVal, int iRow)
+        public CVariant(Boolean boolVal, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.Boolean;
             m_boolVal = new Boolean[] { boolVal, boolVal };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(Char cVal, int iRow)
+        public CVariant(Char cVal, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.Char;
             m_cVal = new Char[] { cVal, cVal };
             m_arrRow = new int[] { iRow, iRow };
         }
 
-        public CVariant(Byte byteVal, int iRow)
+        public CVariant(Byte byteVal, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.Byte;
             m_byteVal = new Byte[] { byteVal, byteVal };
             m_arrRow = new int[] { iRow, iRow };
         }
 
-        public CVariant(SByte sbyteVal, int iRow)
+        public CVariant(SByte sbyteVal, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.SByte;
             m_sbyteVal = new SByte[] { sbyteVal, sbyteVal };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(Int16 int16Val, int iRow)
+        public CVariant(Int16 int16Val, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.Int16;
             m_int16Val = new Int16[] { int16Val, int16Val };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(UInt16 uint16Val, int iRow)
+        public CVariant(UInt16 uint16Val, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.UInt16;
             m_uint16Val = new UInt16[] { uint16Val, uint16Val };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(Int32 int32Val, int iRow)
+        public CVariant(Int32 int32Val, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.Int32;
             m_int32Val = new Int32[] { int32Val, int32Val };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(UInt32 uint32Val, int iRow)
+        public CVariant(UInt32 uint32Val, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.UInt32;
             m_uint32Val = new UInt32[] { uint32Val, uint32Val };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(Int64 int64Val, int iRow)
+        public CVariant(Int64 int64Val, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.Int64;
             m_int64Val = new Int64[] { int64Val, int64Val };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(UInt64 uint64Val, int iRow)
+        public CVariant(UInt64 uint64Val, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.UInt64;
             m_uint64Val = new UInt64[] { uint64Val, uint64Val };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(Single fVal, int iRow)
+        public CVariant(Single fVal, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.Single;
             m_fVal = new Single[] { fVal, fVal };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(Double dVal, int iRow)
+        public CVariant(Double dVal, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.Double;
             m_dVal = new Double[] { dVal, dVal };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(Decimal decVal, int iRow)
+        public CVariant(Decimal decVal, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.Decimal;
             m_decVal = new Decimal[] { decVal, decVal };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(DateTime dtVal, int iRow)
+        public CVariant(DateTime dtVal, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.DateTime;
             m_dtVal = new DateTime[] { dtVal, dtVal };
             m_arrRow = new int[] { iRow, iRow };
         }
-        public CVariant(String strVal, int iRow)
+        public CVariant(String strVal, int iRow) : this(false)
         {
             m_TypeCode = TypeCode.String;
             m_strVal = new String[] { strVal, strVal };
@@ -672,7 +674,7 @@ namespace D00B
 
         public void Copy(CVariant rhs, int iFrom, int iTo)
         {
-            m_bNull = rhs.m_bNull;
+            m_bNull[iTo] = rhs.m_bNull[iFrom];
             switch (m_TypeCode)
             {
                 case TypeCode.Boolean:
@@ -752,7 +754,7 @@ namespace D00B
             get
             {
                 string strCellValue = string.Empty;
-                if (!m_bNull)
+                if (!m_bNull[0])
                 {
                     switch (m_TypeCode)
                     {
