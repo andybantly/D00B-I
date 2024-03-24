@@ -540,10 +540,14 @@ namespace D00B
                         {
                             for (iField = 0; iField < m_nColumns; ++iField)
                             {
+                                TypeCode TypeCode = Sql.ColumnTypes[iField];
                                 object oField = Sql.GetValue(iField);
                                 if (oField == null)
-                                    Debug.WriteLine("null");
-                                TypeCode TypeCode = Sql.ColumnTypes[iField];
+                                {
+                                    m_Arr[iField][iRow] = new CVariant(TypeCode, iRow);
+                                    continue;
+                                }
+
                                 switch (TypeCode)
                                 {
                                     case TypeCode.Boolean:

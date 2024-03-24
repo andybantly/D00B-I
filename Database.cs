@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace D00B
 {
@@ -362,16 +363,84 @@ namespace D00B
         private readonly DateTime[] m_dtVal = null;
         private readonly String[] m_strVal = null;
         private readonly int[] m_arrRow = null;
+        private bool m_bNull = false;
 
         public CVariant(int iRow) 
         {
+            m_bNull = true;
             m_TypeCode = TypeCode.Empty;
             m_arrRow = new int[] { iRow, iRow };
         }
 
         public CVariant(TypeCode TypeCode, int iRow)
         {
+            m_bNull = true;
             m_TypeCode = TypeCode;
+            switch (TypeCode)
+            {
+                case TypeCode.Boolean:
+                    m_boolVal = new Boolean[2];
+                    break;
+
+                case TypeCode.Char:
+                    m_cVal = new Char[2];
+                    break;
+
+                case TypeCode.Byte:
+                    m_byteVal = new Byte[2];
+                    break;
+
+                case TypeCode.SByte:
+                    m_sbyteVal = new SByte[2];
+                    break;
+
+                case TypeCode.Int16:
+                    m_int16Val = new Int16[2];
+                    break;
+
+                case TypeCode.UInt16:
+                    m_uint16Val = new UInt16[2];
+                    break;
+
+                case TypeCode.Int32:
+                    m_int32Val = new Int32[2];
+                    break;
+
+                case TypeCode.UInt32:
+                    m_uint32Val = new UInt32[2];
+                    break;
+
+                case TypeCode.Int64:
+                    m_int64Val = new Int64[2];
+                    break;
+
+                case TypeCode.UInt64:
+                    m_uint64Val = new UInt64[2];
+                    break;
+
+                case TypeCode.Single:
+                    m_fVal = new Single[2];
+                    break;
+
+                case TypeCode.Double:
+                    m_dVal = new Double[2];
+                    break;
+
+                case TypeCode.Decimal:
+                    m_decVal = new Decimal[2];
+                    break;
+
+                case TypeCode.DateTime:
+                    m_dtVal = new DateTime[2];
+                    break;
+
+                case TypeCode.String:
+                    m_strVal = new String[2];
+                    break;
+
+                default:
+                    break;
+            }
             m_arrRow = new int[] { iRow, iRow };
         }
         public CVariant(Boolean boolVal, int iRow)
@@ -477,6 +546,7 @@ namespace D00B
         public int CompareTo(CVariant rhs)
         {
             int iRet;
+
             switch (m_TypeCode)
             {
                 case TypeCode.Boolean:
@@ -602,6 +672,7 @@ namespace D00B
 
         public void Copy(CVariant rhs, int iFrom, int iTo)
         {
+            m_bNull = rhs.m_bNull;
             switch (m_TypeCode)
             {
                 case TypeCode.Boolean:
@@ -681,86 +752,91 @@ namespace D00B
             get
             {
                 string strCellValue = string.Empty;
-                switch (m_TypeCode)
+                if (!m_bNull)
                 {
-                    case TypeCode.String:
-                        if (m_strVal != null)
-                            strCellValue = m_strVal[0];
-                        break;
+                    switch (m_TypeCode)
+                    {
+                        case TypeCode.String:
+                            if (m_strVal != null)
+                                strCellValue = m_strVal[0];
+                            break;
 
-                    case TypeCode.Boolean:
-                        if (m_boolVal != null)
-                            strCellValue = m_boolVal[0].ToString();
-                        break;
+                        case TypeCode.Boolean:
+                            if (m_boolVal != null)
+                                strCellValue = m_boolVal[0].ToString();
+                            break;
 
-                    case TypeCode.Byte:
-                        if (m_byteVal != null)
-                            strCellValue = m_byteVal[0].ToString();
-                        break;
+                        case TypeCode.Byte:
+                            if (m_byteVal != null)
+                                strCellValue = m_byteVal[0].ToString();
+                            break;
 
-                    case TypeCode.SByte:
-                        if (m_sbyteVal != null)
-                            strCellValue = m_sbyteVal[0].ToString();
-                        break;
+                        case TypeCode.SByte:
+                            if (m_sbyteVal != null)
+                                strCellValue = m_sbyteVal[0].ToString();
+                            break;
 
-                    case TypeCode.Char:
-                        if (m_cVal != null)
-                            strCellValue = m_cVal[0].ToString();
-                        break;
+                        case TypeCode.Char:
+                            if (m_cVal != null)
+                                strCellValue = m_cVal[0].ToString();
+                            break;
 
-                    case TypeCode.Int16:
-                        if (m_int16Val != null)
-                            strCellValue = m_int16Val[0].ToString();
-                        break;
+                        case TypeCode.Int16:
+                            if (m_int16Val != null)
+                                strCellValue = m_int16Val[0].ToString();
+                            break;
 
-                    case TypeCode.UInt16:
-                        if (m_uint16Val != null)
-                            strCellValue = m_uint16Val[0].ToString();
-                        break;
+                        case TypeCode.UInt16:
+                            if (m_uint16Val != null)
+                                strCellValue = m_uint16Val[0].ToString();
+                            break;
 
-                    case TypeCode.Int32:
-                        if (m_int32Val != null)
-                            strCellValue = m_int32Val[0].ToString();
-                        break;
+                        case TypeCode.Int32:
+                            if (m_int32Val != null)
+                                strCellValue = m_int32Val[0].ToString();
+                            break;
 
-                    case TypeCode.UInt32:
-                        if (m_uint32Val != null)
-                            strCellValue = m_uint32Val[0].ToString();
-                        break;
+                        case TypeCode.UInt32:
+                            if (m_uint32Val != null)
+                                strCellValue = m_uint32Val[0].ToString();
+                            break;
 
-                    case TypeCode.Int64:
-                        if (m_int64Val != null)
-                            strCellValue = m_int64Val[0].ToString();
-                        break;
+                        case TypeCode.Int64:
+                            if (m_int64Val != null)
+                                strCellValue = m_int64Val[0].ToString();
+                            break;
 
-                    case TypeCode.UInt64:
-                        if (m_uint64Val != null)
-                            strCellValue = m_uint64Val[0].ToString();
-                        break;
+                        case TypeCode.UInt64:
+                            if (m_uint64Val != null)
+                                strCellValue = m_uint64Val[0].ToString();
+                            break;
 
-                    case TypeCode.Single:
-                        if (m_fVal != null)
-                            strCellValue = m_fVal[0].ToString();
-                        break;
+                        case TypeCode.Single:
+                            if (m_fVal != null)
+                                strCellValue = m_fVal[0].ToString();
+                            break;
 
-                    case TypeCode.Double:
-                        if (m_dVal != null)
-                            strCellValue = m_dVal[0].ToString();
-                        break;
+                        case TypeCode.Double:
+                            if (m_dVal != null)
+                                strCellValue = m_dVal[0].ToString();
+                            break;
 
-                    case TypeCode.Decimal:
-                        if (m_decVal != null)
-                            strCellValue = m_decVal[0].ToString();
-                        break;
+                        case TypeCode.Decimal:
+                            if (m_decVal != null)
+                                strCellValue = m_decVal[0].ToString();
+                            break;
 
-                    case TypeCode.DateTime:
-                        if (m_dtVal != null)
-                            strCellValue = m_dtVal[0].ToString();
-                        break;
+                        case TypeCode.DateTime:
+                            if (m_dtVal != null)
+                                strCellValue = m_dtVal[0].ToString();
+                            break;
 
-                    case TypeCode.Empty:
-                        break;
+                        case TypeCode.Empty:
+                            break;
+                    }
                 }
+                else
+                    strCellValue = "NULL";
                 return strCellValue;
             }
         }
