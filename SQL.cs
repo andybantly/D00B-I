@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Runtime;
-using System.Windows.Forms;
 
 namespace D00B
 {
@@ -20,8 +18,9 @@ namespace D00B
         private bool m_bStoredProcedure = false;
 
         private readonly StringCollection m_Columns = new StringCollection();
-        private readonly List<object> m_CurrentRow = new List<object>();
+        private object[] m_CurrentRow = null;
         private readonly List<TypeCode> m_ColTypes = new List<TypeCode>();
+        private int m_nFieldCount = 0;
 
         public SQL()
         {
@@ -117,8 +116,8 @@ namespace D00B
                     m_Columns.Add(strColumnName);
                     Type Type = m_Reader.GetFieldType(iField);
                     TypeCode TypeCode = Type.GetTypeCode(Type);
-                    if (TypeCode == TypeCode.Object || TypeCode == TypeCode.DBNull || TypeCode == TypeCode.Empty)
-                        TypeCode = TypeCode.String;
+                    if (TypeCode == TypeCode.Object || TypeCode == TypeCode.DBNull)
+                        TypeCode = TypeCode.Empty;
                     m_ColTypes.Add(TypeCode);
                 }
             }
@@ -213,24 +212,32 @@ namespace D00B
             bool bReturn = m_Reader != null && m_Reader.Read();
             if (bReturn)
             {
-                m_CurrentRow.Clear();
-                for (int iField = 0; iField < m_Reader.FieldCount; iField++)
+                m_nFieldCount = m_Reader.FieldCount;
+                m_CurrentRow = new object[m_nFieldCount];
+
+                bool bReadRow = true;
+                for (int iField = 0; bReadRow && iField < m_nFieldCount; iField++)
                 {
-                    object oValue = null;
-                    if (!m_Reader.IsDBNull(iField))
-                    {
-                        try
-                        {
-                            oValue = m_Reader.GetValue(iField);
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.WriteLine(e.Message);
-                            oValue = null;
-                        }
-                    }
-                    m_CurrentRow.Add(oValue);
+                    if (m_ColTypes[iField] == TypeCode.Empty)
+                        bReadRow = false;
                 }
+
+                if (bReadRow)
+                    m_Reader.GetValues(m_CurrentRow);
+                else
+                {
+                    for (int iField = 0; iField < m_nFieldCount; iField++)
+                    {
+                        if (m_ColTypes[iField] != TypeCode.Empty)
+                            m_CurrentRow[iField] = m_Reader.GetValue(iField);
+                        else
+                            m_CurrentRow[iField] = null;
+                    }
+                }
+
+                for (int iField = 0; iField < m_nFieldCount; iField++)
+                    if (m_CurrentRow[iField] == DBNull.Value)
+                            m_CurrentRow[iField] = null;
             }
             else
             {
@@ -244,13 +251,13 @@ namespace D00B
         {
             get
             {
-                return m_CurrentRow.Count;
+                return m_nFieldCount;
             }
         }
 
         public object GetValue(int iCol)
         {
-            return iCol < m_CurrentRow.Count ? m_CurrentRow[iCol] : null;
+            return iCol < m_nFieldCount ? m_CurrentRow[iCol] : null;
         }
 
         public object GetValue(string strColumnName)

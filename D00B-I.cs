@@ -547,6 +547,8 @@ namespace D00B
                             for (iField = 0; iField < m_nColumns; ++iField)
                             {
                                 object oField = Sql.GetValue(iField);
+                                if (oField == null)
+                                    Debug.WriteLine("null");
                                 TypeCode TypeCode = Sql.ColumnTypes[iField];
                                 switch (TypeCode)
                                 {
@@ -611,7 +613,8 @@ namespace D00B
                                         break;
 
                                     default:
-                                        throw new Exception("Invalid TypeCode");
+                                        m_Arr[iField][iRow] = new CVariant(iRow);
+                                        break;
                                 }
 
                                 if (iRow < 1000) // TODO - Make this a constant
@@ -1070,14 +1073,15 @@ namespace D00B
                 {
                     for (int idx = 0; idx < m_nColumns; ++idx)
                     {
+                        string strCellValue = m_Arr[idx][iRow].CellValue;
                         if (idx == 0)
                         {
-                            e.Item = new ListViewItem(m_Arr[idx][iRow].CellValue);
+                            e.Item = new ListViewItem(strCellValue);
                             e.Item.UseItemStyleForSubItems = false;
                         }
                         else
                         {
-                            ListViewItem.ListViewSubItem lvSubItem = new ListViewItem.ListViewSubItem(e.Item, m_Arr[idx][iRow].CellValue);
+                            ListViewItem.ListViewSubItem lvSubItem = new ListViewItem.ListViewSubItem(e.Item, strCellValue);
                             e.Item.SubItems.Add(lvSubItem);
                         }
                     }

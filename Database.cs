@@ -363,6 +363,12 @@ namespace D00B
         private readonly DateTime[] m_dtVal = null;
         private readonly String[] m_strVal = null;
         private readonly int[] m_arrRow = null;
+
+        public CVariant(int iRow) 
+        {
+            m_TypeCode = TypeCode.Empty;
+            m_arrRow = new int[] { iRow, iRow };
+        }
         public CVariant(Boolean boolVal, int iRow)
         {
             m_TypeCode = TypeCode.Boolean;
@@ -466,7 +472,6 @@ namespace D00B
         public int CompareTo(CVariant rhs)
         {
             int iRet;
-            
             switch (m_TypeCode)
             {
                 case TypeCode.Boolean:
@@ -559,8 +564,13 @@ namespace D00B
                     iRet = Global.g_bSortOrder ? string.Compare(strLhs, strRhs, false) : string.Compare(strRhs, strLhs, false);
                     break;
 
+                case TypeCode.Empty:
+                    iRet = 0;
+                    break;
+
                 default:
-                    throw new Exception("Invalid TypeCode");
+                    iRet = 0;
+                    break;
             }
             return iRet;
         }
@@ -649,8 +659,11 @@ namespace D00B
                     m_strVal[iTo] = rhs.m_strVal[iFrom];
                     break;
 
+                case TypeCode.Empty:
+                    break;
+
                 default:
-                    throw new Exception("Invalid TypeCode");
+                    break;
             }
         }
         public void UpdateRow(int iRow)
@@ -740,8 +753,8 @@ namespace D00B
                             strCellValue = m_dtVal[0].ToString();
                         break;
 
-                    default:
-                        throw new Exception("Invalid TypeCode");
+                    case TypeCode.Empty:
+                        break;
                 }
                 return strCellValue;
             }
