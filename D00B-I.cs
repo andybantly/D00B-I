@@ -20,11 +20,9 @@ namespace D00B
 
         float g_nFontHeight = 0;
 
-        readonly List<bool> m_Ascending = new List<bool>();
-        readonly List<TypeCode> m_ColTypes = new List<TypeCode>();
-
         CArray m_Arr;
         int[] m_oWidth;
+        bool[] m_oSortOrder;
 
         int m_nColumns = -1;
         int m_nCount = -1;
@@ -360,10 +358,6 @@ namespace D00B
                     // Update the current tables adjacent tables and find out where we can go
                     UpdateAdjTables(strSchema, strTable);
 
-                    // Count the columns
-                    m_Ascending.Clear();
-                    m_ColTypes.Clear();
-
                     // Count the result tables data
                     string strError = string.Empty;
                     string connectionString = txtConnString.Text;
@@ -526,14 +520,14 @@ namespace D00B
                         // Set up the backing for the virtual list view
                         m_Arr = new CArray(m_nCount, m_nColumns);
                         m_oWidth = new int[m_nColumns];
+                        m_oSortOrder = new bool[m_nColumns];
 
                         // Column headers
                         int iField = 0;
                         foreach (string strColHdr in Sql.Columns)
                         {
                             lvQuery.Columns.Add(strColHdr);
-                            m_Ascending.Add(false);
-                            m_ColTypes.Add(Sql.ColumnTypes[iField]);
+                            m_oSortOrder[iField] = false;
                             Size sz = TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), lvQuery.Font);
                             if (sz.Width > m_oWidth[iField])
                                 m_oWidth[iField] = sz.Width;
@@ -848,6 +842,7 @@ namespace D00B
             // Clear storages used for UI
             m_Arr = null;
             m_oWidth = null;
+            m_oSortOrder = null;
         }
 
         void ClearUI()
@@ -1022,13 +1017,13 @@ namespace D00B
         private void LvQuery_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             // Sort using the classes comparer
-            Global.g_bSortOrder = m_Ascending[e.Column];
+            Global.g_bSortOrder = m_oSortOrder[e.Column];
 
             // Sort the indexed column and rearrange
             m_Arr.ParallelSort(e.Column);
 //            m_Arr.Sort(e.Column);
 
-            m_Ascending[e.Column] = !m_Ascending[e.Column];
+            m_oSortOrder[e.Column] = !m_oSortOrder[e.Column];
             lvQuery.Invalidate();
         }
 
