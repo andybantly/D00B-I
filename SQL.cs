@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime;
+using System.Windows.Forms;
 
 namespace D00B
 {
@@ -118,7 +119,7 @@ namespace D00B
                     m_Columns.Add(strColumnName);
                     Type Type = m_Reader.GetFieldType(iField);
                     TypeCode TypeCode = Type.GetTypeCode(Type);
-                    if (TypeCode == TypeCode.Object || TypeCode == TypeCode.DBNull)
+                    if (TypeCode == TypeCode.Object || TypeCode == TypeCode.DBNull || TypeCode == TypeCode.Empty)
                     {
                         TypeCode = TypeCode.Empty;
                         m_bReadRow = false;
