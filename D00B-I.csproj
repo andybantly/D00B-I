@@ -106,6 +106,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CArray.cs" />
+    <Compile Include="CVariant.cs" />
     <Compile Include="D00B-I.cs">
       <SubType>Form</SubType>
     </Compile>

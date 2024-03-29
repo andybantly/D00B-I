@@ -269,9 +269,14 @@ namespace D00B
             get { return m_Columns; }
         }
 
-        public List<TypeCode> ColumnTypes
+        public TypeCode ColumnType(int iCol)
         {
-            get { return m_ColTypes; }
+            return iCol < m_nFieldCount ? m_ColTypes[iCol] : TypeCode.Empty;
+        }
+
+        public TypeCode ColumnType(string strColumnName)
+        {
+            return Columns.Contains(strColumnName) ? m_ColTypes[Columns.IndexOf(strColumnName)] : TypeCode.Empty;
         }
 
         private void Cleanup()

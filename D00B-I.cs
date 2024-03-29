@@ -540,74 +540,74 @@ namespace D00B
                         {
                             for (iField = 0; iField < m_nColumns; ++iField)
                             {
-                                TypeCode TypeCode = Sql.ColumnTypes[iField];
+                                TypeCode TypeCode = Sql.ColumnType(iField);
                                 object oField = Sql.GetValue(iField);
                                 if (oField == null)
                                 {
-                                    m_Arr[iField][iRow] = new CVariant(TypeCode, iRow);
+                                    m_Arr[iField][iRow] = new CVariant(TypeCode);
                                     continue;
                                 }
 
                                 switch (TypeCode)
                                 {
                                     case TypeCode.Boolean:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToBoolean(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToBoolean(oField));
                                         break;
 
                                     case TypeCode.Char:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToChar(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToChar(oField));
                                         break;
 
                                     case TypeCode.Byte:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToByte(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToByte(oField));
                                         break;
 
                                     case TypeCode.SByte:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToSByte(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToSByte(oField));
                                         break;
 
                                     case TypeCode.Int16:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToInt16(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToInt16(oField));
                                         break;
 
                                     case TypeCode.UInt16:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToUInt16(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToUInt16(oField));
                                         break;
 
                                     case TypeCode.Int32:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToInt32(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToInt32(oField));
                                         break;
 
                                     case TypeCode.UInt32:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToUInt32(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToUInt32(oField));
                                         break;
 
                                     case TypeCode.Int64:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToInt64(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToInt64(oField));
                                         break;
 
                                     case TypeCode.UInt64:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToUInt64(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToUInt64(oField));
                                         break;
 
                                     case TypeCode.Single:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToSingle(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToSingle(oField));
                                         break;
 
                                     case TypeCode.Double:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToDouble(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToDouble(oField));
                                         break;
 
                                     case TypeCode.Decimal:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToDecimal(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToDecimal(oField));
                                         break;
 
                                     case TypeCode.DateTime:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToDateTime(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToDateTime(oField));
                                         break;
 
                                     case TypeCode.String:
-                                        m_Arr[iField][iRow] = new CVariant(Convert.ToString(oField), iRow);
+                                        m_Arr[iField][iRow] = new CVariant(Convert.ToString(oField));
                                         break;
 
                                     default:
@@ -1025,7 +1025,6 @@ namespace D00B
 
             // Sort the indexed column and rearrange
             m_Arr.ParallelSort(e.Column);
-//            m_Arr.Sort(e.Column);
 
             m_oSortOrder[e.Column] = !m_oSortOrder[e.Column];
             lvQuery.Invalidate();
@@ -1068,7 +1067,7 @@ namespace D00B
             int iRow = e.ItemIndex;
             try
             {
-                if (m_Arr != null && iRow <= m_Arr.Length)
+                if (m_Arr != null && iRow <= m_Arr.RowLength)
                 {
                     for (int idx = 0; idx < m_nColumns; ++idx)
                     {
