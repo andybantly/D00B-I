@@ -351,26 +351,33 @@ namespace D00B
                 string strLhs = CellValue;
                 string strRhs = rhs.CellValue;
 
-                Double d64Lhs = 0;
-                bool bLhsDbl = false, bLhsInt = Int64.TryParse(strLhs, out Int64 i64Lhs);
+                bool bLLex = false, bRLex = false;
+                Int64 i64Lhs = 0, i64Rhs = 0;
+                Double d64Lhs = 0, d64Rhs = 0;
+                bool bLhsDbl = false, bLhsInt = Int64.TryParse(strLhs, out i64Lhs);
                 if (!bLhsInt)
                     bLhsDbl = Double.TryParse(strLhs, out d64Lhs);
+                bLLex = !(bLhsInt || bLhsDbl);
 
-                Double d64Rhs = 0;
-                bool bRhsDbl = false, bRhsInt = Int64.TryParse(strRhs, out Int64 i64Rhs);
-                if (!bRhsInt)
-                    bRhsDbl = Double.TryParse(strRhs, out d64Rhs);
+                bool bRhsDbl = false, bRhsInt = false;
+                if (!bLLex)
+                {
+                    bRhsInt = Int64.TryParse(strRhs, out i64Rhs);
+                    if (!bRhsInt)
+                        bRhsDbl = Double.TryParse(strRhs, out d64Rhs);
+                    bRLex = !(bRhsInt || bRhsDbl);
+                }
 
-                if (bLhsInt && bRhsInt)
+                if (bLLex || bRLex) // Lexicographic compare
+                    iRet = Global.g_bSortOrder ? string.Compare(strLhs, strRhs, false) : string.Compare(strRhs, strLhs, false);
+                else if (bLhsInt && bRhsInt)
                     iRet = Global.g_bSortOrder ? (i64Lhs < i64Rhs ? -1 : (i64Lhs == i64Rhs ? 0 : 1)) : (i64Lhs < i64Rhs ? 1 : (i64Lhs == i64Rhs ? 0 : -1));
                 else if (bLhsDbl && bRhsDbl)
                     iRet = Global.g_bSortOrder ? (d64Lhs < d64Rhs ? -1 : (d64Lhs == d64Rhs ? 0 : 1)) : (d64Lhs < d64Rhs ? 1 : (d64Lhs == d64Rhs ? 0 : -1));
                 else if (bLhsInt && bRhsDbl)
                     iRet = Global.g_bSortOrder ? (i64Lhs < d64Rhs ? -1 : (i64Lhs == d64Rhs ? 0 : 1)) : (i64Lhs < d64Rhs ? 1 : (i64Lhs == d64Rhs ? 0 : -1));
-                else if (bRhsInt && bLhsDbl)
+                else // (bRhsInt && bLhsDbl)
                     iRet = Global.g_bSortOrder ? (d64Lhs < i64Rhs ? -1 : (d64Lhs == i64Rhs ? 0 : 1)) : (d64Lhs < i64Rhs ? 1 : (d64Lhs == i64Rhs ? 0 : -1));
-                else // Lexicographic compare
-                    iRet = Global.g_bSortOrder ? string.Compare(strLhs, strRhs, false) : string.Compare(strRhs, strLhs, false);
             }
             return iRet;
         }
