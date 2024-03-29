@@ -45,17 +45,6 @@ namespace D00B
 
             Array.Sort(m_oData[iCol]);
 
-            /*            for (int i = 0; i < m_nCols; ++i)
-                        {
-                            for (int j = 0, j2; j < m_nRows; ++j)
-                            {
-                                j2 = m_oData[iCol][j].Row;
-                                Console.WriteLine(string.Format("Row {0}=>{1}\t\t{2}\t=>\t{3}", j2, j, m_oData[i][j], m_oData[i][j2]));
-                            }
-                            Console.WriteLine();
-                        }
-            */
-
             for (int i = 0; i < m_nCols; ++i)
             {
                 if (i != iCol)
