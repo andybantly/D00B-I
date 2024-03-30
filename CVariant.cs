@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace D00B
 {
-    public class CVariant : IComparable<CVariant>, IEquatable<CVariant>, IComparable
+    public class CVariant : IComparable<CVariant>, IEquatable<CVariant>, IComparable, ICloneable
     {
         private readonly TypeCode[] m_TypeCode = new TypeCode[2];
         private readonly Boolean[] m_boolVal = new Boolean[2];
@@ -386,6 +386,62 @@ namespace D00B
             if (!(rhs is CVariant))
                 throw new InvalidOperationException("CompareTo: Not a CVariant");
             return CompareTo((CVariant)rhs);
+        }
+        public object Clone()
+        {
+            CVariant oClone;
+            switch (m_TypeCode[0])
+            {
+                case TypeCode.Boolean:
+                    oClone = new CVariant(m_boolVal[0]);
+                    break;
+                case TypeCode.Char:
+                    oClone = new CVariant(m_cVal[0]);
+                    break;
+                case TypeCode.Byte:
+                    oClone = new CVariant(m_byteVal[0]);
+                    break;
+                case TypeCode.SByte:
+                    oClone = new CVariant(m_sbyteVal[0]);
+                    break;
+                case TypeCode.Int16:
+                    oClone = new CVariant(m_int16Val[0]);
+                    break;
+                case TypeCode.UInt16:
+                    oClone = new CVariant(m_uint16Val[0]);
+                    break;
+                case TypeCode.Int32:
+                    oClone = new CVariant(m_int32Val[0]);
+                    break;
+                case TypeCode.UInt32:
+                    oClone = new CVariant(m_uint32Val[0]);
+                    break;
+                case TypeCode.Int64:
+                    oClone = new CVariant(m_int64Val[0]);
+                    break;
+                case TypeCode.UInt64:
+                    oClone = new CVariant(m_uint64Val[0]);
+                    break;
+                case TypeCode.Single:
+                    oClone = new CVariant(m_fVal[0]);
+                    break;
+                case TypeCode.Double:
+                    oClone = new CVariant(m_dVal[0]);
+                    break;
+                case TypeCode.Decimal:
+                    oClone = new CVariant(m_decVal[0]);
+                    break;
+                case TypeCode.DateTime:
+                    oClone = new CVariant(m_dtVal[0]);
+                    break;
+                case TypeCode.String:
+                    oClone = new CVariant(m_strVal[0]);
+                    break;
+                default:
+                    oClone = new CVariant();
+                    break;
+            }
+            return oClone;
         }
         public static bool operator <(CVariant lhs, CVariant rhs) => lhs.CompareTo(rhs) < 0;
         public static bool operator >(CVariant lhs, CVariant rhs) => lhs.CompareTo(rhs) > 0;
