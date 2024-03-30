@@ -8,7 +8,7 @@ namespace D00B
 {
     public class CVariant : IComparable<CVariant>, IEquatable<CVariant>, IComparable, ICloneable
     {
-        private readonly TypeCode[] m_TypeCode = new TypeCode[2];
+        private TypeCode[] m_TypeCode = new TypeCode[2];
         private readonly Boolean[] m_boolVal = new Boolean[2];
         private readonly Char[] m_cVal = new Char[2];
         private readonly Byte[] m_byteVal = new Byte[2];
@@ -243,9 +243,9 @@ namespace D00B
         {
             int iRet;
 
-            if (m_TypeCode[0] == rhs.m_TypeCode[0])
+            if (TypeCode == rhs.TypeCode)
             {
-                switch (m_TypeCode[0])
+                switch (TypeCode)
                 {
                     case TypeCode.Boolean:
                         Boolean boolLhs = m_boolVal[0];
@@ -390,7 +390,7 @@ namespace D00B
         public object Clone()
         {
             CVariant oClone;
-            switch (m_TypeCode[0])
+            switch (TypeCode)
             {
                 case TypeCode.Boolean:
                     oClone = new CVariant(m_boolVal[0]);
@@ -538,14 +538,22 @@ namespace D00B
             for (int i = 0; i < 1; ++i)
                 m_arrRow[i] = iRow;
         }
+        public bool Null
+        {
+            get { return m_bNull[0]; }
+        }
+        public TypeCode TypeCode
+        {
+            get { return m_TypeCode[0]; }
+        }
         public string CellValue
         {
             get
             {
                 string strCellValue = string.Empty;
-                if (!m_bNull[0])
+                if (!Null)
                 {
-                    switch (m_TypeCode[0])
+                    switch (TypeCode)
                     {
                         case TypeCode.String:
                             strCellValue = m_strVal[0];
