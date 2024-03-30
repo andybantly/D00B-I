@@ -617,7 +617,7 @@ namespace D00B
 
                                 if (iRow < 1000) // TODO - Make this a constant
                                 {
-                                    Size sz = szExtra + TextRenderer.MeasureText(m_Arr[iField][iRow].CellValue, lvQuery.Font);
+                                    Size sz = szExtra + TextRenderer.MeasureText(m_Arr[iField][iRow].Value.ToString(), lvQuery.Font);
                                     if (sz.Width > m_oWidth[iField])
                                         m_oWidth[iField] = sz.Width;
                                 }
@@ -1071,7 +1071,7 @@ namespace D00B
                 {
                     for (int idx = 0; idx < m_nColumns; ++idx)
                     {
-                        string strCellValue = m_Arr[idx][iRow].CellValue;
+                        string strCellValue = m_Arr[idx][iRow].Value.ToString();
                         if (idx == 0)
                         {
                             e.Item = new ListViewItem(strCellValue);
