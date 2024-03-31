@@ -43,7 +43,7 @@ namespace D00B
             lblPreview.Enabled = bEnabled;
             btnExport.Enabled = bEnabled;
             chkHdr.Enabled = bEnabled;
-            chkPrevAll.Enabled = bEnabled;
+            chkPrevAll.Enabled = true;
             cbSchema.Enabled = bEnabled;
             label2.Enabled = bEnabled;
             tbTables.Enabled = bEnabled;
