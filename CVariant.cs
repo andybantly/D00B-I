@@ -147,99 +147,96 @@ namespace D00B
                 switch (TypeCode)
                 {
                     case TypeCode.Boolean:
-                        Boolean boolLhs = m_boolVal[0];
-                        Boolean boolRhs = rhs.m_boolVal[0];
+                        Boolean boolLhs = m_boolVal != null ? m_boolVal[0] : false;
+                        Boolean boolRhs = rhs.m_boolVal != null ? rhs.m_boolVal[0] : false;
                         iRet = Global.g_bSortOrder ? (boolLhs == true && boolRhs == false ? -1 : (boolLhs == boolRhs ? 0 : 1)) : (boolLhs == true && boolRhs == false ? 1 : (boolLhs == boolRhs ? 0 : -1));
                         break;
 
                     case TypeCode.Byte:
-                        Byte bLhs = m_byteVal[0];
-                        Byte bRhs = rhs.m_byteVal[0];
+                        Byte bLhs = m_byteVal != null ? m_byteVal[0] : Byte.MinValue;
+                        Byte bRhs = rhs.m_byteVal != null ? rhs.m_byteVal[0] : Byte.MinValue;
                         iRet = Global.g_bSortOrder ? (bLhs < bRhs ? -1 : (bLhs == bRhs ? 0 : 1)) : (bLhs < bRhs ? 1 : (bLhs == bRhs ? 0 : -1));
                         break;
 
                     case TypeCode.SByte:
-                        SByte sbLhs = m_sbyteVal[0];
-                        SByte sbRhs = rhs.m_sbyteVal[0];
+                        SByte sbLhs = m_sbyteVal != null ? m_sbyteVal[0] : SByte.MinValue;
+                        SByte sbRhs = rhs.m_sbyteVal != null ? rhs.m_sbyteVal[0] : SByte.MinValue;
                         iRet = Global.g_bSortOrder ? (sbLhs < sbRhs ? -1 : (sbLhs == sbRhs ? 0 : 1)) : (sbLhs < sbRhs ? 1 : (sbLhs == sbRhs ? 0 : -1));
                         break;
 
                     case TypeCode.Char:
-                        Char cLhs = m_cVal[0];
-                        Char cRhs = rhs.m_cVal[0];
+                        Char cLhs = m_cVal != null ? m_cVal[0] : Char.MinValue;
+                        Char cRhs = rhs.m_cVal != null ? rhs.m_cVal[0] : Char.MinValue;
                         iRet = Global.g_bSortOrder ? (cLhs < cRhs ? -1 : (cLhs == cRhs ? 0 : 1)) : (cLhs < cRhs ? 1 : (cLhs == cRhs ? 0 : -1));
                         break;
 
                     case TypeCode.Int16:
-                        Int16 i16Lhs = m_int16Val[0];
-                        Int16 i16Rhs = rhs.m_int16Val[0];
+                        Int16 i16Lhs = m_int16Val != null ? m_int16Val[0] : Int16.MinValue;
+                        Int16 i16Rhs = rhs.m_int16Val != null ? rhs.m_int16Val[0] : Int16.MinValue;
                         iRet = Global.g_bSortOrder ? (i16Lhs < i16Rhs ? -1 : (i16Lhs == i16Rhs ? 0 : 1)) : (i16Lhs < i16Rhs ? 1 : (i16Lhs == i16Rhs ? 0 : -1));
                         break;
 
                     case TypeCode.UInt16:
-                        UInt16 ui16Lhs = m_uint16Val[0];
-                        UInt16 ui16Rhs = rhs.m_uint16Val[0];
+                        UInt16 ui16Lhs = m_uint16Val != null ? m_uint16Val[0] : UInt16.MinValue;
+                        UInt16 ui16Rhs = rhs.m_uint16Val != null ? rhs.m_uint16Val[0] : UInt16.MinValue;
                         iRet = Global.g_bSortOrder ? (ui16Lhs < ui16Rhs ? -1 : (ui16Lhs == ui16Rhs ? 0 : 1)) : (ui16Lhs < ui16Rhs ? 1 : (ui16Lhs == ui16Rhs ? 0 : -1));
                         break;
 
                     case TypeCode.Int32:
-                        Int32 i32Lhs = m_int32Val[0];
-                        Int32 i32Rhs = rhs.m_int32Val[0];
+                        Int32 i32Lhs = m_int32Val != null ? m_int32Val[0] : Int32.MinValue;
+                        Int32 i32Rhs = rhs.m_int32Val != null ? rhs.m_int32Val[0] : Int32.MinValue;
                         iRet = Global.g_bSortOrder ? (i32Lhs < i32Rhs ? -1 : (i32Lhs == i32Rhs ? 0 : 1)) : (i32Lhs < i32Rhs ? 1 : (i32Lhs == i32Rhs ? 0 : -1));
                         break;
 
                     case TypeCode.UInt32:
-                        UInt32 ui32Lhs = m_uint32Val[0];
-                        UInt32 ui32Rhs = rhs.m_uint32Val[0];
+                        UInt32 ui32Lhs = m_uint32Val != null ? m_uint32Val[0] : UInt32.MinValue;
+                        UInt32 ui32Rhs = rhs.m_uint32Val != null ? rhs.m_uint32Val[0] : UInt32.MinValue;
                         iRet = Global.g_bSortOrder ? (ui32Lhs < ui32Rhs ? -1 : (ui32Lhs == ui32Rhs ? 0 : 1)) : (ui32Lhs < ui32Rhs ? 1 : (ui32Lhs == ui32Rhs ? 0 : -1));
                         break;
 
                     case TypeCode.Int64:
-                        Int64 i64Lhs = m_int64Val[0];
-                        Int64 i64Rhs = rhs.m_int64Val[0];
+                        Int64 i64Lhs = m_int64Val != null ? m_int64Val[0] : Int64.MinValue;
+                        Int64 i64Rhs = rhs.m_int64Val != null ? rhs.m_int64Val[0] : Int64.MinValue;
                         iRet = Global.g_bSortOrder ? (i64Lhs < i64Rhs ? -1 : (i64Lhs == i64Rhs ? 0 : 1)) : (i64Lhs < i64Rhs ? 1 : (i64Lhs == i64Rhs ? 0 : -1));
                         break;
 
                     case TypeCode.UInt64:
-                        UInt64 ui64Lhs = m_uint64Val[0];
-                        UInt64 ui64Rhs = rhs.m_uint64Val[0];
+                        UInt64 ui64Lhs = m_uint64Val != null ? m_uint64Val[0] : UInt64.MinValue;
+                        UInt64 ui64Rhs = rhs.m_uint64Val != null ? rhs.m_uint64Val[0] : UInt64.MinValue;
                         iRet = Global.g_bSortOrder ? (ui64Lhs < ui64Rhs ? -1 : (ui64Lhs == ui64Rhs ? 0 : 1)) : (ui64Lhs < ui64Rhs ? 1 : (ui64Lhs == ui64Rhs ? 0 : -1));
                         break;
 
                     case TypeCode.Single:
-                        Single fLhs = m_fVal[0];
-                        Single fRhs = rhs.m_fVal[0];
+                        Single fLhs = m_fVal != null ? m_fVal[0] : Single.MinValue;
+                        Single fRhs = rhs.m_fVal != null ? rhs.m_fVal[0] : Single.MinValue;
                         iRet = Global.g_bSortOrder ? (fLhs < fRhs ? -1 : (fLhs == fRhs ? 0 : 1)) : (fLhs < fRhs ? 1 : (fLhs == fRhs ? 0 : -1));
                         break;
 
                     case TypeCode.Double:
-                        Double dLhs = m_dVal[0];
-                        Double dRhs = rhs.m_dVal[0];
+                        Double dLhs = m_dVal != null ? m_dVal[0] : Double.MinValue;
+                        Double dRhs = rhs.m_dVal != null ? rhs.m_dVal[0] : Double.MinValue;
                         iRet = Global.g_bSortOrder ? (dLhs < dRhs ? -1 : (dLhs == dRhs ? 0 : 1)) : (dLhs < dRhs ? 1 : (dLhs == dRhs ? 0 : -1));
                         break;
 
                     case TypeCode.Decimal:
-                        Decimal decLhs = m_decVal[0];
-                        Decimal decRhs = rhs.m_decVal[0];
+                        Decimal decLhs = m_decVal != null ? m_decVal[0] : Decimal.MinValue;
+                        Decimal decRhs = rhs.m_decVal != null ? rhs.m_decVal[0] : Decimal.MinValue;
                         iRet = Global.g_bSortOrder ? (decLhs < decRhs ? -1 : (decLhs == decRhs ? 0 : 1)) : (decLhs < decRhs ? 1 : (decLhs == decRhs ? 0 : -1));
                         break;
 
                     case TypeCode.DateTime:
-                        DateTime dtLhs = m_dtVal[0];
-                        DateTime dtRhs = rhs.m_dtVal[0];
+                        DateTime dtLhs = m_dtVal != null ? m_dtVal[0] : DateTime.MinValue;
+                        DateTime dtRhs = rhs.m_dtVal != null ? rhs.m_dtVal[0] : DateTime.MinValue;
                         iRet = Global.g_bSortOrder ? (dtLhs < dtRhs ? -1 : (dtLhs == dtRhs ? 0 : 1)) : (dtLhs < dtRhs ? 1 : (dtLhs == dtRhs ? 0 : -1));
                         break;
 
                     case TypeCode.String:
-                        string strLhs = m_strVal[0];
-                        string strRhs = rhs.m_strVal[0];
+                        string strLhs = m_strVal != null ? m_strVal[0] : String.Empty;
+                        string strRhs = rhs.m_strVal != null ? rhs.m_strVal[0] : String.Empty;
                         iRet = Global.g_bSortOrder ? string.Compare(strLhs, strRhs, false) : string.Compare(strRhs, strLhs, false);
                         break;
 
                     case TypeCode.Empty:
-                        iRet = 0;
-                        break;
-
                     default:
                         iRet = 0;
                         break;
@@ -265,49 +262,49 @@ namespace D00B
             switch (TypeCode)
             {
                 case TypeCode.Boolean:
-                    oClone = new CVariant(m_boolVal[0]);
+                    oClone = m_boolVal != null ? new CVariant(m_boolVal[0]) : new CVariant(TypeCode.Boolean);
                     break;
                 case TypeCode.Char:
-                    oClone = new CVariant(m_cVal[0]);
+                    oClone = m_cVal != null ? new CVariant(m_cVal[0]) : new CVariant(TypeCode.Char);
                     break;
                 case TypeCode.Byte:
-                    oClone = new CVariant(m_byteVal[0]);
+                    oClone = m_byteVal != null ? new CVariant(m_byteVal[0]) : new CVariant(TypeCode.Byte);
                     break;
                 case TypeCode.SByte:
-                    oClone = new CVariant(m_sbyteVal[0]);
+                    oClone = m_sbyteVal != null ? new CVariant(m_sbyteVal[0]) : new CVariant(TypeCode.SByte);
                     break;
                 case TypeCode.Int16:
-                    oClone = new CVariant(m_int16Val[0]);
+                    oClone = m_int16Val != null ? new CVariant(m_int16Val[0]) : new CVariant(TypeCode.Int16);
                     break;
                 case TypeCode.UInt16:
-                    oClone = new CVariant(m_uint16Val[0]);
+                    oClone = m_uint16Val != null ? new CVariant(m_uint16Val[0]) : new CVariant(TypeCode.UInt16);
                     break;
                 case TypeCode.Int32:
-                    oClone = new CVariant(m_int32Val[0]);
+                    oClone = m_int32Val != null ? new CVariant(m_int32Val[0]) : new CVariant(TypeCode.Int32);
                     break;
                 case TypeCode.UInt32:
-                    oClone = new CVariant(m_uint32Val[0]);
+                    oClone = m_uint32Val != null ? new CVariant(m_uint32Val[0]) : new CVariant(TypeCode.UInt32);
                     break;
                 case TypeCode.Int64:
-                    oClone = new CVariant(m_int64Val[0]);
+                    oClone = m_int64Val != null ? new CVariant(m_int64Val[0]) : new CVariant(TypeCode.Int64);
                     break;
                 case TypeCode.UInt64:
-                    oClone = new CVariant(m_uint64Val[0]);
+                    oClone = m_uint64Val != null ? new CVariant(m_uint64Val[0]) : new CVariant(TypeCode.UInt64);
                     break;
                 case TypeCode.Single:
-                    oClone = new CVariant(m_fVal[0]);
+                    oClone = m_fVal != null ? new CVariant(m_fVal[0]) : new CVariant(TypeCode.Single);
                     break;
                 case TypeCode.Double:
-                    oClone = new CVariant(m_dVal[0]);
+                    oClone = m_dVal != null ? new CVariant(m_dVal[0]) : new CVariant(TypeCode.Double);
                     break;
                 case TypeCode.Decimal:
-                    oClone = new CVariant(m_decVal[0]);
+                    oClone = m_decVal != null ? new CVariant(m_decVal[0]) : new CVariant(TypeCode.Decimal);
                     break;
                 case TypeCode.DateTime:
-                    oClone = new CVariant(m_dtVal[0]);
+                    oClone = m_dtVal != null ? new CVariant(m_dtVal[0]) : new CVariant(TypeCode.DateTime);
                     break;
                 case TypeCode.String:
-                    oClone = new CVariant(m_strVal[0]);
+                    oClone = m_strVal != null ? new CVariant(m_strVal[0]) : new CVariant(TypeCode.String);
                     break;
                 default:
                     oClone = new CVariant();
@@ -335,93 +332,138 @@ namespace D00B
             switch (rhs.m_TypeCode[iFrom])
             {
                 case TypeCode.Boolean:
-                    if (m_boolVal == null)
-                        m_boolVal = new Boolean[2];
-                    m_boolVal[iTo] = rhs.m_boolVal[iFrom];
+                    if (rhs.m_boolVal != null)
+                    {
+                        if (m_boolVal == null)
+                            m_boolVal = new Boolean[2];
+                        m_boolVal[iTo] = rhs.m_boolVal[iFrom];
+                    }
                     break;
 
                 case TypeCode.Char:
-                    if (m_cVal == null)
-                        m_cVal = new Char[2];
-                    m_cVal[iTo] = rhs.m_cVal[iFrom];
+                    if (rhs.m_cVal != null)
+                    {
+                        if (m_cVal == null)
+                            m_cVal = new Char[2];
+                        m_cVal[iTo] = rhs.m_cVal[iFrom];
+                    }
                     break;
 
                 case TypeCode.Byte:
-                    if (m_byteVal == null)
-                        m_byteVal = new Byte[2];
-                    m_byteVal[iTo] = rhs.m_byteVal[iFrom];
+                    if (rhs.m_byteVal != null)
+                    {
+                        if (m_byteVal == null)
+                            m_byteVal = new Byte[2];
+                        m_byteVal[iTo] = rhs.m_byteVal[iFrom];
+                    }
                     break;
 
                 case TypeCode.SByte:
-                    if (m_sbyteVal == null)
-                        m_sbyteVal = new SByte[2];
-                    m_sbyteVal[iTo] = rhs.m_sbyteVal[iFrom];
+                    if (rhs.m_sbyteVal != null)
+                    {
+                        if (m_sbyteVal == null)
+                            m_sbyteVal = new SByte[2];
+                        m_sbyteVal[iTo] = rhs.m_sbyteVal[iFrom];
+                    }
                     break;
 
                 case TypeCode.Int16:
-                    if (m_int16Val == null)
-                        m_int16Val = new Int16[2];
-                    m_int16Val[iTo] = rhs.m_int16Val[iFrom];
+                    if (rhs.m_int16Val != null)
+                    {
+                        if (m_int16Val == null)
+                            m_int16Val = new Int16[2];
+                        m_int16Val[iTo] = rhs.m_int16Val[iFrom];
+                    }
                     break;
 
                 case TypeCode.UInt16:
-                    if (m_uint16Val == null)
-                        m_uint16Val = new UInt16[2];
-                    m_uint16Val[iTo] = rhs.m_uint16Val[iFrom];
+                    if (rhs.m_uint16Val != null)
+                    {
+                        if (m_uint16Val == null)
+                            m_uint16Val = new UInt16[2];
+                        m_uint16Val[iTo] = rhs.m_uint16Val[iFrom];
+                    }
                     break;
 
                 case TypeCode.Int32:
-                    if (m_int32Val == null)
-                        m_int32Val = new Int32[2];
-                    m_int32Val[iTo] = rhs.m_int32Val[iFrom];
+                    if (rhs.m_int32Val != null)
+                    {
+                        if (m_int32Val == null)
+                            m_int32Val = new Int32[2];
+                        m_int32Val[iTo] = rhs.m_int32Val[iFrom];
+                    }
                     break;
 
                 case TypeCode.UInt32:
-                    if (m_uint32Val == null)
-                        m_uint32Val = new UInt32[2];
-                    m_uint32Val[iTo] = rhs.m_uint32Val[iFrom];
+                    if (rhs.m_uint32Val != null)
+                    {
+                        if (m_uint32Val == null)
+                            m_uint32Val = new UInt32[2];
+                        m_uint32Val[iTo] = rhs.m_uint32Val[iFrom];
+                    }
                     break;
 
                 case TypeCode.Int64:
-                    if (m_int64Val == null)
-                        m_int64Val = new Int64[2];
-                    m_int64Val[iTo] = rhs.m_int64Val[iFrom];
+                    if (rhs.m_int64Val != null)
+                    {
+                        if (m_int64Val == null)
+                            m_int64Val = new Int64[2];
+                        m_int64Val[iTo] = rhs.m_int64Val[iFrom];
+                    }
                     break;
 
                 case TypeCode.UInt64:
-                    if (m_uint64Val == null)
-                        m_uint64Val = new UInt64[2];
-                    m_uint64Val[iTo] = rhs.m_uint64Val[iFrom];
+                    if (rhs.m_uint64Val != null)
+                    {
+                        if (m_uint64Val == null)
+                            m_uint64Val = new UInt64[2];
+                        m_uint64Val[iTo] = rhs.m_uint64Val[iFrom];
+                    }
                     break;
 
                 case TypeCode.Single:
-                    if (m_fVal == null)
-                        m_fVal = new Single[2];
-                    m_fVal[iTo] = rhs.m_fVal[iFrom];
+                    if (rhs.m_fVal != null)
+                    {
+                        if (m_fVal == null)
+                            m_fVal = new Single[2];
+                        m_fVal[iTo] = rhs.m_fVal[iFrom];
+                    }
                     break;
 
                 case TypeCode.Double:
-                    if (m_dVal == null)
-                        m_dVal = new Double[2];
-                    m_dVal[iTo] = rhs.m_dVal[iFrom];
+                    if (rhs.m_dVal != null)
+                    {
+                        if (m_dVal == null)
+                            m_dVal = new Double[2];
+                        m_dVal[iTo] = rhs.m_dVal[iFrom];
+                    }
                     break;
 
                 case TypeCode.Decimal:
-                    if (m_decVal == null)
-                        m_decVal = new Decimal[2];
-                    m_decVal[iTo] = rhs.m_decVal[iFrom];
+                    if (rhs.m_decVal != null)
+                    {
+                        if (m_decVal == null)
+                            m_decVal = new Decimal[2];
+                        m_decVal[iTo] = rhs.m_decVal[iFrom];
+                    }
                     break;
 
                 case TypeCode.DateTime:
-                    if (m_dtVal == null)
-                        m_dtVal = new DateTime[2];
-                    m_dtVal[iTo] = rhs.m_dtVal[iFrom];
+                    if (rhs.m_dtVal != null)
+                    {
+                        if (m_dtVal == null)
+                            m_dtVal = new DateTime[2];
+                        m_dtVal[iTo] = rhs.m_dtVal[iFrom];
+                    }
                     break;
 
                 case TypeCode.String:
-                    if (m_strVal == null)
-                        m_strVal = new String[2];
-                    m_strVal[iTo] = rhs.m_strVal[iFrom];
+                    if (rhs.m_strVal != null)
+                    {
+                        if (m_strVal == null)
+                            m_strVal = new String[2];
+                        m_strVal[iTo] = rhs.m_strVal[iFrom];
+                    }
                     break;
 
                 case TypeCode.Empty:
@@ -434,9 +476,10 @@ namespace D00B
         }
         public void UpdateRow(int iRow)
         {
-            m_TypeCode[0] = m_TypeCode[1];
-            for (int i = 0; i < 1; ++i)
-                m_arrRow[i] = iRow;
+            if (m_TypeCode[0] != m_TypeCode[1])
+                m_TypeCode[0] = m_TypeCode[1];
+            m_arrRow[0] = iRow;
+            m_arrRow[1] = iRow;
         }
         public bool Null
         {

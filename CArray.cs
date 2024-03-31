@@ -9,8 +9,9 @@ namespace D00B
     class CArray
     {
         private readonly CVariant[][] m_oData;
-        public readonly int m_nRows;
-        public readonly int m_nCols;
+        private readonly int m_nRows;
+        private readonly int m_nCols;
+        private bool m_bIndexed;
         public CArray(int nRows, int nCols)
         {
             m_oData = new CVariant[nCols][];
@@ -18,6 +19,7 @@ namespace D00B
                 m_oData[iCol] = new CVariant[nRows];
             m_nRows = nRows;
             m_nCols = nCols;
+            m_bIndexed = false;
         }
         public CVariant[] this[int iCol]
         {
@@ -41,7 +43,8 @@ namespace D00B
 
         public void Sort(int iCol)
         {
-            UpdateAllRows();
+            if (!m_bIndexed)
+                UpdateAllRows();
 
             Array.Sort(m_oData[iCol]);
 
@@ -67,11 +70,14 @@ namespace D00B
 
             for (int j = 0; j < m_nRows; ++j)
                 m_oData[iCol][j].UpdateRow(j);
+            
+            m_bIndexed = true;
         }
 
         public void ParallelSort(int iCol)
         {
-            ParallelUpdateAllRows();
+            if (!m_bIndexed)
+                ParallelUpdateAllRows();
 
             Array.Sort(m_oData[iCol]);
 
@@ -97,6 +103,8 @@ namespace D00B
 
             for (int j = 0; j < m_nRows; ++j)
                 m_oData[iCol][j].UpdateRow(j);
+            
+            m_bIndexed = true;
         }
         public int ColLength
         {
