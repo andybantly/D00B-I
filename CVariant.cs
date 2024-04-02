@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace D00B
 {
-    public class CVariant : IComparable<CVariant>, IEquatable<CVariant>, IComparable, ICloneable
+    public class CVariant : IComparable<CVariant>, IEquatable<CVariant>, IComparable, ICloneable, IFormattable
     {
         private TypeCode[] m_TypeCode;
         private Boolean[] m_boolVal;
@@ -132,12 +133,21 @@ namespace D00B
         }
         public override string ToString()
         {
+            return ToString("G", CultureInfo.CurrentCulture);
+        }
+        public string ToString(string strFormat)
+        {
+            return ToString(strFormat, CultureInfo.CurrentCulture);
+        }
+        public string ToString(string strFormat, IFormatProvider FP)
+        {
             return Value.ToString();
         }
         public override int GetHashCode()
         {
             return Utility.GetHashCode(ToString());
         }
+
         public int CompareTo(CVariant rhs)
         {
             int iRet;

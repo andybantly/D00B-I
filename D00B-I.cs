@@ -33,17 +33,17 @@ namespace D00B
         }
         void UpdateUI(bool bEnabled)
         {
+            txtConnString.Enabled = true;
+            btnRefresh.Enabled = true;
+            chkPrevAll.Enabled = true;
             lvTables.Enabled = bEnabled;
             lvAdjTables.Enabled = bEnabled;
             lvJoinTables.Enabled = bEnabled;
-            txtConnString.Enabled = true;
             lvQuery.Enabled = bEnabled;
-            btnRefresh.Enabled = true;
             txtPreview.Enabled = bEnabled;
             lblPreview.Enabled = bEnabled;
             btnExport.Enabled = bEnabled;
             chkHdr.Enabled = bEnabled;
-            chkPrevAll.Enabled = true;
             cbSchema.Enabled = bEnabled;
             label2.Enabled = bEnabled;
             tbTables.Enabled = bEnabled;
