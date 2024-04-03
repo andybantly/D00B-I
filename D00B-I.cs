@@ -20,7 +20,7 @@ namespace D00B
         List<DBJoinKey> m_JoinKeysTo = new List<DBJoinKey>();
         int m_nCT = 0; // Number of correlation tables
 
-        float g_nFontHeight = 0;
+        float m_nFontHeight = 0;
 
         CArray m_Arr;
         int[] m_oWidth;
@@ -95,20 +95,20 @@ namespace D00B
             chkPrevAll.Checked = false;
             txtPreview.Text = m_nPreview.ToString();
 
-            g_nFontHeight = lvQuery.Font.Size;
+            m_nFontHeight = lvQuery.Font.Size;
             lvQuery.View = View.Details;
             lvQuery.Sorting = SortOrder.None;
-            lvQuery.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            lvQuery.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             lvTables.View = View.Details;
-            lvTables.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            lvTables.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             lvColumns.View = View.Details;
-            lvColumns.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            lvColumns.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             lvAdjTables.View = View.Details;
-            lvAdjTables.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            lvAdjTables.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             lvJoinTables.View = View.Details;
-            lvJoinTables.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            lvJoinTables.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             lvResults.View = View.Details;
-            lvResults.Font = Utility.MakeFont(g_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            lvResults.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
         }
         private void CountTablesAndRows()
         {
