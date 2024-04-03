@@ -7,12 +7,14 @@ using System.Security.Principal;
 using System.Windows.Forms;
 using SortOrder = System.Windows.Forms.SortOrder;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace D00B
 {
     public partial class D00B : Form
     {
-        Dictionary<DBTableKey, DBTable> g_TableMap;
+        BackgroundWorker m_BkgSQL;
+        Dictionary<DBTableKey, DBTable> m_TableMap;
         List<DBTableKey> m_TableKeys = new List<DBTableKey>();
         List<DBJoinKey> m_JoinKeysFr = new List<DBJoinKey>();
         List<DBJoinKey> m_JoinKeysTo = new List<DBJoinKey>();
@@ -30,7 +32,9 @@ namespace D00B
         public D00B()
         {
             InitializeComponent();
+            InitializeBackgroundSQL();
         }
+
         void UpdateUI(bool bEnabled)
         {
             txtConnString.Enabled = true;
@@ -123,7 +127,7 @@ namespace D00B
                 SQL SqlTables = new SQL(strConnectionString, strQueryString);
 
                 int iSelectedIndex = 0;
-                g_TableMap = new Dictionary<DBTableKey, DBTable>();
+                m_TableMap = new Dictionary<DBTableKey, DBTable>();
                 if (SqlTables.ExecuteReader(out string strError))
                 {
                     if (!string.IsNullOrEmpty(strError))
@@ -136,14 +140,14 @@ namespace D00B
                         string strColumn = string.Empty;
 
                         DBTableKey TableKey = new DBTableKey(strSchema, strTable, strColumn);
-                        if (!g_TableMap.ContainsKey(TableKey))
+                        if (!m_TableMap.ContainsKey(TableKey))
                         {
                             DBTable Table = new DBTable(TableKey)
                             {
                                 SelectedIndex = iSelectedIndex,
                                 Rows = strRows
                             };
-                            g_TableMap.Add(TableKey, Table);
+                            m_TableMap.Add(TableKey, Table);
                             iSelectedIndex++;
                         }
                     }
@@ -152,7 +156,7 @@ namespace D00B
                     MessageBox.Show(strError);
                 SqlTables.Close();
 
-                foreach (KeyValuePair<DBTableKey, DBTable> kvp in g_TableMap)
+                foreach (KeyValuePair<DBTableKey, DBTable> kvp in m_TableMap)
                 {
                     DBTable Table = kvp.Value;
                     strQueryString = "[sys].[sp_pkeys]";
@@ -177,9 +181,9 @@ namespace D00B
 
                 // For every table get the list of the tables primary keys and foreign keys and map as two database keys, then get the table columns and if they are keys or not
                 pbData.Minimum = 1;
-                pbData.Maximum = g_TableMap.Count;
+                pbData.Maximum = m_TableMap.Count;
                 nData = 0;
-                foreach (KeyValuePair<DBTableKey, DBTable> KVP in g_TableMap)
+                foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
                 {
                     pbData.Value = ++nData;
                     DBTable Table = KVP.Value;
@@ -251,7 +255,7 @@ namespace D00B
         private void UpdateJoinTable()
         {
             int nTotalColumns = 0;
-            foreach (KeyValuePair<DBTableKey, DBTable> KVP in g_TableMap) { nTotalColumns += KVP.Value.Columns.Count; }
+            foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap) { nTotalColumns += KVP.Value.Columns.Count; }
             lvJoinTables.VirtualListSize = nTotalColumns;
             lvJoinTables.SelectedIndices.Clear();
         }
@@ -281,14 +285,14 @@ namespace D00B
                 lvColumns.Columns[0].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", lvTables.Font).Width;
 
                 // Enable/Disable
-                tbTables.Text = string.Format("{0}", g_TableMap.Count);
-                lvTables.Enabled = g_TableMap.Count > 0;
+                tbTables.Text = string.Format("{0}", m_TableMap.Count);
+                lvTables.Enabled = m_TableMap.Count > 0;
 
                 // Select the first column to activate the selectindex trigger that populates the columns and adjacent table list
                 if (lvTables.Enabled)
                 {
                     // Update the virtual sizes
-                    lvTables.VirtualListSize = g_TableMap.Count;
+                    lvTables.VirtualListSize = m_TableMap.Count;
 
                     // Select the first item
                     if (lvTables.VirtualListSize > 0)
@@ -331,7 +335,7 @@ namespace D00B
         }
         private void UpdateIndex()
         {
-            if (g_TableMap.Count > 0 && m_TableKeys.Count > 0)
+            if (m_TableMap.Count > 0 && m_TableKeys.Count > 0)
             {
                 // Clear the output
                 lvQuery.Clear();
@@ -351,7 +355,7 @@ namespace D00B
                     string strOT = TableKey.JoinTag;
 
                     // Colums
-                    DBTable Table = g_TableMap[TableKey];
+                    DBTable Table = m_TableMap[TableKey];
                     lvColumns.VirtualListSize = Table.Columns.Count;
                     lvColumns.SelectedIndices.Clear();
 
@@ -367,7 +371,7 @@ namespace D00B
                     SQL Sql = new SQL(connectionString, strQueryString);
                     string strRows = Convert.ToString(Sql.ExecuteScalar(out strError));
                     Sql.Close();
-                    g_TableMap[TableKey].Rows = strRows;
+                    m_TableMap[TableKey].Rows = strRows;
                     bool bCount = false;
 
                     if (TableIndex() != -1 && ColumnIndex() != -1 && m_TableKeys.Count > 1)
@@ -663,10 +667,10 @@ namespace D00B
             lvAdjTables.Columns[2].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXX", lvAdjTables.Font).Width;
 
             DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
-            bool bInclude = g_TableMap.ContainsKey(TK);
+            bool bInclude = m_TableMap.ContainsKey(TK);
             if (bInclude)
             {
-                DBTable Table = g_TableMap[TK];
+                DBTable Table = m_TableMap[TK];
                 foreach (DBColumn Column in Table.Columns)
                 {
                     // Is it a key?
@@ -685,9 +689,9 @@ namespace D00B
                                 ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, FK.Column);
 
                                 TK = new DBTableKey(strSchema, FK.Table, string.Empty); // Essentially the parent function
-                                if (g_TableMap.ContainsKey(TK))
+                                if (m_TableMap.ContainsKey(TK))
                                 {
-                                    Table = g_TableMap[TK];
+                                    Table = m_TableMap[TK];
                                     if (Table.Rows == "0")
                                         Item.BackColor = Color.Red;
 
@@ -736,10 +740,10 @@ namespace D00B
 
                 // BackKeys
                 DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty);
-                if (g_TableMap.ContainsKey(TableKey))
+                if (m_TableMap.ContainsKey(TableKey))
                 {
-                    DBTable TableL = g_TableMap[TableKey];
-                    foreach (KeyValuePair<DBTableKey, DBTable> KVP2 in g_TableMap)
+                    DBTable TableL = m_TableMap[TableKey];
+                    foreach (KeyValuePair<DBTableKey, DBTable> KVP2 in m_TableMap)
                     {
                         if (KVP2.Key == TableKey)
                             continue;
@@ -911,7 +915,7 @@ namespace D00B
         }
         private void FillSearchResults()
         {
-            foreach (KeyValuePair<DBTableKey, DBTable> KVP in g_TableMap)
+            foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
             {
                 string strOwn = KVP.Key.Schema;
                 string strTable = KVP.Key.Table;
@@ -955,7 +959,7 @@ namespace D00B
                     {
                         // See if it is solely a PK
                         DBTableKey TK = new DBTableKey(strOwn, strTable, Column.Name);
-                        if (g_TableMap[new DBTableKey(KVP.Key.Schema, KVP.Key.Table, KVP.Key.Column)].HasKey(TK))
+                        if (m_TableMap[new DBTableKey(KVP.Key.Schema, KVP.Key.Table, KVP.Key.Column)].HasKey(TK))
                         {
                             ColumnItem.ForeColor = Color.DarkBlue;
                             ColumnItem.BackColor = Color.Yellow;
@@ -1050,9 +1054,9 @@ namespace D00B
         private string TableCurSel(int idx)
         {
             string strSelection = string.Empty;
-            if (g_TableMap != null && idx < g_TableMap.Count)
+            if (m_TableMap != null && idx < m_TableMap.Count)
             {
-                foreach (KeyValuePair<DBTableKey, DBTable> KVP in g_TableMap)
+                foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
                 {
                     if (KVP.Value.SelectedIndex == idx)
                     {
@@ -1089,8 +1093,8 @@ namespace D00B
                     int iColStart = 0;
                     foreach (DBTableKey TableKey in m_TableKeys)
                     {
-                        DBTable Table = g_TableMap[TableKey];
-                        int nCols = g_TableMap[TableKey].Columns.Count;
+                        DBTable Table = m_TableMap[TableKey];
+                        int nCols = m_TableMap[TableKey].Columns.Count;
                         for (int idx = 0; idx < nCols; ++idx)
                         {
                             int iCol = iColStart + idx;
@@ -1114,7 +1118,7 @@ namespace D00B
                             else
                             {
                                 DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
-                                if (g_TableMap[TableKey].HasKey(TK))
+                                if (m_TableMap[TableKey].HasKey(TK))
                                 {
                                     lvSI.ForeColor = Color.DarkBlue;
                                     lvSI.BackColor = Color.Yellow;
@@ -1143,7 +1147,7 @@ namespace D00B
             try
             {
                 DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
-                DBTable Table = g_TableMap[TK];
+                DBTable Table = m_TableMap[TK];
                 e.Item = new ListViewItem(strSchema);
                 e.Item.UseItemStyleForSubItems = false;
                 ListViewItem.ListViewSubItem lvSubValue = new ListViewItem.ListViewSubItem(e.Item, strTable);
@@ -1167,7 +1171,7 @@ namespace D00B
             {
                 // Pivot table
                 nRows = 0;
-                foreach (KeyValuePair<DBTableKey, DBTable> KVP in g_TableMap)
+                foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
                 {
                     if (nRows + KVP.Value.Columns.Count <= e.ItemIndex)
                         nRows += KVP.Value.Columns.Count;
@@ -1207,7 +1211,7 @@ namespace D00B
                         else
                         {
                             DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
-                            if (g_TableMap[TableKey].HasKey(TK))
+                            if (m_TableMap[TableKey].HasKey(TK))
                             {
                                 e.Item.SubItems[2].ForeColor = Color.DarkBlue;
                                 e.Item.SubItems[2].BackColor = Color.Yellow;
@@ -1243,7 +1247,7 @@ namespace D00B
                     string strSchema = TableKey.Schema;
                     string strTable = TableKey.Table;
                     string strColumn = string.Empty;
-                    DBTable Table = g_TableMap[TableKey];
+                    DBTable Table = m_TableMap[TableKey];
                     DBColumn Column = Table.Columns[iRow];
                     e.Item = new ListViewItem(Column.Name);
                     e.Item.UseItemStyleForSubItems = false;
@@ -1266,7 +1270,7 @@ namespace D00B
                     {
                         // See if it is solely a PK
                         DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
-                        if (g_TableMap[TableKey].HasKey(TK))
+                        if (m_TableMap[TableKey].HasKey(TK))
                         {
                             e.Item.ForeColor = Color.DarkBlue;
                             e.Item.BackColor = Color.Yellow;
@@ -1313,9 +1317,9 @@ namespace D00B
             string strSchema = lvAdjTables.SelectedItems[0].Text;
             string strTable = lvAdjTables.SelectedItems[0].SubItems[1].Text;
             DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
-            if (g_TableMap.ContainsKey(TK))
+            if (m_TableMap.ContainsKey(TK))
             {
-                int iSelectedIndex = g_TableMap[TK].SelectedIndex;
+                int iSelectedIndex = m_TableMap[TK].SelectedIndex;
                 lvTables.SelectedIndices.Add(iSelectedIndex);
                 SelectIndex();
                 lvTables.EnsureVisible(iSelectedIndex);
@@ -1331,9 +1335,9 @@ namespace D00B
             string strSchema = lvJoinTables.Items[iJoinTabIdx].Text;
             string strTable = lvJoinTables.Items[iJoinTabIdx].SubItems[1].Text;
             DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
-            if (g_TableMap.ContainsKey(TK))
+            if (m_TableMap.ContainsKey(TK))
             {
-                int iSelectedIndex = g_TableMap[TK].SelectedIndex;
+                int iSelectedIndex = m_TableMap[TK].SelectedIndex;
                 lvTables.SelectedIndices.Add(iSelectedIndex);
                 SelectIndex();
                 lvTables.EnsureVisible(iSelectedIndex);
@@ -1366,9 +1370,9 @@ namespace D00B
             string strTable = lvResults.SelectedItems[0].SubItems[1].Text;
 
             DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
-            if (g_TableMap.ContainsKey(TK))
+            if (m_TableMap.ContainsKey(TK))
             {
-                DBTable Table = g_TableMap[TK];
+                DBTable Table = m_TableMap[TK];
                 int iSelectedIndex = Table.SelectedIndex;
                 lvTables.SelectedIndices.Add(iSelectedIndex);
                 SelectIndex();
@@ -1484,7 +1488,7 @@ namespace D00B
                     strSrcColumn == strJoinColumn;
                 if (!bJoin)
                 {
-                    Maze Path = new Maze(g_TableMap);
+                    Maze Path = new Maze(m_TableMap);
                     Path.SourceSchema = strSrcSchema;
                     Path.SourceTable = strSrcTable;
                     Path.SourceColumn = strSrcColumn;
@@ -1507,7 +1511,7 @@ namespace D00B
             DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
 
             int iRow = 0;
-            foreach (KeyValuePair<DBTableKey, DBTable> KVP in g_TableMap)
+            foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
             {
                 if (KVP.Key != TK)
                     iRow += KVP.Value.Columns.Count;
@@ -1529,6 +1533,44 @@ namespace D00B
                 }
             }
         }
+
+        #region THREADING
+        // Background Worker Thread area
+        private void InitializeBackgroundSQL()
+        {
+            m_BkgSQL = new BackgroundWorker();
+            m_BkgSQL.DoWork += new DoWorkEventHandler(BkgSQL_DoWork);
+            m_BkgSQL.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BkgSQL_RunWorkerCompleted);
+            m_BkgSQL.ProgressChanged += new ProgressChangedEventHandler(BkgSQL_ProgressChanged);
+        }
+
+        private void BkgSQL_DoWork(object sender, DoWorkEventArgs e) 
+        {
+            BackgroundWorker SQLWorker = sender as BackgroundWorker;
+            //e.Result = SQLQuery();
+        }
+
+        private void BkgSQL_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                MessageBox.Show(e.Error.Message);
+            }
+            else if (e.Cancelled)
+            {
+                // Canceled
+            }
+            else
+            {
+                // Operation succeeded
+            }
+        }
+
+        private void BkgSQL_ProgressChanged(object sender, ProgressChangedEventArgs e) 
+        {
+            // Set virtual list box count
+        }
+        #endregion // THREADING
     }
     // Not currently used anymore due to virtual listviews.  For non-virtual this can be used
     class ListViewItemComparer : IComparer

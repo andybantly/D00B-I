@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Runtime;
-using System.Windows.Forms;
 
 namespace D00B
 {
@@ -130,7 +130,7 @@ namespace D00B
             catch (Exception ex)
             {
                 strErrorMessage = ex.Message;
-                Console.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
                 return false;
             }
             return true;
@@ -154,11 +154,12 @@ namespace D00B
             {
                 m_Connection.Open();
                 m_Command.ExecuteNonQuery();
+                m_Connection.Close();
             }
             catch (Exception ex)
             {
                 strErrorMessage = ex.Message;
-                Console.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
                 return false;
             }
             return true;
@@ -200,11 +201,12 @@ namespace D00B
             {
                 m_Connection.Open();
                 obj = m_Command.ExecuteScalar();
+                m_Connection.Close();
             }
             catch (Exception ex)
             {
                 strErrorMessage = ex.Message;
-                Console.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
                 return null;
             }
             return obj;
@@ -242,6 +244,8 @@ namespace D00B
             {
                 if (m_Reader != null)
                     m_Reader.Close();
+                if (m_Connection != null)
+                    m_Connection.Close();
             }
             return bReturn;
         }
@@ -288,10 +292,10 @@ namespace D00B
         {
             if (m_Reader != null)
                 m_Reader = null;
-            if (m_Command != null)
-                m_Command = null;
             if (m_Connection != null)
                 m_Connection = null;
+            if (m_Command != null)
+                m_Command = null;
             Cleanup();
         }
     }
