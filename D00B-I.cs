@@ -617,7 +617,8 @@ namespace D00B
 
                                 if (iRow < 1000) // TODO - Make this a constant
                                 {
-                                    Size sz = szExtra + TextRenderer.MeasureText(m_Arr[iField][iRow].Value.ToString(), lvQuery.Font);
+                                    // IFormattable
+                                    Size sz = szExtra + TextRenderer.MeasureText(m_Arr[iField][iRow].ToString(), lvQuery.Font);
                                     if (sz.Width > m_oWidth[iField])
                                         m_oWidth[iField] = sz.Width;
                                 }
@@ -1071,7 +1072,7 @@ namespace D00B
                 {
                     for (int idx = 0; idx < m_nColumns; ++idx)
                     {
-                        string strCellValue = m_Arr[idx][iRow].Value.ToString();
+                        string strCellValue = m_Arr[idx][iRow].ToString(); // IFormattable
                         if (idx == 0)
                         {
                             e.Item = new ListViewItem(strCellValue);
@@ -1529,7 +1530,7 @@ namespace D00B
             }
         }
     }
-
+    // Not currently used anymore due to virtual listviews.  For non-virtual this can be used
     class ListViewItemComparer : IComparer
     {
         private readonly int m_iColumn;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -139,9 +140,52 @@ namespace D00B
         {
             return ToString(strFormat, CultureInfo.CurrentCulture);
         }
-        public string ToString(string strFormat, IFormatProvider FP)
+        public string ToString(string strFormat, IFormatProvider FmtProvider)
         {
-            return Value.ToString();
+            string strFmtStr = string.Empty;
+            if (String.IsNullOrEmpty(strFormat))
+                strFormat = "G";
+            
+            if (FmtProvider == null)
+                FmtProvider = CultureInfo.CurrentCulture;
+
+            switch (TypeCode)
+            {
+                case TypeCode.Boolean:
+                    return Value.ToString();
+                case TypeCode.Byte:
+                    return Value.ToString();
+                case TypeCode.SByte:
+                    return Value.ToString();
+                case TypeCode.Char:
+                    return Value.ToString();
+                case TypeCode.Int16:
+                    return Value.ToString();
+                case TypeCode.UInt16:
+                    return Value.ToString();
+                case TypeCode.Int32:
+                    return Value.ToString();
+                case TypeCode.UInt32:
+                    return Value.ToString();
+                case TypeCode.Int64:
+                    return Value.ToString();
+                case TypeCode.UInt64:
+                    return Value.ToString();
+                case TypeCode.Single:
+                    return Value.ToString();
+                case TypeCode.Double:
+                    return Value.ToString();
+                case TypeCode.Decimal:
+                    return Value.ToString();
+                case TypeCode.DateTime:
+                    strFmtStr = string.Format("{{0:{0}}}", strFormat);
+                    return string.Format(strFmtStr, m_dtVal[0]);
+                case TypeCode.String:
+                    return Value.ToString();
+                case TypeCode.Empty:
+                default:
+                    return Value.ToString();
+            }
         }
         public override int GetHashCode()
         {
