@@ -142,46 +142,49 @@ namespace D00B
         }
         public string ToString(string strFormat, IFormatProvider FmtProvider)
         {
-            string strFmtStr = string.Empty;
+            if (Null)
+                return "NULL";
+
             if (String.IsNullOrEmpty(strFormat))
                 strFormat = "G";
             
             if (FmtProvider == null)
                 FmtProvider = CultureInfo.CurrentCulture;
 
+            string strFmtStr = string.Format("{{0:{0}}}", strFormat);
+
             switch (TypeCode)
             {
                 case TypeCode.Boolean:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_boolVal[0]);
                 case TypeCode.Byte:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_byteVal[0]);
                 case TypeCode.SByte:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_sbyteVal[0]);
                 case TypeCode.Char:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_cVal[0]);
                 case TypeCode.Int16:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_int16Val[0]);
                 case TypeCode.UInt16:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_uint16Val[0]);
                 case TypeCode.Int32:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_int32Val[0]);
                 case TypeCode.UInt32:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_uint32Val[0]);
                 case TypeCode.Int64:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_int64Val[0]);
                 case TypeCode.UInt64:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_uint64Val[0]);
                 case TypeCode.Single:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_fVal[0]);
                 case TypeCode.Double:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_dVal[0]);
                 case TypeCode.Decimal:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_decVal[0]);
                 case TypeCode.DateTime:
-                    strFmtStr = string.Format("{{0:{0}}}", strFormat);
-                    return string.Format(strFmtStr, m_dtVal[0]);
+                    return string.Format(FmtProvider, strFmtStr, m_dtVal[0]);
                 case TypeCode.String:
-                    return Value.ToString();
+                    return string.Format(FmtProvider, strFmtStr, m_strVal[0]);
                 case TypeCode.Empty:
                 default:
                     return Value.ToString();
@@ -546,82 +549,7 @@ namespace D00B
 
         public object Value
         {
-            get
-            {
-                string strCellValue = string.Empty;
-                if (!Null)
-                {
-                    switch (TypeCode)
-                    {
-                        case TypeCode.String:
-                            strCellValue = m_strVal[0];
-                            break;
-
-                        case TypeCode.Boolean:
-                            strCellValue = m_boolVal[0].ToString();
-                            break;
-
-                        case TypeCode.Byte:
-                            strCellValue = m_byteVal[0].ToString();
-                            break;
-
-                        case TypeCode.SByte:
-                            strCellValue = m_sbyteVal[0].ToString();
-                            break;
-
-                        case TypeCode.Char:
-                            strCellValue = m_cVal[0].ToString();
-                            break;
-
-                        case TypeCode.Int16:
-                            strCellValue = m_int16Val[0].ToString();
-                            break;
-
-                        case TypeCode.UInt16:
-                            strCellValue = m_uint16Val[0].ToString();
-                            break;
-
-                        case TypeCode.Int32:
-                            strCellValue = m_int32Val[0].ToString();
-                            break;
-
-                        case TypeCode.UInt32:
-                            strCellValue = m_uint32Val[0].ToString();
-                            break;
-
-                        case TypeCode.Int64:
-                            strCellValue = m_int64Val[0].ToString();
-                            break;
-
-                        case TypeCode.UInt64:
-                            strCellValue = m_uint64Val[0].ToString();
-                            break;
-
-                        case TypeCode.Single:
-                            strCellValue = m_fVal[0].ToString();
-                            break;
-
-                        case TypeCode.Double:
-                            strCellValue = m_dVal[0].ToString();
-                            break;
-
-                        case TypeCode.Decimal:
-                            strCellValue = m_decVal[0].ToString();
-                            break;
-
-                        case TypeCode.DateTime:
-                            strCellValue = m_dtVal[0].ToString();
-                            break;
-
-                        case TypeCode.Empty:
-                            strCellValue = string.Empty;
-                            break;
-                    }
-                }
-                else
-                    strCellValue = "NULL";
-                return strCellValue;
-            }
+            get { return ToString(); }
         }
 
         public int Row
