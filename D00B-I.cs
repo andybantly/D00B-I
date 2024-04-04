@@ -19,12 +19,11 @@ namespace D00B
         List<DBJoinKey> m_JoinKeysFr = new List<DBJoinKey>();
         List<DBJoinKey> m_JoinKeysTo = new List<DBJoinKey>();
         int m_nCT = 0; // Number of correlation tables
-
         float m_nFontHeight = 0;
 
         CArray m_Arr;
-        int[] m_oWidth;
-        bool[] m_oSortOrder;
+        int[] m_Width;
+        bool[] m_SortOrder;
 
         int m_nColumns = -1;
         int m_nCount = -1;
@@ -65,7 +64,6 @@ namespace D00B
             btnTestJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1 && JoinTablesIndex() != -1;
             btnJoin.Visible = false;
             btnResetJoin.Visible = false;
-
             btnTestJoin.Visible = false;
         }
 
@@ -337,13 +335,13 @@ namespace D00B
         {
             if (m_TableMap.Count > 0 && m_TableKeys.Count > 0)
             {
-                // Clear the output
-                lvQuery.Clear();
-
                 // Get the current table selection
                 int iSelectedIndex = TableIndex();
                 if (iSelectedIndex == -1)
                     return;
+
+                // Clear the output
+                lvQuery.Clear();
 
                 try
                 {
@@ -523,18 +521,18 @@ namespace D00B
 
                         // Set up the backing for the virtual list view
                         m_Arr = new CArray(m_nCount, m_nColumns);
-                        m_oWidth = new int[m_nColumns];
-                        m_oSortOrder = new bool[m_nColumns];
+                        m_Width = new int[m_nColumns];
+                        m_SortOrder = new bool[m_nColumns];
 
                         // Column headers
                         int iField = 0;
                         foreach (string strColHdr in Sql.Columns)
                         {
                             lvQuery.Columns.Add(strColHdr);
-                            m_oSortOrder[iField] = false;
+                            m_SortOrder[iField] = false;
                             Size sz = TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), lvQuery.Font);
-                            if (sz.Width > m_oWidth[iField])
-                                m_oWidth[iField] = sz.Width;
+                            if (sz.Width > m_Width[iField])
+                                m_Width[iField] = sz.Width;
                             iField++;
                         }
 
@@ -623,15 +621,15 @@ namespace D00B
                                 {
                                     // IFormattable
                                     Size sz = szExtra + TextRenderer.MeasureText(m_Arr[iField][iRow].ToString(), lvQuery.Font);
-                                    if (sz.Width > m_oWidth[iField])
-                                        m_oWidth[iField] = sz.Width;
+                                    if (sz.Width > m_Width[iField])
+                                        m_Width[iField] = sz.Width;
                                 }
                             }
                         }
 
                         // Set the widths
                         for (iField = 0; iField < m_nColumns; ++iField)
-                            lvQuery.Columns[iField].Width = m_oWidth[iField];
+                            lvQuery.Columns[iField].Width = m_Width[iField];
                     }
                     else
                         MessageBox.Show(strError);
@@ -639,9 +637,6 @@ namespace D00B
 
                     if (!string.IsNullOrEmpty(strError))
                         return;
-
-                    // Bring focus to the tables
-                    lvTables.Select();
                 }
                 catch (Exception ex)
                 {
@@ -649,6 +644,9 @@ namespace D00B
                 }
                 finally
                 {
+                    // Bring focus to the tables
+                    lvTables.Select();
+
                     // Set the virtual list size
                     lvQuery.VirtualListSize = m_nCount;
                     UpdateJoinTable();
@@ -850,8 +848,8 @@ namespace D00B
         {
             // Clear storages used for UI
             m_Arr = null;
-            m_oWidth = null;
-            m_oSortOrder = null;
+            m_Width = null;
+            m_SortOrder = null;
         }
 
         void ClearUI()
@@ -1026,12 +1024,12 @@ namespace D00B
         private void LvQuery_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             // Sort using the classes comparer
-            Global.g_bSortOrder = m_oSortOrder[e.Column];
+            Global.g_bSortOrder = m_SortOrder[e.Column];
 
             // Sort the indexed column and rearrange
             m_Arr.ParallelSort(e.Column);
 
-            m_oSortOrder[e.Column] = !m_oSortOrder[e.Column];
+            m_SortOrder[e.Column] = !m_SortOrder[e.Column];
             lvQuery.Invalidate();
         }
 
