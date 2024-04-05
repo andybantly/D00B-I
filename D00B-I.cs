@@ -321,9 +321,6 @@ namespace D00B
                 if (iSelectedIndex == -1)
                     return;
 
-                // Cancel the background worker if it is still going
-                CancelBackgroundSQL();
-
                 // Clear the output
                 lvQuery.Clear();
 
@@ -1147,8 +1144,14 @@ namespace D00B
 
         private void LvTables_SelectedIndexChanged(object sender, EventArgs e)
         {
+            ChangeTables();
+        }
+
+        private void ChangeTables()
+        {
             // Stop the virtual list from asking for cell information
             lvQuery.VirtualListSize = 0;
+            CancelBackgroundSQL();
 
             // Start a new list and add the selected table
             // and prepare for joins
@@ -1454,11 +1457,15 @@ namespace D00B
             SQL Sql = new SQL(strConnectionString, strQueryString);
             if (Sql.ExecuteReader(out string strError))
             {
+                if (SQLWorker.CancellationPending)
+                    e.Cancel = true;
+
                 if (!string.IsNullOrEmpty(strError))
                 {
                     Sql.Close();
-                    e.Cancel = true;
-                    throw new Exception(strError);
+                    if (SQLWorker.CancellationPending)
+                        e.Cancel = true;
+                    return 0;
                 }
 
                 int nColumns = Sql.Columns.Count;
@@ -1484,22 +1491,13 @@ namespace D00B
                 SQLWorker.ReportProgress(0);
 
                 // Extra column width
-                for (int iRow = 0; Sql.Read(); ++iRow)
+                for (int iRow = 0; !e.Cancel && Sql.Read(); ++iRow)
                 {
                     if (SQLWorker.CancellationPending)
-                    {
                         e.Cancel = true;
-                        break;
-                    }
 
-                    for (int iField = 0; iField < nColumns; ++iField)
+                    for (int iField = 0; !e.Cancel && iField < nColumns; ++iField)
                     {
-                        if (SQLWorker.CancellationPending)
-                        {
-                            e.Cancel = true;
-                            break;
-                        }
-
                         TypeCode TypeCode = Sql.ColumnType(iField);
                         object oField = Sql.GetValue(iField);
                         if (oField == null)
@@ -1582,18 +1580,15 @@ namespace D00B
                             if (sz.Width > m_Width[iField])
                                 m_Width[iField] = sz.Width;
                         }
+
+                        if (SQLWorker.CancellationPending)
+                            e.Cancel = true;
                     }
 
                     // Report the progress
                     if ((iRow + 1) % nReportProgress == 0)
                         SQLWorker.ReportProgress(iRow + 1);
                 }
-            }
-            else
-            {
-                Sql.Close();
-                e.Cancel = true;
-                throw new Exception(strError);
             }
             Sql.Close();
             SQLWorker.ReportProgress(nCount);
@@ -1612,7 +1607,8 @@ namespace D00B
             }
             else if (e.Cancelled)
             {
-                // Canceled
+                // Canceled - try again
+                ChangeTables();
             }
             else
             {
@@ -1646,7 +1642,6 @@ namespace D00B
             }
             else
             {
-
                 // Set the wait cursor and progress percentage
                 pbData.Value = m_nCount;
                 Cursor.Current = Cursors.WaitCursor;
