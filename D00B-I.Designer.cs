@@ -30,7 +30,7 @@
         {
             this.txtConnString = new System.Windows.Forms.TextBox();
             this.lvQuery = new System.Windows.Forms.ListView();
-            this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnLoad = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
             this.chkHdr = new System.Windows.Forms.CheckBox();
             this.chkPrevAll = new System.Windows.Forms.CheckBox();
@@ -91,16 +91,16 @@
             this.lvQuery.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.LvQuery_RetrieveVirtualItem);
             this.lvQuery.SelectedIndexChanged += new System.EventHandler(this.LvQuery_SelectedIndexChanged);
             // 
-            // btnRefresh
+            // btnLoad
             // 
-            this.btnRefresh.Location = new System.Drawing.Point(1617, 3);
-            this.btnRefresh.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(114, 35);
-            this.btnRefresh.TabIndex = 8;
-            this.btnRefresh.Text = "Refresh";
-            this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.BtnRefresh_Click);
+            this.btnLoad.Location = new System.Drawing.Point(1617, 3);
+            this.btnLoad.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            this.btnLoad.Name = "btnLoad";
+            this.btnLoad.Size = new System.Drawing.Size(114, 35);
+            this.btnLoad.TabIndex = 8;
+            this.btnLoad.Text = "Load";
+            this.btnLoad.UseVisualStyleBackColor = true;
+            this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
             // 
             // btnExport
             // 
@@ -482,7 +482,7 @@
             this.Controls.Add(this.chkPrevAll);
             this.Controls.Add(this.chkHdr);
             this.Controls.Add(this.btnExport);
-            this.Controls.Add(this.btnRefresh);
+            this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.lvQuery);
             this.Controls.Add(this.txtConnString);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -500,7 +500,7 @@
         #endregion
         private System.Windows.Forms.TextBox txtConnString;
         private System.Windows.Forms.ListView lvQuery;
-        private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Button btnLoad;
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.CheckBox chkHdr;
         private System.Windows.Forms.CheckBox chkPrevAll;

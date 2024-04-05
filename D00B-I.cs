@@ -38,7 +38,7 @@ namespace D00B
         void UpdateUI(bool bEnabled)
         {
             txtConnString.Enabled = true;
-            btnRefresh.Enabled = true;
+            btnLoad.Enabled = true;
             chkPrevAll.Enabled = true;
             lvTables.Enabled = bEnabled;
             lvAdjTables.Enabled = bEnabled;
@@ -683,13 +683,13 @@ namespace D00B
                 return lvResults.SelectedItems[0].Index;
             return -1;
         }
-        private void BtnRefresh_Click(object sender, EventArgs e)
+        private void btnLoad_Click(object sender, EventArgs e)
         {
             UpdateUI(false);
-            RefreshView();
+            LoadView();
         }
 
-        private void RefreshView()
+        private void LoadView()
         {
             ClearUI();
             ClearData();
@@ -751,8 +751,9 @@ namespace D00B
         {
             lblPreview.Enabled = !chkPrevAll.Checked;
             txtPreview.Enabled = !chkPrevAll.Checked;
-            
-            RefreshView();
+
+            // Reload the view
+            LoadView();
         }
 
         private void SetupSearchResults()
