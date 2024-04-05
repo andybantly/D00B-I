@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -22,6 +21,7 @@ namespace D00B
         float m_nFontHeight = 0;
 
         CArray m_Arr;
+        string[] m_Header;
         int[] m_Width;
         bool[] m_SortOrder;
 
@@ -308,28 +308,8 @@ namespace D00B
 
         private void SelectIndex()
         {
-            Cursor.Current = Cursors.WaitCursor;
-
-            // Flicker free drawing
-            using (lvAdjTables.SuspendDrawing())
-            {
-                using (lvResults.SuspendDrawing())
-                {
-                    using (lvTables.SuspendDrawing())
-                    {
-                        using (lvColumns.SuspendDrawing())
-                        {
-                            using (lvQuery.SuspendDrawing())
-                            {
-                                // Do the work
-                                UpdateIndex();
-                            }
-                        }
-                    }
-                }
-            }
-
-            Cursor.Current = Cursors.Default;
+            // Do the work
+            UpdateIndex();
         }
         private void UpdateIndex()
         {
@@ -339,6 +319,9 @@ namespace D00B
                 int iSelectedIndex = TableIndex();
                 if (iSelectedIndex == -1)
                     return;
+
+                // Cancel the background worker if it is still going
+                CancelBackgroundSQL();
 
                 // Clear the output
                 lvQuery.Clear();
@@ -429,7 +412,7 @@ namespace D00B
                         }
                     }
 
-                    // Get the virtual list size
+                    // Get the list size which will become the virtual list size when the operation completes
                     int nCount;
                     if (bCount)
                     {
@@ -441,7 +424,7 @@ namespace D00B
                         nCount = Convert.ToInt32(strRows);
 
                     // Set the final count of rows in the view
-                    m_nCount = chkPrevAll.Checked ? nCount : Math.Min(nCount, m_nPreview);
+                    nCount = chkPrevAll.Checked ? nCount : Math.Min(nCount, m_nPreview);
 
                     // Search criteria
                     strColumn = string.Empty;
@@ -457,7 +440,7 @@ namespace D00B
                         {
                             if (TableIndex() != -1 && ColumnIndex() != -1)
                             {
-                                string strSelect = chkPrevAll.Checked ? "*" : string.Format("top {0} *", m_nCount);
+                                string strSelect = chkPrevAll.Checked ? "*" : string.Format("top {0} *", nCount);
                                 bool bIsNum = IsNumber(txtData.Text);
                                 string strTest = bIsNum ? "=" : (chkExact.Checked ? "=" : "like");
                                 string strTestVal = bIsNum ? txtData.Text : (chkExact.Checked ? string.Format("'{0}'", txtData.Text) : string.Format("'%{0}%'", txtData.Text));
@@ -471,7 +454,7 @@ namespace D00B
                         if (chkPrevAll.Checked)
                             strQueryString = string.Format("select * from [{0}].[{1}] {2}", strSchema, strTable, strOT);
                         else
-                            strQueryString = string.Format("select top {0} * from [{1}].[{2}] {3}", m_nCount, strSchema, strTable, strOT);
+                            strQueryString = string.Format("select top {0} * from [{1}].[{2}] {3}", nCount, strSchema, strTable, strOT);
 
                         // Join and preview the output
                         if (TableIndex() != -1 && ColumnIndex() != -1 && m_TableKeys.Count > 1)
@@ -509,6 +492,12 @@ namespace D00B
                     }
 
                     // Perform the search
+                    txtQuery.Text = strQueryString;
+
+                    // Process the SQL query in the background
+                    StartBackgroundSQL(connectionString, strQueryString, nCount);
+
+/* Single threaded junction                   
                     Sql = new SQL(connectionString, strQueryString);
                     if (Sql.ExecuteReader(out strError))
                     {
@@ -520,7 +509,7 @@ namespace D00B
                         m_nColumns = Sql.Columns.Count;
 
                         // Set up the backing for the virtual list view
-                        m_Arr = new CArray(m_nCount, m_nColumns);
+                        m_Arr = new CArray(nCount, m_nColumns);
                         m_Width = new int[m_nColumns];
                         m_SortOrder = new bool[m_nColumns];
 
@@ -637,6 +626,7 @@ namespace D00B
 
                     if (!string.IsNullOrEmpty(strError))
                         return;
+*/
                 }
                 catch (Exception ex)
                 {
@@ -644,12 +634,15 @@ namespace D00B
                 }
                 finally
                 {
+                    /* - Single threaded junction
                     // Bring focus to the tables
                     lvTables.Select();
 
                     // Set the virtual list size
+                    m_nCount = nCount;
                     lvQuery.VirtualListSize = m_nCount;
                     UpdateJoinTable();
+                    */
                 }
             }
         }
@@ -1285,6 +1278,9 @@ namespace D00B
 
         private void LvTables_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Stop the virtual list from asking for cell information
+            lvQuery.VirtualListSize = 0;
+
             // Start a new list and add the selected table
             // and prepare for joins
             m_nCT = 0;
@@ -1540,16 +1536,202 @@ namespace D00B
             m_BkgSQL.DoWork += new DoWorkEventHandler(BkgSQL_DoWork);
             m_BkgSQL.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BkgSQL_RunWorkerCompleted);
             m_BkgSQL.ProgressChanged += new ProgressChangedEventHandler(BkgSQL_ProgressChanged);
+            m_BkgSQL.WorkerReportsProgress = true;
+            m_BkgSQL.WorkerSupportsCancellation = true;
+        }
+
+        private bool StartBackgroundSQL(string strConnectionString, string strQueryString, int nCount)
+        {
+            bool bRet = !m_BkgSQL.IsBusy;
+            if (bRet)
+            {
+                // Start the asynchronous SQL query operation
+                List<string> Parms = new List<string>
+                {
+                    strConnectionString,
+                    strQueryString,
+                    nCount.ToString()
+                };
+                m_BkgSQL.RunWorkerAsync(Parms);
+            }
+            return bRet;
+        }
+        private void CancelBackgroundSQL()
+        {
+            if (m_BkgSQL.WorkerSupportsCancellation == true)
+            {
+                // Cancel the asynchronous SQL query operation
+                m_BkgSQL.CancelAsync();
+            }
         }
 
         private void BkgSQL_DoWork(object sender, DoWorkEventArgs e) 
         {
-            BackgroundWorker SQLWorker = sender as BackgroundWorker;
-            //e.Result = SQLQuery();
+            e.Result = BackgroundQuery(sender, e);
         }
 
+        private long BackgroundQuery(object sender, DoWorkEventArgs e)
+        {
+            long iResult = 0;
+            
+            BackgroundWorker SQLWorker = sender as BackgroundWorker;
+            List<string> Parms = e.Argument as List<string>;
+
+            string strConnectionString = Parms[0];
+            string strQueryString = Parms[1];
+            int nCount = Convert.ToInt32(Parms[2]);
+
+            SQL Sql = new SQL(strConnectionString, strQueryString);
+            if (Sql.ExecuteReader(out string strError))
+            {
+                if (!string.IsNullOrEmpty(strError))
+                {
+                    Sql.Close();
+                    e.Cancel = true;
+                    throw new Exception(strError);
+                }
+
+                int nColumns = Sql.Columns.Count;
+                m_Arr = new CArray(nCount, nColumns);
+                m_Header = new string[nColumns];
+                m_Width = new int[nColumns];
+                m_SortOrder = new bool[nColumns];
+
+                // Column headers
+                System.Drawing.Font Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+                Size szExtra = TextRenderer.MeasureText("XXXXX", Font);
+                for (int iField = 0; iField < nColumns; ++iField)
+                {
+                    string strColHdr = Sql.Columns[iField];
+                    m_Header[iField] = strColHdr;
+                    m_SortOrder[iField] = false;
+                    Size sz = szExtra + TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), Font);
+                    if (sz.Width > m_Width[iField])
+                        m_Width[iField] = sz.Width;
+                }
+
+                SQLWorker.ReportProgress(0);
+
+                // Extra column width
+                for (int iRow = 0; Sql.Read(); ++iRow)
+                {
+                    if (SQLWorker.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        break;
+                    }
+
+                    for (int iField = 0; iField < nColumns; ++iField)
+                    {
+                        if (SQLWorker.CancellationPending)
+                        {
+                            e.Cancel = true;
+                            break;
+                        }
+
+                        TypeCode TypeCode = Sql.ColumnType(iField);
+                        object oField = Sql.GetValue(iField);
+                        if (oField == null)
+                        {
+                            m_Arr[iField][iRow] = new CVariant(TypeCode);
+                            continue;
+                        }
+
+                        switch (TypeCode)
+                        {
+                            case TypeCode.Boolean:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToBoolean(oField));
+                                break;
+
+                            case TypeCode.Char:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToChar(oField));
+                                break;
+
+                            case TypeCode.Byte:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToByte(oField));
+                                break;
+
+                            case TypeCode.SByte:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToSByte(oField));
+                                break;
+
+                            case TypeCode.Int16:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToInt16(oField));
+                                break;
+
+                            case TypeCode.UInt16:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToUInt16(oField));
+                                break;
+
+                            case TypeCode.Int32:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToInt32(oField));
+                                break;
+
+                            case TypeCode.UInt32:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToUInt32(oField));
+                                break;
+
+                            case TypeCode.Int64:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToInt64(oField));
+                                break;
+
+                            case TypeCode.UInt64:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToUInt64(oField));
+                                break;
+
+                            case TypeCode.Single:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToSingle(oField));
+                                break;
+
+                            case TypeCode.Double:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToDouble(oField));
+                                break;
+
+                            case TypeCode.Decimal:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToDecimal(oField));
+                                break;
+
+                            case TypeCode.DateTime:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToDateTime(oField));
+                                break;
+
+                            case TypeCode.String:
+                                m_Arr[iField][iRow] = new CVariant(Convert.ToString(oField));
+                                break;
+
+                            default:
+                                m_Arr[iField][iRow] = new CVariant(iRow);
+                                break;
+                        }
+
+                        if (iRow < 1000) // TODO - Make this a constant
+                        {
+                            // IFormattable
+                            Size sz = szExtra + TextRenderer.MeasureText(m_Arr[iField][iRow].ToString(), Font);
+                            if (sz.Width > m_Width[iField])
+                                m_Width[iField] = sz.Width;
+                        }
+                    }
+
+                    // Report the progress
+                    SQLWorker.ReportProgress(iRow + 1);
+                }
+            }
+            else
+            {
+                Sql.Close();
+                e.Cancel = true;
+                throw new Exception(strError);
+            }
+            Sql.Close();
+
+            return iResult;
+        }
         private void BkgSQL_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            // Reset the cursor
+            Cursor.Current = Cursors.Default;
+
             if (e.Error != null)
             {
                 MessageBox.Show(e.Error.Message);
@@ -1561,12 +1743,31 @@ namespace D00B
             else
             {
                 // Operation succeeded
+                lvTables.Select();
+
+                for (int iField = 0; iField < m_nColumns; ++iField)
+                {
+                    lvQuery.Columns.Add(m_Header[iField]);
+                    lvQuery.Columns[iField].Width = m_Width[iField];
+                }
+
+                // Set the virtual list size
+                lvQuery.VirtualListSize = m_nCount;
+                UpdateJoinTable();
             }
         }
 
         private void BkgSQL_ProgressChanged(object sender, ProgressChangedEventArgs e) 
         {
             // Set virtual list box count
+            m_nCount = e.ProgressPercentage;
+
+            if (m_nCount == 0)
+                m_nColumns = m_Arr.ColLength;
+
+            // Set the wait cursor
+            if (m_nCount % 100 == 0)
+                Cursor.Current = Cursors.WaitCursor;
         }
         #endregion // THREADING
     }
