@@ -202,6 +202,7 @@ namespace D00B
         List<DBColumn> m_Cols;
         readonly Dictionary<DBTableKey, List<DBTableKey>> m_MapPKtoFK;
         readonly Dictionary<DBTableKey, List<DBTableKey>> m_MapFKtoPK;
+        bool m_bView = false;
 
         public DBTable()
         {
@@ -341,6 +342,12 @@ namespace D00B
         {
             get { return m_iSelectedIndex; }
             set { m_iSelectedIndex = value; }
+        }
+
+        public bool View
+        {
+            get { return m_bView; }
+            set { m_bView = value; }
         }
     }
 }

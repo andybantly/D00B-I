@@ -178,7 +178,7 @@ namespace D00B
                             DBTable Table = new DBTable(TableKey)
                             {
                                 SelectedIndex = iSelectedIndex,
-                                Rows = "-1"
+                                View = true
                             };
                             m_TableMap.Add(TableKey, Table);
                             iSelectedIndex++;
@@ -1046,6 +1046,11 @@ namespace D00B
                 {
                     e.Item.BackColor = Color.Red;
                     lvSubValue.BackColor = Color.Red;
+                }
+                else if (Table.View)
+                {
+                    e.Item.BackColor = Color.Orange;
+                    lvSubValue.BackColor = Color.Orange;
                 }
                 e.Item.SubItems.Add(lvSubValue);
             }
