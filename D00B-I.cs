@@ -702,6 +702,7 @@ namespace D00B
         {
             // Clear storages used for UI
             m_Arr = null;
+            m_Header = null;
             m_Width = null;
             m_SortOrder = null;
         }
