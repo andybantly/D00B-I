@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using SortOrder = System.Windows.Forms.SortOrder;
 using System.Diagnostics;
 using System.ComponentModel;
+using System.Threading;
 
 namespace D00B
 {
@@ -876,6 +877,9 @@ namespace D00B
         }
         private void LvQuery_ColumnClick(object sender, ColumnClickEventArgs e)
         {
+            // Set the busy cursor
+            Cursor.Current = Cursors.WaitCursor;
+
             // Sort using the classes comparer
             Global.g_bSortOrder = m_SortOrder[e.Column];
 
@@ -884,6 +888,9 @@ namespace D00B
 
             m_SortOrder[e.Column] = !m_SortOrder[e.Column];
             lvQuery.Invalidate();
+
+            // Set the default cursor
+            Cursor.Current = Cursors.Default;
         }
 
         private void ChkData_CheckedChanged(object sender, EventArgs e)
@@ -1440,6 +1447,7 @@ namespace D00B
             string strConnectionString = Parms[0];
             string strQueryString = Parms[1];
             int nCount = Convert.ToInt32(Parms[2]);
+            int nReportProgress = (int)((Double)nCount * 0.01) + 1;
 
             SQL Sql = new SQL(strConnectionString, strQueryString);
             if (Sql.ExecuteReader(out string strError))
@@ -1470,6 +1478,7 @@ namespace D00B
                         m_Width[iField] = sz.Width;
                 }
 
+                // Report the number of columns
                 SQLWorker.ReportProgress(0);
 
                 // Extra column width
@@ -1574,7 +1583,8 @@ namespace D00B
                     }
 
                     // Report the progress
-                    SQLWorker.ReportProgress(iRow + 1);
+                    if ((iRow + 1) % nReportProgress == 0)
+                        SQLWorker.ReportProgress(iRow + 1);
                 }
             }
             else
@@ -1584,6 +1594,7 @@ namespace D00B
                 throw new Exception(strError);
             }
             Sql.Close();
+            SQLWorker.ReportProgress(nCount);
 
             return iResult;
         }
@@ -1591,6 +1602,7 @@ namespace D00B
         {
             // Reset the cursor
             Cursor.Current = Cursors.Default;
+            pbData.Value = pbData.Minimum;
 
             if (e.Error != null)
             {
@@ -1623,11 +1635,20 @@ namespace D00B
             m_nCount = e.ProgressPercentage;
 
             if (m_nCount == 0)
+            {
                 m_nColumns = m_Arr.ColLength;
 
-            // Set the wait cursor
-            if (m_nCount % 100 == 0)
+                // Prepare the progress bar
+                pbData.Minimum = 1;
+                pbData.Maximum = m_Arr.RowLength;
+            }
+            else
+            {
+
+                // Set the wait cursor and progress percentage
+                pbData.Value = m_nCount;
                 Cursor.Current = Cursors.WaitCursor;
+            }
         }
         #endregion // THREADING
     }
