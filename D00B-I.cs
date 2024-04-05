@@ -346,11 +346,11 @@ namespace D00B
 
                     // Count the result tables data
                     string strError = string.Empty;
-                    string connectionString = txtConnString.Text;
+                    string strConnectionString = txtConnString.Text;
                     string strQueryString = string.Format("select count(*) from [{0}].[{1}] {2}", strSchema, strTable, strOT);
 
                     // Update ROW count
-                    SQL Sql = new SQL(connectionString, strQueryString);
+                    SQL Sql = new SQL(strConnectionString, strQueryString);
                     string strRows = Convert.ToString(Sql.ExecuteScalar(out strError));
                     Sql.Close();
                     m_TableMap[TableKey].Rows = strRows;
@@ -417,7 +417,7 @@ namespace D00B
                     int nCount;
                     if (bCount)
                     {
-                        Sql = new SQL(connectionString, strQueryString);
+                        Sql = new SQL(strConnectionString, strQueryString);
                         nCount = Convert.ToInt32(Sql.ExecuteScalar(out strError));
                         Sql.Close();
                     }
@@ -496,7 +496,7 @@ namespace D00B
                     txtQuery.Text = strQueryString;
 
                     // Process the SQL query in the background
-                    StartBackgroundSQL(connectionString, strQueryString, nCount);
+                    StartBackgroundSQL(strConnectionString, strQueryString, nCount);
                 }
                 catch (Exception ex)
                 {
@@ -720,9 +720,9 @@ namespace D00B
             string strSchema = cbSchema.Text;
             cbSchema.Items.Clear();
             cbSchema.Items.Add("All");
-            string connectionString = txtConnString.Text;
-            string queryString = string.Format("select name from sys.schemas");
-            SQL Sql = new SQL(connectionString, queryString);
+            string strConnectionString = txtConnString.Text;
+            string strQueryString = string.Format("select name from sys.schemas");
+            SQL Sql = new SQL(strConnectionString, strQueryString);
             if (Sql.ExecuteReader(out string strError))
             {
                 if (!string.IsNullOrEmpty(strError))
