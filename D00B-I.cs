@@ -155,6 +155,40 @@ namespace D00B
                     MessageBox.Show(strError);
                 SqlTables.Close();
 
+                // Now do views
+                if (cbSchema.SelectedIndex == 0)
+                    strQueryString = "select distinct schema_name(v.schema_id) as schema_name, v.name as table_name from sys.views as v order by schema_name;";
+                else
+                    strQueryString = string.Format("select distinct schema_name(v.schema_id) as schema_name, v.name as table_name from sys.views as v where schema_name='{0}' order by schema_name;", cbSchema.Text);
+                SQL SqlViews = new SQL(strConnectionString, strQueryString);
+
+                if (SqlViews.ExecuteReader(out strError))
+                {
+                    if (!string.IsNullOrEmpty(strError))
+                        throw new Exception(strError);
+                    while (SqlViews.Read())
+                    {
+                        string strSchema = SqlViews.GetValue(0).ToString();
+                        string strTable = SqlViews.GetValue(1).ToString();
+                        string strColumn = string.Empty;
+
+                        DBTableKey TableKey = new DBTableKey(strSchema, strTable, strColumn);
+                        if (!m_TableMap.ContainsKey(TableKey))
+                        {
+                            DBTable Table = new DBTable(TableKey)
+                            {
+                                SelectedIndex = iSelectedIndex,
+                                Rows = "-1"
+                            };
+                            m_TableMap.Add(TableKey, Table);
+                            iSelectedIndex++;
+                        }
+                    }
+                }
+                else
+                    MessageBox.Show(strError);
+                SqlViews.Close();
+
                 foreach (KeyValuePair<DBTableKey, DBTable> kvp in m_TableMap)
                 {
                     DBTable Table = kvp.Value;
