@@ -576,7 +576,10 @@ namespace D00B
                                 {
                                     Table = m_TableMap[TK];
                                     if (Table.Rows == "0")
+                                    {
                                         Item.BackColor = Color.Red;
+                                        SubItem.BackColor = Color.Red;
+                                    }
 
                                     // The case where the the foreign key is in the primary table
                                     SubItem2.ForeColor = Color.DarkBlue;
@@ -590,7 +593,7 @@ namespace D00B
 
                                 Item.SubItems.Add(SubItem);
                                 Item.SubItems.Add(SubItem2);
-                                lvAdjTables.Items.Add(Item);
+                                lvAdjTables.Items.Add(Item); // DBTableKey FK
                             }
                         }
                     }
@@ -616,7 +619,7 @@ namespace D00B
 
                             Item.SubItems.Add(SubItem);
                             Item.SubItems.Add(SubItem2);
-                            lvAdjTables.Items.Add(Item);
+                            lvAdjTables.Items.Add(Item); // DBTableKey TK
                         }
                     }
                 }
@@ -643,8 +646,7 @@ namespace D00B
                                         Item.UseItemStyleForSubItems = false;
                                         ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, TK2.Table);
                                         ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, TK2.Column);
-                                        TK = new DBTableKey(TK2.Schema, TK2.Table, TK2.Column);
-                                        if (Table.HasKey(TK))
+                                        if (Table.HasKey(TK2))
                                         {
                                             if (Table.Rows == "0")
                                             {
@@ -652,12 +654,16 @@ namespace D00B
                                                 SubItem.BackColor = Color.Red;
                                                 SubItem2.BackColor = Color.Red;
                                             }
+                                            else
+                                                SubItem2.BackColor = Color.DarkGreen;
                                         }
+                                        else
+                                            SubItem2.BackColor = Color.DarkGreen;
                                         SubItem2.ForeColor = Color.Yellow;
-                                        SubItem2.BackColor = Color.DarkGreen;
+                                        
                                         Item.SubItems.Add(SubItem);
                                         Item.SubItems.Add(SubItem2);
-                                        lvAdjTables.Items.Add(Item);
+                                        lvAdjTables.Items.Add(Item); // DBTableKey TK2
                                     }
                                 }
                             }
