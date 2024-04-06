@@ -878,7 +878,7 @@ namespace D00B
             }
         }
 
-        private void BtnSearch_Click(object sender, EventArgs e)
+        private void Search()
         {
             try
             {
@@ -895,6 +895,11 @@ namespace D00B
             }
             catch { }
             finally { }
+
+        }
+        private void BtnSearch_Click(object sender, EventArgs e)
+        {
+            Search();
         }
         public int Compare(bool bAsc, object lhs, object rhs)
         {
@@ -944,12 +949,12 @@ namespace D00B
         {
             if (chkTable.Checked)
                 chkData.Checked = false;
-            BtnSearch_Click(null, null);
+            Search();
         }
 
         private void BtnSearch_TextChanged(object sender, EventArgs e)
         {
-            BtnSearch_Click(null, null);
+            Search();
         }
         private string TableCurSel(int idx)
         {
@@ -1272,7 +1277,7 @@ namespace D00B
         }
         private void ChkExact_CheckedChanged(object sender, EventArgs e)
         {
-            BtnSearch_Click(null, null);
+            Search();
         }
         private void LvResults_MouseDoubleClick(object sender, MouseEventArgs e)
         {
