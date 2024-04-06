@@ -815,12 +815,21 @@ namespace D00B
                     {
                         UseItemStyleForSubItems = false
                     };
-                    if (!bRows)
-                        Item.BackColor = Color.Red;
 
                     ListViewItem.ListViewSubItem TableItem = new ListViewItem.ListViewSubItem(Item, strTable);
+
+                    if (Table.View)
+                    {
+                        Item.BackColor = Color.Orange;
+                        TableItem.BackColor = Color.Orange;
+                    }
+
                     if (!bRows)
+                    {
+                        Item.BackColor = Color.Red;
                         TableItem.BackColor = Color.Red;
+                    }
+
                     Item.SubItems.Add(TableItem);
 
                     ListViewItem.ListViewSubItem ColumnItem = new ListViewItem.ListViewSubItem(Item, Column.Name);
