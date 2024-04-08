@@ -981,7 +981,7 @@ namespace D00B
             }
             return strSelection;
         }
-        private void dgvQuery_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+        private void DgvQuery_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
             try
             {
