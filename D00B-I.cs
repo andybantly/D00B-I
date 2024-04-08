@@ -1002,7 +1002,6 @@ namespace D00B
             finally { }
         }
 
-
         private void LvTables_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             string strCurSel = TableCurSel(e.ItemIndex);
@@ -1489,7 +1488,7 @@ namespace D00B
                     m_SortOrder[iField] = false;
                     Size sz = szExtra + TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), Font);
                     if (sz.Width > m_Width[iField])
-                        m_Width[iField] = sz.Width;
+                        m_Width[iField] = Math.Min(65535, sz.Width);
                 }
 
                 // Report the number of columns
@@ -1583,7 +1582,7 @@ namespace D00B
                             // IFormattable
                             Size sz = szExtra + TextRenderer.MeasureText(m_Arr[iField][iRow].ToString(), Font);
                             if (sz.Width > m_Width[iField])
-                                m_Width[iField] = sz.Width;
+                                m_Width[iField] = Math.Min(65535, sz.Width);
                         }
 
                         if (SQLWorker.CancellationPending)
