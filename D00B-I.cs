@@ -1687,9 +1687,10 @@ namespace D00B
             }
             else
             {
-                // Set the wait cursor and progress percentage
+                // Set the wait cursor, rowcount, and progress percentage
                 pbData.Value = m_nCount;
                 Cursor.Current = Cursors.WaitCursor;
+                dgvQuery.RowCount = m_nCount + 1;
             }
         }
         #endregion // THREADING
