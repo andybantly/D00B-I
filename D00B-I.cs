@@ -988,6 +988,8 @@ namespace D00B
                 int iRow = e.RowIndex;
                 int iCol = e.ColumnIndex;
 
+                if (dgvQuery.Rows[iRow].HeaderCell.Value == null)
+                    dgvQuery.Rows[iRow].HeaderCell.Value = (iRow + 1).ToString();
                 if (m_Arr != null && iRow < m_Arr.RowLength && iCol < m_Arr.ColLength)
                     e.Value = m_Arr[iCol][iRow].ToString(); // IFormattable
                 else
@@ -1618,6 +1620,9 @@ namespace D00B
                 // Operation succeeded
                 lvTables.Select();
 
+                System.Drawing.Font Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+                Size szRowHeader = TextRenderer.MeasureText("XXXXXXXXXX", Font);
+                dgvQuery.RowHeadersWidth = szRowHeader.Width;
                 for (int iField = 0; iField < m_nColumns; ++iField)
                 {
                     dgvQuery.Columns.Add(m_Header[iField], m_Header[iField]);
