@@ -4,10 +4,8 @@ using System.Data;
 using System.Drawing;
 using System.Security.Principal;
 using System.Windows.Forms;
-using SortOrder = System.Windows.Forms.SortOrder;
 using System.Diagnostics;
 using System.ComponentModel;
-using System.Threading;
 
 namespace D00B
 {
@@ -43,7 +41,7 @@ namespace D00B
             lvTables.Enabled = bEnabled;
             lvAdjTables.Enabled = bEnabled;
             lvJoinTables.Enabled = bEnabled;
-            lvQuery.Enabled = bEnabled;
+            dgvQuery.Enabled = bEnabled;
             txtPreview.Enabled = bEnabled;
             lblPreview.Enabled = bEnabled;
             btnExport.Enabled = bEnabled;
@@ -94,10 +92,9 @@ namespace D00B
             chkPrevAll.Checked = false;
             txtPreview.Text = m_nPreview.ToString();
 
-            m_nFontHeight = lvQuery.Font.Size;
-            lvQuery.View = View.Details;
-            lvQuery.Sorting = SortOrder.None;
-            lvQuery.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            m_nFontHeight = lvTables.Font.Size;
+            dgvQuery.AllowUserToDeleteRows = false;
+            dgvQuery.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             lvTables.View = View.Details;
             lvTables.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             lvColumns.View = View.Details;
@@ -301,7 +298,7 @@ namespace D00B
             try
             {
                 // Suspend retrieval of virtual items
-                lvQuery.VirtualListSize = 0;
+                dgvQuery.Rows.Clear();
                 lvTables.VirtualListSize = 0;
                 lvJoinTables.VirtualListSize = 0;
                 lvColumns.VirtualListSize = 0;
@@ -356,7 +353,8 @@ namespace D00B
                     return;
 
                 // Clear the output
-                lvQuery.Clear();
+                dgvQuery.Columns.Clear();
+                dgvQuery.Rows.Clear();
 
                 try
                 {
@@ -522,6 +520,9 @@ namespace D00B
                             }
                         }
                     }
+
+                    lvTables.Invalidate();
+                    lvColumns.Invalidate();
 
                     // Perform the search
                     txtQuery.Text = strQueryString;
@@ -720,7 +721,7 @@ namespace D00B
                 return lvResults.SelectedItems[0].Index;
             return -1;
         }
-        private void btnLoad_Click(object sender, EventArgs e)
+        private void BtnLoad_Click(object sender, EventArgs e)
         {
             UpdateUI(false);
             LoadView();
@@ -752,7 +753,8 @@ namespace D00B
             lvAdjTables.Clear();
             lvJoinTables.Clear();
             lvResults.Clear();
-            lvQuery.Clear();
+            dgvQuery.Columns.Clear();
+            dgvQuery.Rows.Clear();
 
             // Get the schemas
             string strSchema = cbSchema.Text;
@@ -779,7 +781,7 @@ namespace D00B
 
         private void BtnExport_Click(object sender, EventArgs e)
         {
-            if (lvQuery.Items.Count > 0 && ExportListView.ExportToExcel(lvQuery, "Query Results"))
+            if (dgvQuery.RowCount > 0 && ExportListView.ExportToExcel(m_Arr, m_Header, "SQL"))
                 MessageBox.Show("Successfully exported to Excel");
             else
                 MessageBox.Show("Failed to export to Excel");
@@ -914,7 +916,7 @@ namespace D00B
             bool bLhsNum = int.TryParse(sLhs, out int iLhs);
             bool bRhsNum = int.TryParse(sRhs, out int iRhs);
 
-            bool bNumber = (bLhsNum && bRhsNum) ? true : false;
+            bool bNumber = bLhsNum && bRhsNum;
             if (bNumber)
                 return bAsc ? (iLhs < iRhs ? -1 : (iLhs == iRhs ? 0 : 1)) : (iLhs < iRhs ? 1 : (iLhs == iRhs ? 0 : -1));
             else
@@ -928,23 +930,24 @@ namespace D00B
                 bNum = double.TryParse(s, out _);
             return bNum;
         }
-        private void LvQuery_ColumnClick(object sender, ColumnClickEventArgs e)
+        private void dgvQuery_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             // Set the busy cursor
             Cursor.Current = Cursors.WaitCursor;
 
             // Sort using the classes comparer
-            Global.g_bSortOrder = m_SortOrder[e.Column];
+            Global.g_bSortOrder = m_SortOrder[e.ColumnIndex];
 
             // Sort the indexed column and rearrange
-            m_Arr.ParallelSort(e.Column);
+            m_Arr.ParallelSort(e.ColumnIndex);
 
-            m_SortOrder[e.Column] = !m_SortOrder[e.Column];
-            lvQuery.Invalidate();
+            m_SortOrder[e.ColumnIndex] = !m_SortOrder[e.ColumnIndex];
+            dgvQuery.Invalidate();
 
             // Set the default cursor
             Cursor.Current = Cursors.Default;
         }
+
 
         private void ChkData_CheckedChanged(object sender, EventArgs e)
         {
@@ -978,78 +981,25 @@ namespace D00B
             }
             return strSelection;
         }
-        private void LvQuery_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        private void dgvQuery_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
-            int iRow = e.ItemIndex;
             try
             {
-                if (m_Arr != null && iRow <= m_Arr.RowLength)
-                {
-                    for (int idx = 0; idx < m_nColumns; ++idx)
-                    {
-                        string strCellValue = m_Arr[idx][iRow].ToString(); // IFormattable
-                        if (idx == 0)
-                        {
-                            e.Item = new ListViewItem(strCellValue);
-                            e.Item.UseItemStyleForSubItems = false;
-                        }
-                        else
-                        {
-                            ListViewItem.ListViewSubItem lvSubItem = new ListViewItem.ListViewSubItem(e.Item, strCellValue);
-                            e.Item.SubItems.Add(lvSubItem);
-                        }
-                    }
+                int iRow = e.RowIndex;
+                int iCol = e.ColumnIndex;
 
-                    // Style the values
-                    int iColStart = 0;
-                    foreach (DBTableKey TableKey in m_TableKeys)
-                    {
-                        DBTable Table = m_TableMap[TableKey];
-                        int nCols = m_TableMap[TableKey].Columns.Count;
-                        for (int idx = 0; idx < nCols; ++idx)
-                        {
-                            int iCol = iColStart + idx;
-                            ListViewItem.ListViewSubItem lvSI = e.Item.SubItems[iCol];
-
-                            DBColumn Column = Table.Columns[idx];
-                            if (Column.IsPrimaryKey)
-                            {
-                                if (Table.ContainsFK(TableKey.Schema, TableKey.Table, Column.Name))
-                                {
-                                    // The case where the the foreign key is in the primary table
-                                    lvSI.ForeColor = Color.DarkBlue;
-                                    lvSI.BackColor = Color.Yellow;
-                                }
-                                else
-                                {
-                                    lvSI.ForeColor = Color.DarkBlue;
-                                    lvSI.BackColor = Color.Yellow;
-                                }
-                            }
-                            else
-                            {
-                                DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
-                                if (m_TableMap[TableKey].HasKey(TK))
-                                {
-                                    lvSI.ForeColor = Color.DarkBlue;
-                                    lvSI.BackColor = Color.Yellow;
-                                }
-                            }
-                        }
-                        iColStart += nCols;
-                    }
-                }
+                if (m_Arr != null && iRow < m_Arr.RowLength && iCol < m_Arr.ColLength)
+                    e.Value = m_Arr[iCol][iRow].ToString(); // IFormattable
                 else
-                {
-                    MessageBox.Show(string.Format("{0}", e.ItemIndex));
-                }
+                    e.Value = string.Empty;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("{0} : {1}", e.ItemIndex, ex.Message));
+                MessageBox.Show(string.Format("{0} {1},{2}", ex.Message, e.ColumnIndex, e.RowIndex));
             }
             finally { }
         }
+
 
         private void LvTables_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
@@ -1209,7 +1159,8 @@ namespace D00B
         private void ChangeTables()
         {
             // Stop the virtual list from asking for cell information
-            lvQuery.VirtualListSize = 0;
+            dgvQuery.Columns.Clear();
+            dgvQuery.Rows.Clear();
             CancelBackgroundSQL();
 
             // Start a new list and add the selected table
@@ -1303,13 +1254,6 @@ namespace D00B
                 SelectIndex();
                 lvTables.EnsureVisible(iSelectedIndex);
             }
-        }
-
-        private void LvQuery_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            int iSel = lvQuery.SelectedIndices.Count;
-            if (iSel == 0)
-                return;
         }
 
         private void CbDataBases_SelectionChangeCommitted(object sender, EventArgs e)
@@ -1676,12 +1620,50 @@ namespace D00B
 
                 for (int iField = 0; iField < m_nColumns; ++iField)
                 {
-                    lvQuery.Columns.Add(m_Header[iField]);
-                    lvQuery.Columns[iField].Width = m_Width[iField];
+                    dgvQuery.Columns.Add(m_Header[iField], m_Header[iField]);
+                    dgvQuery.Columns[m_Header[iField]].Width = m_Width[iField];
+                    dgvQuery.Columns[m_Header[iField]].ReadOnly = true;
+                }
+
+                // Set the background color of the columns for the keys
+                int iColStart = 0;
+                foreach (DBTableKey TableKey in m_TableKeys)
+                {
+                    DBTable Table = m_TableMap[TableKey];
+                    int nCols = m_TableMap[TableKey].Columns.Count;
+                    for (int idx = 0; idx < nCols; ++idx)
+                    {
+                        int iCol = iColStart + idx;
+                        DBColumn Column = Table.Columns[idx];
+                        if (Column.IsPrimaryKey)
+                        {
+                            if (Table.ContainsFK(TableKey.Schema, TableKey.Table, Column.Name))
+                            {
+                                // The case where the the foreign key is in the primary table
+                                dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
+                                dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.DarkBlue;
+                            }
+                            else
+                            {
+                                dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
+                                dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.Yellow;
+                            }
+                        }
+                        else
+                        {
+                            DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
+                            if (m_TableMap[TableKey].HasKey(TK))
+                            {
+                                dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
+                                dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.Yellow;
+                            }
+                        }
+                    }
+                    iColStart += nCols;
                 }
 
                 // Set the virtual list size
-                lvQuery.VirtualListSize = m_nCount;
+                dgvQuery.RowCount = m_nCount + 1;
                 UpdateJoinTable();
             }
         }
