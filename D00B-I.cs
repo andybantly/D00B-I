@@ -18,6 +18,7 @@ namespace D00B
         List<DBJoinKey> m_JoinKeysTo = new List<DBJoinKey>();
         int m_nCT = 0; // Number of correlation tables
         float m_nFontHeight = 0;
+        Font m_Font;
 
         CArray m_Arr;
         string[] m_Header;
@@ -93,18 +94,19 @@ namespace D00B
             txtPreview.Text = m_nPreview.ToString();
 
             m_nFontHeight = lvTables.Font.Size;
+            m_Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             dgvQuery.AllowUserToDeleteRows = false;
-            dgvQuery.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            dgvQuery.Font = m_Font;
             lvTables.View = View.Details;
-            lvTables.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            lvTables.Font = m_Font;
             lvColumns.View = View.Details;
-            lvColumns.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            lvColumns.Font = m_Font;
             lvAdjTables.View = View.Details;
-            lvAdjTables.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            lvAdjTables.Font = m_Font;
             lvJoinTables.View = View.Details;
-            lvJoinTables.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            lvJoinTables.Font = m_Font;
             lvResults.View = View.Details;
-            lvResults.Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            lvResults.Font = m_Font;
         }
         private void CountTablesAndRows()
         {
@@ -274,12 +276,7 @@ namespace D00B
 
         private void SetupJoinTables()
         {
-            lvJoinTables.Columns.Add("Schema");
-            lvJoinTables.Columns[0].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvJoinTables.Font).Width;
-            lvJoinTables.Columns.Add("Table");
-            lvJoinTables.Columns[1].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXX", lvJoinTables.Font).Width;
-            lvJoinTables.Columns.Add("Column");
-            lvJoinTables.Columns[2].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXX", lvJoinTables.Font).Width;
+            SetupListViewHeaders(lvJoinTables);
         }
 
         private void UpdateJoinTable()
@@ -306,13 +303,8 @@ namespace D00B
                 // Collect information about the database
                 CountTablesAndRows();
 
-                lvTables.Columns.Add("Schema");
-                lvTables.Columns[0].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvTables.Font).Width;
-                lvTables.Columns.Add("Table");
-                lvTables.Columns[1].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXX", lvTables.Font).Width;
-
-                lvColumns.Columns.Add("Columns");
-                lvColumns.Columns[0].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", lvTables.Font).Width;
+                SetupListViewHeaders(lvTables, true, true, false);
+                SetupListViewHeaders(lvColumns, false, false, true);
 
                 // Enable/Disable
                 tbTables.Text = string.Format("{0}", m_TableMap.Count);
@@ -333,7 +325,7 @@ namespace D00B
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                Debug.WriteLine(ex.Message);
             }
             finally { }
         }
@@ -532,23 +524,17 @@ namespace D00B
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    Debug.WriteLine(ex.Message);
                 }
                 finally
                 {
                 }
             }
         }
+
         private void UpdateAdjTables(string strSchema, string strTable)
         {
-            lvAdjTables.Clear();
-            lvAdjTables.SelectedIndices.Clear();
-            lvAdjTables.Columns.Add("Schema");
-            lvAdjTables.Columns[0].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvAdjTables.Font).Width;
-            lvAdjTables.Columns.Add("Table");
-            lvAdjTables.Columns[1].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvAdjTables.Font).Width;
-            lvAdjTables.Columns.Add("Columns");
-            lvAdjTables.Columns[2].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXX", lvAdjTables.Font).Width;
+            SetupListViewHeaders(lvAdjTables);
 
             DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
             bool bInclude = m_TableMap.ContainsKey(TK);
@@ -581,10 +567,12 @@ namespace D00B
                                         Item.BackColor = Color.Red;
                                         SubItem.BackColor = Color.Red;
                                     }
-
-                                    // The case where the the foreign key is in the primary table
-                                    SubItem2.ForeColor = Color.DarkBlue;
-                                    SubItem2.BackColor = Color.Yellow;
+                                    else
+                                    {
+                                        // The case where the the foreign key is in the primary table
+                                        SubItem2.ForeColor = Color.DarkBlue;
+                                        SubItem2.BackColor = Color.Yellow;
+                                    }
                                 }
                                 else
                                 {
@@ -617,11 +605,10 @@ namespace D00B
                             else
                                 SubItem2.BackColor = Color.Yellow;
                             SubItem2.ForeColor = Color.DarkBlue;
-
-                            Item.SubItems.Add(SubItem);
-                            Item.SubItems.Add(SubItem2);
-                            lvAdjTables.Items.Add(Item); // DBTableKey TK
                         }
+                        Item.SubItems.Add(SubItem);
+                        Item.SubItems.Add(SubItem2);
+                        lvAdjTables.Items.Add(Item); // DBTableKey TK
                     }
                 }
 
@@ -723,17 +710,26 @@ namespace D00B
         }
         private void BtnLoad_Click(object sender, EventArgs e)
         {
-            UpdateUI(false);
-            LoadView();
+            UpdateUI(LoadView());
         }
 
-        private void LoadView()
+        private bool LoadView()
         {
-            ClearUI();
-            ClearData();
-            RefreshIndex();
-            SetupJoinTables();
-            SetupSearchResults();
+            bool bReturn = true;
+            try
+            {
+                ClearUI();
+                ClearData();
+                RefreshIndex();
+                SetupJoinTables();
+                SetupSearchResults();
+            }
+            catch (Exception ex) 
+            {
+                Debug.WriteLine(ex.Message);
+                bReturn = false;
+            }
+            return bReturn;
         }
 
         void ClearData()
@@ -763,10 +759,13 @@ namespace D00B
             string strConnectionString = txtConnString.Text;
             string strQueryString = string.Format("select name from sys.schemas");
             SQL Sql = new SQL(strConnectionString, strQueryString);
-            if (Sql.ExecuteReader(out string strError))
+            if (!Sql.ExecuteReader(out string strError))
             {
                 if (!string.IsNullOrEmpty(strError))
                     throw new Exception(strError);
+            }
+            else
+            {
                 while (Sql.Read())
                 {
                     string strItem = Sql.GetValue(0).ToString();
@@ -793,18 +792,32 @@ namespace D00B
             txtPreview.Enabled = !chkPrevAll.Checked;
 
             // Reload the view
-            LoadView();
+            UpdateUI(LoadView());
+        }
+
+        private void SetupListViewHeaders(ListView lv, bool bSchema = true, bool bTable = true, bool bColumn = true)
+        {
+            lv.Clear();
+            if (bSchema)
+            {
+                lv.Columns.Add("Schema");
+                lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
+            }
+            if (bTable)
+            {
+                lv.Columns.Add("Table");
+                lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
+            }
+            if (bColumn)
+            {
+                lv.Columns.Add("Column");
+                lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXX", m_Font).Width;
+            }
         }
 
         private void SetupSearchResults()
         {
-            lvResults.Clear();
-            lvResults.Columns.Add("Schema");
-            lvResults.Columns[0].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvResults.Font).Width;
-            lvResults.Columns.Add("Table");
-            lvResults.Columns[1].Width = TextRenderer.MeasureText("XXXXXXXXXX", lvResults.Font).Width;
-            lvResults.Columns.Add("Column");
-            lvResults.Columns[2].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXX", lvResults.Font).Width;
+            SetupListViewHeaders(lvResults);
         }
         private void FillSearchResults()
         {
@@ -948,7 +961,6 @@ namespace D00B
             Cursor.Current = Cursors.Default;
         }
 
-
         private void ChkData_CheckedChanged(object sender, EventArgs e)
         {
             if (chkData.Checked)
@@ -991,13 +1003,23 @@ namespace D00B
                 if (dgvQuery.Rows[iRow].HeaderCell.Value == null)
                     dgvQuery.Rows[iRow].HeaderCell.Value = (iRow + 1).ToString();
                 if (m_Arr != null && iRow < m_Arr.RowLength && iCol < m_Arr.ColLength)
-                    e.Value = m_Arr[iCol][iRow].ToString(); // IFormattable
+                {
+                    try
+                    {
+                        e.Value = m_Arr[iCol][iRow].ToString(dgvQuery.Columns[iCol].DefaultCellStyle.Format); // IFormattable
+                    }
+                    catch (Exception ex) 
+                    {
+                        Debug.WriteLine(string.Format("{0} {1},{2}", ex.Message, e.ColumnIndex, e.RowIndex));
+                        e.Value = string.Empty;
+                    }
+                }
                 else
                     e.Value = string.Empty;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("{0} {1},{2}", ex.Message, e.ColumnIndex, e.RowIndex));
+                Debug.WriteLine(string.Format("{0} {1},{2}", ex.Message, e.ColumnIndex, e.RowIndex));
             }
             finally { }
         }
@@ -1027,7 +1049,7 @@ namespace D00B
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("{0} : {1}", e.ItemIndex, ex.Message));
+                Debug.WriteLine(string.Format("{0} : {1}", e.ItemIndex, ex.Message));
             }
             finally { }
         }
@@ -1091,7 +1113,7 @@ namespace D00B
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("{0} : {1}", e.ItemIndex, ex.Message));
+                Debug.WriteLine(string.Format("{0} : {1}", e.ItemIndex, ex.Message));
             }
             finally { }
         }
@@ -1147,7 +1169,7 @@ namespace D00B
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("{0} : {1}", e.ItemIndex, ex.Message));
+                Debug.WriteLine(string.Format("{0} : {1}", e.ItemIndex, ex.Message));
             }
             finally { }
         }
@@ -1479,14 +1501,13 @@ namespace D00B
                 m_SortOrder = new bool[nColumns];
 
                 // Column headers
-                System.Drawing.Font Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
-                Size szExtra = TextRenderer.MeasureText("XXXXX", Font);
+                Size szExtra = TextRenderer.MeasureText("XXXXX", m_Font);
                 for (int iField = 0; iField < nColumns; ++iField)
                 {
                     string strColHdr = Sql.Columns[iField];
                     m_Header[iField] = strColHdr;
                     m_SortOrder[iField] = false;
-                    Size sz = szExtra + TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), Font);
+                    Size sz = szExtra + TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), m_Font);
                     if (sz.Width > m_Width[iField])
                         m_Width[iField] = Math.Min(65535, sz.Width);
                 }
@@ -1619,14 +1640,15 @@ namespace D00B
                 // Operation succeeded
                 lvTables.Select();
 
-                System.Drawing.Font Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
-                Size szRowHeader = TextRenderer.MeasureText("XXXXXXXXXX", Font);
+                Size szRowHeader = TextRenderer.MeasureText("XXXXXXXXXX", m_Font);
                 dgvQuery.RowHeadersWidth = szRowHeader.Width;
+                dgvQuery.Columns.Clear();
                 for (int iField = 0; iField < m_nColumns; ++iField)
                 {
                     dgvQuery.Columns.Add(m_Header[iField], m_Header[iField]);
-                    dgvQuery.Columns[m_Header[iField]].Width = m_Width[iField];
-                    dgvQuery.Columns[m_Header[iField]].ReadOnly = true;
+                    dgvQuery.Columns[iField].Width = m_Width[iField];
+                    dgvQuery.Columns[iField].ReadOnly = true;
+                    dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Format = "G" };
                 }
 
                 // Set the background color of the columns for the keys
@@ -1679,6 +1701,7 @@ namespace D00B
 
             if (m_nCount == 0)
             {
+                // Set the column count
                 m_nColumns = m_Arr.ColLength;
 
                 // Prepare the progress bar
@@ -1689,8 +1712,8 @@ namespace D00B
             {
                 // Set the wait cursor, rowcount, and progress percentage
                 pbData.Value = m_nCount;
-                Cursor.Current = Cursors.WaitCursor;
                 dgvQuery.RowCount = m_nCount + 1;
+                Cursor.Current = Cursors.WaitCursor;
             }
         }
         #endregion // THREADING
