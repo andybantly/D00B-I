@@ -18,6 +18,9 @@ namespace D00B
         List<DBJoinKey> m_JoinKeysTo = new List<DBJoinKey>();
         int m_nCT = 0; // Number of correlation tables
         float m_nFontHeight = 0;
+        int m_nMaxSchemaWidth = 0;
+        int m_nMaxTableWidth = 0;
+        int m_nMaxColumnWidth = 0;
         Font m_Font;
 
         CArray m_Arr;
@@ -108,9 +111,21 @@ namespace D00B
             lvResults.View = View.Details;
             lvResults.Font = m_Font;
         }
+        
+        private void UpdateMaxWidth(string strSchema, string strTable, string strColumn)
+        {
+            Size szExtra = TextRenderer.MeasureText(strSchema, m_Font);
+            if (szExtra.Width > m_nMaxSchemaWidth)
+                m_nMaxSchemaWidth = szExtra.Width;
+            szExtra = TextRenderer.MeasureText(strTable, m_Font);
+            if (szExtra.Width > m_nMaxTableWidth)
+                m_nMaxTableWidth = szExtra.Width;
+            szExtra = TextRenderer.MeasureText(strColumn, m_Font);
+            if (szExtra.Width > m_nMaxColumnWidth)
+                m_nMaxColumnWidth = szExtra.Width;
+        }
         private void CountTablesAndRows()
         {
-            int nData;
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
@@ -124,6 +139,9 @@ namespace D00B
                     strQueryString = string.Format("select distinct schema_name(t.schema_id) as schema_name, t.name as table_name, p.[Rows] 'Rows' from sys.tables as t INNER JOIN sys.indexes as i ON t.OBJECT_ID = i.object_id INNER JOIN sys.partitions p ON i.object_id = p.OBJECT_ID AND i.index_id = p.index_id where p.[Rows] >= 0 and schema_name(t.schema_id) = '{0}' order by schema_name;", cbSchema.Text);
                 SQL SqlTables = new SQL(strConnectionString, strQueryString);
 
+                m_nMaxSchemaWidth = 0;
+                m_nMaxTableWidth = 0;
+                m_nMaxColumnWidth = 0;
                 int iSelectedIndex = 0;
                 m_TableMap = new Dictionary<DBTableKey, DBTable>();
                 if (SqlTables.ExecuteReader(out string strError))
@@ -148,6 +166,9 @@ namespace D00B
                             m_TableMap.Add(TableKey, Table);
                             iSelectedIndex++;
                         }
+
+                        // Measure the header text
+                        UpdateMaxWidth(strSchema, strTable, strColumn);
                     }
                 }
                 else
@@ -182,6 +203,9 @@ namespace D00B
                             m_TableMap.Add(TableKey, Table);
                             iSelectedIndex++;
                         }
+
+                        // Measure the header text
+                        UpdateMaxWidth(strSchema, strTable, strColumn);
                     }
                 }
                 else
@@ -214,7 +238,7 @@ namespace D00B
                 // For every table get the list of the tables primary keys and foreign keys and map as two database keys, then get the table columns and if they are keys or not
                 pbData.Minimum = 1;
                 pbData.Maximum = m_TableMap.Count;
-                nData = 0;
+                int nData = 0;
                 foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
                 {
                     pbData.Value = ++nData;
@@ -801,17 +825,17 @@ namespace D00B
             if (bSchema)
             {
                 lv.Columns.Add("Schema");
-                lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
+                lv.Columns[lv.Columns.Count - 1].Width = Math.Max(TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width, m_nMaxSchemaWidth);
             }
             if (bTable)
             {
                 lv.Columns.Add("Table");
-                lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
+                lv.Columns[lv.Columns.Count - 1].Width = Math.Max(TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width, m_nMaxTableWidth);
             }
             if (bColumn)
             {
                 lv.Columns.Add("Column");
-                lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXX", m_Font).Width;
+                lv.Columns[lv.Columns.Count - 1].Width = Math.Max(TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXX", m_Font).Width, m_nMaxColumnWidth);
             }
         }
 
