@@ -6,6 +6,7 @@ using System.Security.Principal;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.ComponentModel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace D00B
 {
@@ -31,43 +32,40 @@ namespace D00B
         int m_nColumns = -1;
         int m_nCount = -1;
         int m_nPreview = 100;
+
+        // Screen rectangle and positions of the controls
+        private const int WM_SIZING = 0x0214;
+        private Rectangle m_DialogRect;
+        private int m_btnLoadLeft;
+        private int m_pbDataLeft;
+        private int m_txtDataLeft;
+        private int m_txtSearchLeft;
+        private int m_lvResultsLeft;
+        private int m_chkExactLeft;
+        private int m_chkTableLeft;
+        private int m_chkDataLeft;
+        private int m_btnSearchLeft;
+        private int m_btnJoinLeft;
+        private int m_btnResetJoinLeft;
+        private int m_btnTestJoinLeft;
+        private int m_btnExportLeft;
+        private int m_tbTablesLeft;
+        private int m_dgvQueryWidth;
+        private int m_dgvQueryHeight;
+        private int m_txtQueryWidth;
+        private int m_txtQueryTop;
+        private int m_cbDataBasesWidth;
+        private int m_txtConnStringWidth;
+        private int m_lvTablesWidth;
+        private int m_lvColumnsWidth;
+        private int m_lvAdjTablesWidth;
+        private int m_lvJoinTablesWidth;
+
+
         public D00B()
         {
             InitializeComponent();
             InitializeBackgroundSQL();
-        }
-
-        void UpdateUI(bool bEnabled)
-        {
-            txtConnString.Enabled = true;
-            btnLoad.Enabled = true;
-            chkPrevAll.Enabled = true;
-            lvTables.Enabled = bEnabled;
-            lvAdjTables.Enabled = bEnabled;
-            lvJoinTables.Enabled = bEnabled;
-            dgvQuery.Enabled = bEnabled;
-            txtPreview.Enabled = bEnabled;
-            lblPreview.Enabled = bEnabled;
-            btnExport.Enabled = bEnabled;
-            chkHdr.Enabled = bEnabled;
-            cbSchema.Enabled = bEnabled;
-            label2.Enabled = bEnabled;
-            tbTables.Enabled = bEnabled;
-            txtSearch.Enabled = bEnabled;
-            btnSearch.Enabled = bEnabled;
-            lvResults.Enabled = bEnabled;
-            chkTable.Enabled = bEnabled;
-            chkData.Enabled = bEnabled;
-            txtData.Enabled = bEnabled;
-            pbData.Enabled = bEnabled;
-            chkExact.Enabled = bEnabled;
-            lvColumns.Enabled = bEnabled;
-            btnJoin.Enabled = bEnabled && ColumnIndex() != -1 && lvAdjTables.Items.Count > 0;
-            btnResetJoin.Enabled = bEnabled && m_JoinKeysFr.Count > 0;
-            btnTestJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1 && JoinTablesIndex() != -1;
-            btnJoin.Visible = false;
-            btnResetJoin.Visible = false;
-            btnTestJoin.Visible = false;
         }
 
         private void D00B_Load(object sender, EventArgs e)
@@ -111,7 +109,163 @@ namespace D00B
             lvResults.View = View.Details;
             lvResults.Font = m_Font;
         }
-        
+
+        protected override void WndProc(ref Message m)
+        {
+            switch (m.Msg)
+            {
+                // Resize/move controls while form is being resized
+                case WM_SIZING:
+                    OnSizing();
+                    break;
+
+                default:
+                    break;
+            }
+            base.WndProc(ref m);
+        }
+
+        private void D00B_Show(object sender, EventArgs e)
+        {
+            // Get the dialog rectangle
+            m_DialogRect = ClientRectangle;
+            m_btnLoadLeft = btnLoad.Left;
+            m_pbDataLeft = pbData.Left;
+            m_txtDataLeft = txtData.Left;
+            m_txtSearchLeft = txtSearch.Left;
+            m_lvResultsLeft = lvResults.Left;
+            m_chkExactLeft = chkExact.Left;
+            m_chkTableLeft = chkTable.Left;
+            m_chkDataLeft = chkData.Left;
+            m_btnSearchLeft = btnSearch.Left;
+            m_btnJoinLeft = btnJoin.Left;
+            m_btnResetJoinLeft = btnResetJoin.Left;
+            m_btnTestJoinLeft = btnTestJoin.Left;
+            m_btnExportLeft = btnExport.Left;
+            m_tbTablesLeft = tbTables.Left;
+            m_dgvQueryWidth = dgvQuery.Width;
+            m_dgvQueryHeight = dgvQuery.Height;
+            m_txtQueryWidth = txtQuery.Width;
+            m_txtQueryTop = txtQuery.Top;
+            m_cbDataBasesWidth = cbDataBases.Width;
+            m_txtConnStringWidth = txtConnString.Width;
+            m_lvTablesWidth = lvTables.Width;
+            m_lvColumnsWidth = lvColumns.Width;
+            m_lvAdjTablesWidth = lvAdjTables.Width;
+            m_lvJoinTablesWidth = lvJoinTables.Width;
+        }
+
+        private void OnSizing()
+        {
+            // Get the dialog rectangle
+            Rectangle DialogRect = ClientRectangle;
+
+            // Get the dialog size delta
+            Point ptDiff = new Point(DialogRect.Right - m_DialogRect.Right, DialogRect.Bottom - m_DialogRect.Bottom);
+
+            // Move the load button
+            btnLoad.Left = m_btnLoadLeft + ptDiff.X;
+
+            // Move the progress bar
+            pbData.Left = m_pbDataLeft + ptDiff.X;
+
+            // Move the search text data
+            txtData.Left = m_txtDataLeft + ptDiff.X;
+
+            // Move the search text
+            txtSearch.Left = m_txtSearchLeft + ptDiff.X;
+
+            // Move the search results listview
+            lvResults.Left = m_lvResultsLeft + ptDiff.X;
+            
+            // Move the exact check box
+            chkExact.Left = m_chkExactLeft + ptDiff.X;
+
+            // Move the table check box
+            chkTable.Left = m_chkTableLeft + ptDiff.X;
+
+            // Move the data check box
+            chkData.Left = m_chkDataLeft + ptDiff.X;
+
+            // Move the search button
+            btnSearch.Left = m_btnSearchLeft + ptDiff.X;
+
+            // Move the join button
+            btnJoin.Left = m_btnJoinLeft + ptDiff.X;
+
+            // Move the reset join button
+            btnResetJoin.Left = m_btnResetJoinLeft + ptDiff.X;
+
+            // Move the test join button
+            btnTestJoin.Left = m_btnTestJoinLeft + ptDiff.X;
+
+            // Move the export button
+            btnExport.Left = m_btnExportLeft + ptDiff.X;
+
+            // Move the tables count
+            tbTables.Left = m_tbTablesLeft + ptDiff.X;
+
+            // Expand the query results
+            dgvQuery.Width = m_dgvQueryWidth + ptDiff.X;
+            dgvQuery.Height = m_dgvQueryHeight + ptDiff.Y;
+
+            // Expand the text query
+            txtQuery.Width = m_txtQueryWidth + ptDiff.X;
+            txtQuery.Top = m_txtQueryTop + ptDiff.Y;
+
+            // Expand the database combobox
+            cbDataBases.Width = m_cbDataBasesWidth + ptDiff.X;
+
+            // Expand the connection string text box
+            txtConnString.Width = m_txtConnStringWidth + ptDiff.X;
+
+            // Move and size the list views
+            int dX = ptDiff.X / 4;
+            lvTables.Width = m_lvTablesWidth + dX;
+
+            lvColumns.Left = lvTables.Right + 1;
+            lvColumns.Width = m_lvColumnsWidth + dX;
+
+            lvAdjTables.Left = lvColumns.Right + 1;
+            lvAdjTables.Width = m_lvAdjTablesWidth + dX;
+
+            lvJoinTables.Left = lvAdjTables.Right + 1;
+            lvJoinTables.Width = m_lvJoinTablesWidth + dX;
+        }
+
+        void UpdateUI(bool bEnabled)
+        {
+            txtConnString.Enabled = true;
+            btnLoad.Enabled = true;
+            chkPrevAll.Enabled = true;
+            lvTables.Enabled = bEnabled;
+            lvAdjTables.Enabled = bEnabled;
+            lvJoinTables.Enabled = bEnabled;
+            dgvQuery.Enabled = bEnabled;
+            txtPreview.Enabled = bEnabled;
+            lblPreview.Enabled = bEnabled;
+            btnExport.Enabled = bEnabled;
+            chkHdr.Enabled = bEnabled;
+            cbSchema.Enabled = bEnabled;
+            label2.Enabled = bEnabled;
+            tbTables.Enabled = bEnabled;
+            txtSearch.Enabled = bEnabled;
+            btnSearch.Enabled = bEnabled;
+            lvResults.Enabled = bEnabled;
+            chkTable.Enabled = bEnabled;
+            chkData.Enabled = bEnabled;
+            txtData.Enabled = bEnabled;
+            pbData.Enabled = bEnabled;
+            chkExact.Enabled = bEnabled;
+            lvColumns.Enabled = bEnabled;
+            btnJoin.Enabled = bEnabled && ColumnIndex() != -1 && lvAdjTables.Items.Count > 0;
+            btnResetJoin.Enabled = bEnabled && m_JoinKeysFr.Count > 0;
+            btnTestJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1 && JoinTablesIndex() != -1;
+            btnJoin.Visible = false;
+            btnResetJoin.Visible = false;
+            btnTestJoin.Visible = false;
+        }
+
         private void UpdateMaxWidth(string strSchema, string strTable, string strColumn)
         {
             Size szExtra = TextRenderer.MeasureText(strSchema, m_Font);

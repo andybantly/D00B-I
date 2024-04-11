@@ -65,7 +65,7 @@
             // 
             // txtConnString
             // 
-            this.txtConnString.Location = new System.Drawing.Point(6, 43);
+            this.txtConnString.Location = new System.Drawing.Point(6, 42);
             this.txtConnString.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtConnString.Multiline = true;
             this.txtConnString.Name = "txtConnString";
@@ -86,7 +86,7 @@
             // btnExport
             // 
             this.btnExport.Enabled = false;
-            this.btnExport.Location = new System.Drawing.Point(1164, 303);
+            this.btnExport.Location = new System.Drawing.Point(1166, 305);
             this.btnExport.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(114, 35);
@@ -113,7 +113,7 @@
             // 
             this.chkPrevAll.AutoSize = true;
             this.chkPrevAll.Enabled = false;
-            this.chkPrevAll.Location = new System.Drawing.Point(416, 12);
+            this.chkPrevAll.Location = new System.Drawing.Point(416, 9);
             this.chkPrevAll.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkPrevAll.Name = "chkPrevAll";
             this.chkPrevAll.Size = new System.Drawing.Size(52, 24);
@@ -126,7 +126,7 @@
             // 
             this.cbSchema.Enabled = false;
             this.cbSchema.FormattingEnabled = true;
-            this.cbSchema.Location = new System.Drawing.Point(84, 9);
+            this.cbSchema.Location = new System.Drawing.Point(84, 6);
             this.cbSchema.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.cbSchema.Name = "cbSchema";
             this.cbSchema.Size = new System.Drawing.Size(178, 28);
@@ -135,7 +135,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 11);
+            this.label2.Location = new System.Drawing.Point(8, 9);
             this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(68, 20);
@@ -144,7 +144,7 @@
             // 
             // tbTables
             // 
-            this.tbTables.Location = new System.Drawing.Point(1545, 8);
+            this.tbTables.Location = new System.Drawing.Point(1546, 6);
             this.tbTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.tbTables.Name = "tbTables";
             this.tbTables.ReadOnly = true;
@@ -163,7 +163,7 @@
             // btnSearch
             // 
             this.btnSearch.Enabled = false;
-            this.btnSearch.Location = new System.Drawing.Point(1164, 111);
+            this.btnSearch.Location = new System.Drawing.Point(1166, 111);
             this.btnSearch.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(114, 35);
@@ -209,7 +209,7 @@
             // 
             // pbData
             // 
-            this.pbData.Location = new System.Drawing.Point(1546, 40);
+            this.pbData.Location = new System.Drawing.Point(1546, 42);
             this.pbData.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.pbData.Name = "pbData";
             this.pbData.Size = new System.Drawing.Size(183, 29);
@@ -229,9 +229,8 @@
             // 
             // lblPreview
             // 
-            this.lblPreview.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblPreview.AutoSize = true;
-            this.lblPreview.Location = new System.Drawing.Point(274, 14);
+            this.lblPreview.Location = new System.Drawing.Point(274, 9);
             this.lblPreview.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblPreview.Name = "lblPreview";
             this.lblPreview.Size = new System.Drawing.Size(63, 20);
@@ -240,9 +239,8 @@
             // 
             // txtPreview
             // 
-            this.txtPreview.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtPreview.Enabled = false;
-            this.txtPreview.Location = new System.Drawing.Point(348, 11);
+            this.txtPreview.Location = new System.Drawing.Point(348, 6);
             this.txtPreview.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtPreview.Name = "txtPreview";
             this.txtPreview.Size = new System.Drawing.Size(52, 26);
@@ -324,16 +322,16 @@
             // 
             this.cbDataBases.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbDataBases.FormattingEnabled = true;
-            this.cbDataBases.Location = new System.Drawing.Point(466, 8);
+            this.cbDataBases.Location = new System.Drawing.Point(466, 4);
             this.cbDataBases.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.cbDataBases.Name = "cbDataBases";
-            this.cbDataBases.Size = new System.Drawing.Size(1054, 28);
+            this.cbDataBases.Size = new System.Drawing.Size(1068, 28);
             this.cbDataBases.TabIndex = 37;
             this.cbDataBases.SelectionChangeCommitted += new System.EventHandler(this.CbDataBases_SelectionChangeCommitted);
             // 
             // btnJoin
             // 
-            this.btnJoin.Location = new System.Drawing.Point(1164, 154);
+            this.btnJoin.Location = new System.Drawing.Point(1166, 154);
             this.btnJoin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btnJoin.Name = "btnJoin";
             this.btnJoin.Size = new System.Drawing.Size(114, 35);
@@ -349,7 +347,7 @@
             this.txtQuery.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtQuery.Multiline = true;
             this.txtQuery.Name = "txtQuery";
-            this.txtQuery.Size = new System.Drawing.Size(1726, 81);
+            this.txtQuery.Size = new System.Drawing.Size(1726, 99);
             this.txtQuery.TabIndex = 39;
             // 
             // lvJoinTables
@@ -409,7 +407,7 @@
             // 
             // btnResetJoin
             // 
-            this.btnResetJoin.Location = new System.Drawing.Point(1164, 198);
+            this.btnResetJoin.Location = new System.Drawing.Point(1166, 198);
             this.btnResetJoin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btnResetJoin.Name = "btnResetJoin";
             this.btnResetJoin.Size = new System.Drawing.Size(114, 35);
@@ -420,7 +418,7 @@
             // 
             // btnTestJoin
             // 
-            this.btnTestJoin.Location = new System.Drawing.Point(1164, 249);
+            this.btnTestJoin.Location = new System.Drawing.Point(1166, 249);
             this.btnTestJoin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btnTestJoin.Name = "btnTestJoin";
             this.btnTestJoin.Size = new System.Drawing.Size(114, 35);
@@ -437,7 +435,7 @@
             this.dgvQuery.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dgvQuery.Name = "dgvQuery";
             this.dgvQuery.RowHeadersWidth = 62;
-            this.dgvQuery.Size = new System.Drawing.Size(1728, 323);
+            this.dgvQuery.Size = new System.Drawing.Size(1726, 333);
             this.dgvQuery.TabIndex = 47;
             this.dgvQuery.VirtualMode = true;
             this.dgvQuery.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DgvQuery_CellValueNeeded);
@@ -447,7 +445,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1737, 763);
+            this.ClientSize = new System.Drawing.Size(1743, 780);
             this.Controls.Add(this.dgvQuery);
             this.Controls.Add(this.btnTestJoin);
             this.Controls.Add(this.btnResetJoin);
@@ -480,13 +478,14 @@
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.txtConnString);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(1756, 810);
             this.Name = "D00B";
             this.Text = "DóòB-👁";
             this.Load += new System.EventHandler(this.D00B_Load);
+            this.Shown += new System.EventHandler(this.D00B_Show);
             ((System.ComponentModel.ISupportInitialize)(this.dgvQuery)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
