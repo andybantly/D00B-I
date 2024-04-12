@@ -1452,6 +1452,9 @@ namespace D00B
         private void CbDataBases_SelectionChangeCommitted(object sender, EventArgs e)
         {
             txtConnString.Text = cbDataBases.Text;
+
+            // Reload the view
+            UpdateUI(LoadView());
         }
 
         private void BtnJoin_Click(object sender, EventArgs e)
