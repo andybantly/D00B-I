@@ -479,13 +479,12 @@
             this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.txtConnString);
             this.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(1756, 810);
             this.Name = "D00B";
             this.Text = "DóòB-👁";
             this.Load += new System.EventHandler(this.D00B_Load);
             this.Shown += new System.EventHandler(this.D00B_Show);
+            this.Resize += new System.EventHandler(this.D00B_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.dgvQuery)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

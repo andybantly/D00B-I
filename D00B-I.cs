@@ -6,7 +6,6 @@ using System.Security.Principal;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.ComponentModel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace D00B
 {
@@ -109,22 +108,10 @@ namespace D00B
             lvResults.View = View.Details;
             lvResults.Font = m_Font;
         }
-
-        protected override void WndProc(ref Message m)
+        private void D00B_Resize(object sender, EventArgs e)
         {
-            switch (m.Msg)
-            {
-                // Resize/move controls while form is being resized
-                case WM_SIZING:
-                    OnSizing();
-                    break;
-
-                default:
-                    break;
-            }
-            base.WndProc(ref m);
+            OnSizing();
         }
-
         private void D00B_Show(object sender, EventArgs e)
         {
             // Get the dialog rectangle
@@ -154,73 +141,72 @@ namespace D00B
             m_lvAdjTablesWidth = lvAdjTables.Width;
             m_lvJoinTablesWidth = lvJoinTables.Width;
         }
-
         private void OnSizing()
         {
             // Get the dialog rectangle
             Rectangle DialogRect = ClientRectangle;
 
             // Get the dialog size delta
-            Point ptDiff = new Point(DialogRect.Right - m_DialogRect.Right, DialogRect.Bottom - m_DialogRect.Bottom);
+            Point PtDiff = new Point(DialogRect.Right - m_DialogRect.Right, DialogRect.Bottom - m_DialogRect.Bottom);
 
             // Move the load button
-            btnLoad.Left = m_btnLoadLeft + ptDiff.X;
+            btnLoad.Left = m_btnLoadLeft + PtDiff.X;
 
             // Move the progress bar
-            pbData.Left = m_pbDataLeft + ptDiff.X;
+            pbData.Left = m_pbDataLeft + PtDiff.X;
 
             // Move the search text data
-            txtData.Left = m_txtDataLeft + ptDiff.X;
+            txtData.Left = m_txtDataLeft + PtDiff.X;
 
             // Move the search text
-            txtSearch.Left = m_txtSearchLeft + ptDiff.X;
+            txtSearch.Left = m_txtSearchLeft + PtDiff.X;
 
             // Move the search results listview
-            lvResults.Left = m_lvResultsLeft + ptDiff.X;
+            lvResults.Left = m_lvResultsLeft + PtDiff.X;
             
             // Move the exact check box
-            chkExact.Left = m_chkExactLeft + ptDiff.X;
+            chkExact.Left = m_chkExactLeft + PtDiff.X;
 
             // Move the table check box
-            chkTable.Left = m_chkTableLeft + ptDiff.X;
+            chkTable.Left = m_chkTableLeft + PtDiff.X;
 
             // Move the data check box
-            chkData.Left = m_chkDataLeft + ptDiff.X;
+            chkData.Left = m_chkDataLeft + PtDiff.X;
 
             // Move the search button
-            btnSearch.Left = m_btnSearchLeft + ptDiff.X;
+            btnSearch.Left = m_btnSearchLeft + PtDiff.X;
 
             // Move the join button
-            btnJoin.Left = m_btnJoinLeft + ptDiff.X;
+            btnJoin.Left = m_btnJoinLeft + PtDiff.X;
 
             // Move the reset join button
-            btnResetJoin.Left = m_btnResetJoinLeft + ptDiff.X;
+            btnResetJoin.Left = m_btnResetJoinLeft + PtDiff.X;
 
             // Move the test join button
-            btnTestJoin.Left = m_btnTestJoinLeft + ptDiff.X;
+            btnTestJoin.Left = m_btnTestJoinLeft + PtDiff.X;
 
             // Move the export button
-            btnExport.Left = m_btnExportLeft + ptDiff.X;
+            btnExport.Left = m_btnExportLeft + PtDiff.X;
 
             // Move the tables count
-            tbTables.Left = m_tbTablesLeft + ptDiff.X;
+            tbTables.Left = m_tbTablesLeft + PtDiff.X;
 
             // Expand the query results
-            dgvQuery.Width = m_dgvQueryWidth + ptDiff.X;
-            dgvQuery.Height = m_dgvQueryHeight + ptDiff.Y;
+            dgvQuery.Width = m_dgvQueryWidth + PtDiff.X;
+            dgvQuery.Height = m_dgvQueryHeight + PtDiff.Y;
 
             // Expand the text query
-            txtQuery.Width = m_txtQueryWidth + ptDiff.X;
-            txtQuery.Top = m_txtQueryTop + ptDiff.Y;
+            txtQuery.Width = m_txtQueryWidth + PtDiff.X;
+            txtQuery.Top = m_txtQueryTop + PtDiff.Y;
 
             // Expand the database combobox
-            cbDataBases.Width = m_cbDataBasesWidth + ptDiff.X;
+            cbDataBases.Width = m_cbDataBasesWidth + PtDiff.X;
 
             // Expand the connection string text box
-            txtConnString.Width = m_txtConnStringWidth + ptDiff.X;
+            txtConnString.Width = m_txtConnStringWidth + PtDiff.X;
 
             // Move and size the list views
-            int dX = ptDiff.X / 4;
+            int dX = PtDiff.X / 4;
             lvTables.Width = m_lvTablesWidth + dX;
 
             lvColumns.Left = lvTables.Right + 1;
