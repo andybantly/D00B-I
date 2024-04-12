@@ -115,6 +115,7 @@ namespace D00B
         private void D00B_Show(object sender, EventArgs e)
         {
             // Get the dialog rectangle
+            MinimumSize = Size;
             m_DialogRect = ClientRectangle;
             m_btnLoadLeft = btnLoad.Left;
             m_pbDataLeft = pbData.Left;
