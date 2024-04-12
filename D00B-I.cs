@@ -60,7 +60,6 @@ namespace D00B
         private int m_lvAdjTablesWidth;
         private int m_lvJoinTablesWidth;
 
-
         public D00B()
         {
             InitializeComponent();
@@ -206,18 +205,24 @@ namespace D00B
             // Expand the connection string text box
             txtConnString.Width = m_txtConnStringWidth + PtDiff.X;
 
-            // Move and size the list views
+            // Move and size the labels and list views
             int dX = PtDiff.X / 4;
+
+            // Move and resize the list views
             lvTables.Width = m_lvTablesWidth + dX;
+            lb1.Left = lvTables.Left;
 
             lvColumns.Left = lvTables.Right + 1;
             lvColumns.Width = m_lvColumnsWidth + dX;
+            lb2.Left = lvColumns.Left;
 
             lvAdjTables.Left = lvColumns.Right + 1;
             lvAdjTables.Width = m_lvAdjTablesWidth + dX;
+            lb3.Left = lvAdjTables.Left;
 
             lvJoinTables.Left = lvAdjTables.Right + 1;
             lvJoinTables.Width = m_lvJoinTablesWidth + dX;
+            lb4.Left = lvJoinTables.Left;
         }
 
         void UpdateUI(bool bEnabled)
