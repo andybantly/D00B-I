@@ -33,7 +33,6 @@ namespace D00B
         int m_nPreview = 100;
 
         // Screen rectangle and positions of the controls
-        private const int WM_SIZING = 0x0214;
         private Rectangle m_DialogRect;
         private int m_btnLoadLeft;
         private int m_pbDataLeft;
@@ -299,6 +298,16 @@ namespace D00B
                         string strSchema = SqlTables.GetValue(0).ToString();
                         string strTable = SqlTables.GetValue(1).ToString();
                         string strRows = SqlTables.GetValue(2).ToString();
+                        if (strRows == "0")
+                        {
+                            // Test ROW count
+                            string strQueryStringCount = string.Format("select count(*) from [{0}].[{1}]", strSchema, strTable);
+                            SQL SqlCount = new SQL(strConnectionString, strQueryStringCount);
+                            string strCount = Convert.ToString(SqlCount.ExecuteScalar(out strError));
+                            if (string.IsNullOrEmpty(strError))
+                                strRows = strCount;
+                            SqlCount.Close();
+                        }
                         string strColumn = string.Empty;
 
                         DBTableKey TableKey = new DBTableKey(strSchema, strTable, strColumn);
