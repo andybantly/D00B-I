@@ -1176,7 +1176,7 @@ namespace D00B
                 {
                     try
                     {
-                        e.Value = m_Arr[iCol][iRow].ToString(dgvQuery.Columns[iCol].DefaultCellStyle.Format); // IFormattable
+                        e.Value = m_Arr[iCol][iRow]?.ToString(dgvQuery.Columns[iCol].DefaultCellStyle.Format); // IFormattable
                     }
                     catch (Exception ex) 
                     {
@@ -1240,9 +1240,8 @@ namespace D00B
                         DBTable Table = KVP.Value;
 
                         idx = e.ItemIndex - nRows;
-                        e.Item = new ListViewItem();
+                        e.Item = new ListViewItem(TableKey.Schema);
                         e.Item.UseItemStyleForSubItems = false;
-                        e.Item.Text = TableKey.Schema;
                         e.Item.SubItems.Add(TableKey.Table);
                         DBColumn Column = Table.Columns[idx];
                         e.Item.SubItems.Add(Column.Name);
