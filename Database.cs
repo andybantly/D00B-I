@@ -122,6 +122,7 @@ namespace D00B
     public class DBColumn : IComparable<DBColumn>, IEquatable<DBColumn>, IComparable
     {
         string m_strName = string.Empty;
+        string m_strFormatString = string.Empty;
         bool m_bIsKey = false;
         List<DBTableKey> m_Tables = new List<DBTableKey>();
 
@@ -160,6 +161,7 @@ namespace D00B
 
         public DBColumn()
         {
+            m_strFormatString = "G";
         }
 
         public DBColumn(string strName) : this()
@@ -190,6 +192,19 @@ namespace D00B
             get { return m_Tables; }
             set { m_Tables = value; }
         }
+
+        public string FormatString
+        { 
+            get 
+            { 
+                return m_strFormatString; 
+            } 
+            set 
+            { 
+                m_strFormatString = value; 
+            }
+        }
+        
     }
 
     internal class DBTable : IComparable<DBTable>, IEquatable<DBTable>, IComparable

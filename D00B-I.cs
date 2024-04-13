@@ -114,6 +114,8 @@ namespace D00B
         {
             // Get the dialog rectangle
             MinimumSize = Size;
+
+            // Get the coordinates that will be used for moving/resizing when the dialogs size changes
             m_DialogRect = ClientRectangle;
             m_btnLoadLeft = btnLoad.Left;
             m_pbDataLeft = pbData.Left;
@@ -139,6 +141,9 @@ namespace D00B
             m_lvColumnsWidth = lvColumns.Width;
             m_lvAdjTablesWidth = lvAdjTables.Width;
             m_lvJoinTablesWidth = lvJoinTables.Width;
+
+            // Probably not necessary, but making sure labels are in the right place
+            OnSizing();
         }
         private void OnSizing()
         {
@@ -257,17 +262,12 @@ namespace D00B
             btnTestJoin.Visible = false;
         }
 
-        private void UpdateMaxWidth(string strSchema, string strTable, string strColumn)
+        private int UpdateMaxWidth(string strField, int nCurrentWidth)
         {
-            Size szExtra = TextRenderer.MeasureText(strSchema, m_Font);
-            if (szExtra.Width > m_nMaxSchemaWidth)
-                m_nMaxSchemaWidth = szExtra.Width;
-            szExtra = TextRenderer.MeasureText(strTable, m_Font);
-            if (szExtra.Width > m_nMaxTableWidth)
-                m_nMaxTableWidth = szExtra.Width;
-            szExtra = TextRenderer.MeasureText(strColumn, m_Font);
-            if (szExtra.Width > m_nMaxColumnWidth)
-                m_nMaxColumnWidth = szExtra.Width;
+            Size szExtra = TextRenderer.MeasureText(strField, m_Font);
+            if (szExtra.Width > nCurrentWidth)
+                nCurrentWidth = szExtra.Width;
+            return nCurrentWidth;
         }
         private void CountTablesAndRows()
         {
@@ -308,9 +308,8 @@ namespace D00B
                                 strRows = strCount;
                             SqlCount.Close();
                         }
-                        string strColumn = string.Empty;
 
-                        DBTableKey TableKey = new DBTableKey(strSchema, strTable, strColumn);
+                        DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty);
                         if (!m_TableMap.ContainsKey(TableKey))
                         {
                             DBTable Table = new DBTable(TableKey)
@@ -323,7 +322,8 @@ namespace D00B
                         }
 
                         // Measure the header text
-                        UpdateMaxWidth(strSchema, strTable, strColumn);
+                        m_nMaxSchemaWidth = UpdateMaxWidth(strSchema, m_nMaxSchemaWidth);
+                        m_nMaxTableWidth = UpdateMaxWidth(strTable, m_nMaxTableWidth);
                     }
                 }
                 else
@@ -345,9 +345,8 @@ namespace D00B
                     {
                         string strSchema = SqlViews.GetValue(0).ToString();
                         string strTable = SqlViews.GetValue(1).ToString();
-                        string strColumn = string.Empty;
 
-                        DBTableKey TableKey = new DBTableKey(strSchema, strTable, strColumn);
+                        DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty);
                         if (!m_TableMap.ContainsKey(TableKey))
                         {
                             DBTable Table = new DBTable(TableKey)
@@ -360,7 +359,8 @@ namespace D00B
                         }
 
                         // Measure the header text
-                        UpdateMaxWidth(strSchema, strTable, strColumn);
+                        m_nMaxSchemaWidth = UpdateMaxWidth(strSchema, m_nMaxSchemaWidth);
+                        m_nMaxTableWidth = UpdateMaxWidth(strTable, m_nMaxTableWidth);
                     }
                 }
                 else
@@ -483,7 +483,6 @@ namespace D00B
                 CountTablesAndRows();
 
                 SetupListViewHeaders(lvTables, true, true, false);
-                SetupListViewHeaders(lvColumns, false, false, true);
 
                 // Enable/Disable
                 tbTables.Text = string.Format("{0}", m_TableMap.Count);
@@ -974,7 +973,7 @@ namespace D00B
             UpdateUI(LoadView());
         }
 
-        private void SetupListViewHeaders(ListView lv, bool bSchema = true, bool bTable = true, bool bColumn = true)
+        private void SetupListViewHeaders(ListView lv, bool bSchema = true, bool bTable = true, bool bColumn = true, bool bFormat = false)
         {
             lv.Clear();
             if (bSchema)
@@ -990,7 +989,12 @@ namespace D00B
             if (bColumn)
             {
                 lv.Columns.Add("Column");
-                lv.Columns[lv.Columns.Count - 1].Width = Math.Max(TextRenderer.MeasureText("XXXXXXXXXXXXXXXXXXXXXXXXXX", m_Font).Width, m_nMaxColumnWidth);
+                lv.Columns[lv.Columns.Count - 1].Width = Math.Max(TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width, m_nMaxColumnWidth);
+            }
+            if (bFormat)
+            {
+                lv.Columns.Add("Format");
+                lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
             }
         }
 
@@ -1122,7 +1126,7 @@ namespace D00B
                 bNum = double.TryParse(s, out _);
             return bNum;
         }
-        private void dgvQuery_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void DgvQuery_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             // Set the busy cursor
             Cursor.Current = Cursors.WaitCursor;
@@ -1310,7 +1314,7 @@ namespace D00B
             {
                 if (m_Arr != null)
                 {
-                    DBTableKey TableKey = m_TableKeys[0];
+                    DBTableKey TableKey = m_TableKeys[0]; // Loop through this for all table columns
                     string strSchema = TableKey.Schema;
                     string strTable = TableKey.Table;
                     string strColumn = string.Empty;
@@ -1318,6 +1322,7 @@ namespace D00B
                     DBColumn Column = Table.Columns[iRow];
                     e.Item = new ListViewItem(Column.Name);
                     e.Item.UseItemStyleForSubItems = false;
+                    e.Item.SubItems.Add(Column.FormatString);
 
                     if (Column.IsPrimaryKey)
                     {
@@ -1375,11 +1380,20 @@ namespace D00B
             ParseKey(TableCurSel(TableIndex()), out string strSchema, out string strTable);
             if (string.IsNullOrEmpty(strSchema))
                 return;
+
             DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty)
             {
                 JoinTag = string.Format("T{0}", ++m_nCT)
             };
             m_TableKeys.Add(TableKey);
+
+            // Setup the column and format list
+            lvColumns.VirtualListSize = 0;
+            m_nMaxColumnWidth = 0;
+            DBTable Table = m_TableMap[TableKey];
+            foreach (DBColumn Column in Table.Columns)
+                m_nMaxColumnWidth = UpdateMaxWidth(Column.Name, m_nMaxColumnWidth);
+            SetupListViewHeaders(lvColumns, false, false, true, true);
 
             // Select the table
             SelectIndex();

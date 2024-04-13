@@ -439,7 +439,7 @@
             this.dgvQuery.TabIndex = 47;
             this.dgvQuery.VirtualMode = true;
             this.dgvQuery.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DgvQuery_CellValueNeeded);
-            this.dgvQuery.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvQuery_ColumnHeaderMouseClick);
+            this.dgvQuery.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DgvQuery_ColumnHeaderMouseClick);
             // 
             // D00B
             // 
