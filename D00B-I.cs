@@ -28,7 +28,6 @@ namespace D00B
         int[] m_Width;
         bool[] m_SortOrder;
 
-        int m_nColumns = -1;
         int m_nCount = -1;
         int m_nPreview = 100;
 
@@ -141,9 +140,6 @@ namespace D00B
             m_lvColumnsWidth = lvColumns.Width;
             m_lvAdjTablesWidth = lvAdjTables.Width;
             m_lvJoinTablesWidth = lvJoinTables.Width;
-
-            // Probably not necessary, but making sure labels are in the right place
-            OnSizing();
         }
         private void OnSizing()
         {
@@ -455,6 +451,7 @@ namespace D00B
 
         private void SetupJoinTables()
         {
+            // Setup the join table headers
             SetupListViewHeaders(lvJoinTables);
         }
 
@@ -477,11 +474,11 @@ namespace D00B
                 dgvQuery.Rows.Clear();
                 lvTables.VirtualListSize = 0;
                 lvJoinTables.VirtualListSize = 0;
-                lvColumns.VirtualListSize = 0;
 
                 // Collect information about the database
                 CountTablesAndRows();
 
+                // Setup the table headers
                 SetupListViewHeaders(lvTables, true, true, false);
 
                 // Enable/Disable
@@ -712,6 +709,7 @@ namespace D00B
 
         private void UpdateAdjTables(string strSchema, string strTable)
         {
+            // Setup the adjacent table headers
             SetupListViewHeaders(lvAdjTables);
 
             DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
@@ -1000,6 +998,7 @@ namespace D00B
 
         private void SetupSearchResults()
         {
+            // Setup the search results headers
             SetupListViewHeaders(lvResults);
         }
         private void FillSearchResults()
@@ -1307,6 +1306,16 @@ namespace D00B
         {
             UpdateUI(true);
         }
+        private void LvColumns_EditFormat(object sender, MouseEventArgs e)
+        {
+            DBTableKey TableKey = m_TableKeys[0];
+            DBTable Table = m_TableMap[TableKey];
+            int iColumn = ColumnIndex();
+            DBColumn Column = Table.Columns[iColumn];
+
+            // Edit the format
+        }
+
         private void LvColumns_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             int iRow = e.ItemIndex;
@@ -1393,6 +1402,8 @@ namespace D00B
             DBTable Table = m_TableMap[TableKey];
             foreach (DBColumn Column in Table.Columns)
                 m_nMaxColumnWidth = UpdateMaxWidth(Column.Name, m_nMaxColumnWidth);
+
+            // Setup the column headers
             SetupListViewHeaders(lvColumns, false, false, true, true);
 
             // Select the table
@@ -1838,12 +1849,19 @@ namespace D00B
                 Size szRowHeader = TextRenderer.MeasureText("XXXXXXXXXX", m_Font);
                 dgvQuery.RowHeadersWidth = szRowHeader.Width;
                 dgvQuery.Columns.Clear();
-                for (int iField = 0; iField < m_nColumns; ++iField)
+
+                for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
                 {
-                    dgvQuery.Columns.Add(m_Header[iField], m_Header[iField]);
-                    dgvQuery.Columns[iField].Width = m_Width[iField];
-                    dgvQuery.Columns[iField].ReadOnly = true;
-                    dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Format = "G" };
+                    DBTableKey TK = m_TableKeys[idx];
+                    DBTable Table = m_TableMap[TK];
+                    foreach (DBColumn Column in Table.Columns)
+                    {
+                        dgvQuery.Columns.Add(Column.Name, Column.Name);
+                        dgvQuery.Columns[iField].Width = m_Width[iField];
+                        dgvQuery.Columns[iField].ReadOnly = true;
+                        dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Format = Column.FormatString };
+                        iField++;
+                    }
                 }
 
                 // Set the background color of the columns for the keys
@@ -1896,9 +1914,6 @@ namespace D00B
 
             if (m_nCount == 0)
             {
-                // Set the column count
-                m_nColumns = m_Arr.ColLength;
-
                 // Prepare the progress bar
                 pbData.Minimum = 1;
                 pbData.Maximum = m_Arr.RowLength;

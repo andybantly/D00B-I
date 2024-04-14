@@ -284,6 +284,7 @@
             this.lvColumns.VirtualMode = true;
             this.lvColumns.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.LvColumns_RetrieveVirtualItem);
             this.lvColumns.SelectedIndexChanged += new System.EventHandler(this.LvColumns_SelectedIndexChanged);
+            this.lvColumns.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.LvColumns_EditFormat);
             // 
             // lvAdjTables
             // 
