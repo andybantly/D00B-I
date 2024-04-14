@@ -1312,8 +1312,23 @@ namespace D00B
             DBTable Table = m_TableMap[TableKey];
             int iColumn = ColumnIndex();
             DBColumn Column = Table.Columns[iColumn];
+            string strFormatString = Column.FormatString;
 
             // Edit the format
+            Format FmtDlg = new Format(Column.Name, strFormatString);
+            DialogResult Res = FmtDlg.ShowDialog();
+            if (Res == DialogResult.OK)
+            {
+                if (strFormatString != FmtDlg.FormatString)
+                {
+                    // Update the format string
+                    strFormatString = FmtDlg.FormatString;
+                    Column.FormatString = strFormatString;
+
+                    // Trigger the new formatting
+                    ChangeTables();
+                }
+            }
         }
 
         private void LvColumns_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
