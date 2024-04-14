@@ -113,6 +113,7 @@ namespace D00B
             {
                 m_Connection.Open();
                 m_Reader = m_Command.ExecuteReader();
+                m_nFieldCount = m_Reader != null ? m_Reader.FieldCount : 0;
                 for (int iField = 0; iField < m_Reader.FieldCount; iField++)
                 {
                     string strColumnName = m_Reader.GetName(iField);
@@ -220,7 +221,6 @@ namespace D00B
             bool bReturn = m_Reader != null && m_Reader.Read();
             if (bReturn)
             {
-                m_nFieldCount = m_Reader.FieldCount;
                 m_CurrentRow = new object[m_nFieldCount];
 
                 if (m_bReadRow)
@@ -260,7 +260,7 @@ namespace D00B
 
         public object GetValue(int iCol)
         {
-            return iCol < m_nFieldCount ? m_CurrentRow[iCol] : null;
+            return iCol < m_Reader.FieldCount ? m_CurrentRow[iCol] : null;
         }
 
         public object GetValue(string strColumnName)

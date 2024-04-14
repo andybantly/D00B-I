@@ -5,11 +5,13 @@ namespace D00B
 {
     public partial class Format : Form
     {
-        public Format(string strColumnName, string strFormatString)
+        private TypeCode m_TypeCode;
+        public Format(string strColumnName, TypeCode TypeCode, string strFormatString)
         {
             InitializeComponent();
             FmtLabel.Text = string.Format(FmtLabel.Text, strColumnName); 
             FormatString = strFormatString;
+            m_TypeCode = TypeCode;
         }
 
         public string FormatString
@@ -25,6 +27,14 @@ namespace D00B
             }
         }
 
+        private void Format_Load(object sender, EventArgs e)
+        {
+            switch (m_TypeCode) 
+            {
+                default:
+                    break;
+            }
+        }
         private void btnOK_Click(object sender, EventArgs e)
         {
             Close();

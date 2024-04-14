@@ -121,10 +121,11 @@ namespace D00B
 
     public class DBColumn : IComparable<DBColumn>, IEquatable<DBColumn>, IComparable
     {
-        string m_strName = string.Empty;
-        string m_strFormatString = string.Empty;
-        bool m_bIsKey = false;
-        List<DBTableKey> m_Tables = new List<DBTableKey>();
+        private string m_strName = string.Empty;
+        private string m_strFormatString = string.Empty;
+        private TypeCode m_TypeCode;
+        private bool m_bIsKey = false;
+        private List<DBTableKey> m_Tables = new List<DBTableKey>();
 
         public override string ToString()
         {
@@ -204,7 +205,18 @@ namespace D00B
                 m_strFormatString = value; 
             }
         }
-        
+
+        public TypeCode TypeCode
+        {
+            get
+            {
+                return m_TypeCode;
+            }
+            set
+            {
+                m_TypeCode = value;
+            }
+        }
     }
 
     internal class DBTable : IComparable<DBTable>, IEquatable<DBTable>, IComparable

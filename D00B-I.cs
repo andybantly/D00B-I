@@ -27,6 +27,7 @@ namespace D00B
         string[] m_Header;
         int[] m_Width;
         bool[] m_SortOrder;
+        TypeCode[] m_TypeCode;
 
         int m_nCount = -1;
         int m_nPreview = 100;
@@ -1315,7 +1316,7 @@ namespace D00B
             string strFormatString = Column.FormatString;
 
             // Edit the format
-            Format FmtDlg = new Format(Column.Name, strFormatString);
+            Format FmtDlg = new Format(Column.Name, Column.TypeCode, strFormatString);
             DialogResult Res = FmtDlg.ShowDialog();
             if (Res == DialogResult.OK)
             {
@@ -1685,6 +1686,7 @@ namespace D00B
             }
         }
 
+        // Finish up and shpw the results
         private void FinishBackgroundSQL()
         {
             // Operation succeeded
@@ -1704,6 +1706,7 @@ namespace D00B
                     dgvQuery.Columns[iField].Width = m_Width[iField];
                     dgvQuery.Columns[iField].ReadOnly = true;
                     dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Format = Column.FormatString };
+                    Column.TypeCode = m_TypeCode[iField];
                     iField++;
                 }
             }
@@ -1786,6 +1789,7 @@ namespace D00B
                 m_Header = new string[nColumns];
                 m_Width = new int[nColumns];
                 m_SortOrder = new bool[nColumns];
+                m_TypeCode = new TypeCode[nColumns];
 
                 // Column headers
                 Size szExtra = TextRenderer.MeasureText("XXXXX", m_Font);
@@ -1797,6 +1801,7 @@ namespace D00B
                     Size sz = szExtra + TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), m_Font);
                     if (sz.Width > m_Width[iField])
                         m_Width[iField] = Math.Min(65535, sz.Width);
+                    m_TypeCode[iField] = Sql.ColumnType(iField);
                 }
 
                 // Report the number of columns
