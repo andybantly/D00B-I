@@ -17,7 +17,7 @@ namespace D00B
         List<DBJoinKey> m_JoinKeysFr = new List<DBJoinKey>();
         List<DBJoinKey> m_JoinKeysTo = new List<DBJoinKey>();
         int m_nCT = 0; // Number of correlation tables
-        float m_nFontHeight = 0;
+        float m_nFontHeight;
         int m_nMaxSchemaWidth = 0;
         int m_nMaxTableWidth = 0;
         int m_nMaxColumnWidth = 0;
@@ -91,7 +91,8 @@ namespace D00B
             chkPrevAll.Checked = false;
             txtPreview.Text = m_nPreview.ToString();
 
-            m_Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
+            m_nFontHeight = 10.0F;
+            m_Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Regular);
             dgvQuery.AllowUserToDeleteRows = false;
             dgvQuery.Font = m_Font;
             lvTables.View = View.Details;
