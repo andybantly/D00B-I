@@ -1325,7 +1325,7 @@ namespace D00B
             int iAlignment = Column.Alignment;
 
             // Edit the format
-            Format FmtDlg = new Format(Column.Name, Column.TypeCode, strFormatString, iAlignment);
+            FormatBuilder FmtDlg = new FormatBuilder(Column.Name, Column.TypeCode, strFormatString, iAlignment);
             DialogResult Res = FmtDlg.ShowDialog();
             if (Res == DialogResult.OK)
             {

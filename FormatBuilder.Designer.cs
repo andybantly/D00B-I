@@ -1,6 +1,6 @@
 ﻿namespace D00B
 {
-    partial class Format
+    partial class FormatBuilder
     {
         /// <summary>
         /// Required designer variable.
@@ -33,31 +33,36 @@
             this.btnOK = new System.Windows.Forms.Button();
             this.AlignLabel = new System.Windows.Forms.Label();
             this.txtAlignment = new System.Windows.Forms.TextBox();
+            this.txtDescription = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // cbFormat
             // 
             this.cbFormat.FormattingEnabled = true;
-            this.cbFormat.Location = new System.Drawing.Point(16, 44);
+            this.cbFormat.Location = new System.Drawing.Point(14, 35);
+            this.cbFormat.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbFormat.Name = "cbFormat";
-            this.cbFormat.Size = new System.Drawing.Size(315, 28);
+            this.cbFormat.Size = new System.Drawing.Size(280, 24);
             this.cbFormat.TabIndex = 0;
+            this.cbFormat.SelectedIndexChanged += new System.EventHandler(this.CbFormat_SelectedIndexChanged);
+            this.cbFormat.TextChanged += new System.EventHandler(this.CbFormat_SelectedIndexChanged);
             // 
             // FmtLabel
             // 
             this.FmtLabel.AutoSize = true;
-            this.FmtLabel.Location = new System.Drawing.Point(12, 21);
+            this.FmtLabel.Location = new System.Drawing.Point(11, 17);
             this.FmtLabel.Name = "FmtLabel";
-            this.FmtLabel.Size = new System.Drawing.Size(109, 20);
+            this.FmtLabel.Size = new System.Drawing.Size(90, 16);
             this.FmtLabel.TabIndex = 1;
             this.FmtLabel.Text = "{0} Formatting";
             // 
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(217, 182);
+            this.btnOK.Location = new System.Drawing.Point(190, 197);
+            this.btnOK.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(114, 35);
+            this.btnOK.Size = new System.Drawing.Size(101, 28);
             this.btnOK.TabIndex = 2;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
@@ -66,37 +71,49 @@
             // AlignLabel
             // 
             this.AlignLabel.AutoSize = true;
-            this.AlignLabel.Location = new System.Drawing.Point(12, 85);
+            this.AlignLabel.Location = new System.Drawing.Point(11, 68);
             this.AlignLabel.Name = "AlignLabel";
-            this.AlignLabel.Size = new System.Drawing.Size(103, 20);
+            this.AlignLabel.Size = new System.Drawing.Size(86, 16);
             this.AlignLabel.TabIndex = 3;
             this.AlignLabel.Text = "{0} Alignment";
             // 
             // txtAlignment
             // 
-            this.txtAlignment.Location = new System.Drawing.Point(16, 108);
+            this.txtAlignment.Location = new System.Drawing.Point(14, 86);
+            this.txtAlignment.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtAlignment.Name = "txtAlignment";
-            this.txtAlignment.Size = new System.Drawing.Size(313, 26);
+            this.txtAlignment.Size = new System.Drawing.Size(279, 22);
             this.txtAlignment.TabIndex = 4;
             this.txtAlignment.Validating += new System.ComponentModel.CancelEventHandler(this.Alignment_Validating);
             // 
-            // Format
+            // txtDescription
+            // 
+            this.txtDescription.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtDescription.Location = new System.Drawing.Point(14, 124);
+            this.txtDescription.Multiline = true;
+            this.txtDescription.Name = "txtDescription";
+            this.txtDescription.ReadOnly = true;
+            this.txtDescription.Size = new System.Drawing.Size(277, 68);
+            this.txtDescription.TabIndex = 5;
+            // 
+            // FormatBuilder
             // 
             this.AcceptButton = this.btnOK;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(341, 228);
+            this.ClientSize = new System.Drawing.Size(303, 236);
+            this.Controls.Add(this.txtDescription);
             this.Controls.Add(this.txtAlignment);
             this.Controls.Add(this.AlignLabel);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.FmtLabel);
             this.Controls.Add(this.cbFormat);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Format";
+            this.Name = "FormatBuilder";
             this.Text = "Column Format";
-            this.Load += new System.EventHandler(this.Format_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -109,5 +126,6 @@
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Label AlignLabel;
         private System.Windows.Forms.TextBox txtAlignment;
+        private System.Windows.Forms.TextBox txtDescription;
     }
 }
