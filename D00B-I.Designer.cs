@@ -67,11 +67,11 @@
             // txtConnString
             // 
             this.txtConnString.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtConnString.Location = new System.Drawing.Point(124, 42);
+            this.txtConnString.Location = new System.Drawing.Point(166, 42);
             this.txtConnString.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtConnString.Multiline = true;
             this.txtConnString.Name = "txtConnString";
-            this.txtConnString.Size = new System.Drawing.Size(1259, 27);
+            this.txtConnString.Size = new System.Drawing.Size(1217, 29);
             this.txtConnString.TabIndex = 6;
             // 
             // btnLoad
@@ -108,7 +108,7 @@
             this.chkHdr.Location = new System.Drawing.Point(1636, 1960);
             this.chkHdr.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkHdr.Name = "chkHdr";
-            this.chkHdr.Size = new System.Drawing.Size(99, 17);
+            this.chkHdr.Size = new System.Drawing.Size(140, 24);
             this.chkHdr.TabIndex = 13;
             this.chkHdr.Text = "Include Header";
             this.chkHdr.UseVisualStyleBackColor = true;
@@ -120,7 +120,7 @@
             this.chkPrevAll.Location = new System.Drawing.Point(413, 12);
             this.chkPrevAll.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkPrevAll.Name = "chkPrevAll";
-            this.chkPrevAll.Size = new System.Drawing.Size(45, 24);
+            this.chkPrevAll.Size = new System.Drawing.Size(53, 24);
             this.chkPrevAll.TabIndex = 14;
             this.chkPrevAll.Text = "All";
             this.chkPrevAll.UseVisualStyleBackColor = true;
@@ -134,7 +134,7 @@
             this.cbSchema.Location = new System.Drawing.Point(84, 11);
             this.cbSchema.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.cbSchema.Name = "cbSchema";
-            this.cbSchema.Size = new System.Drawing.Size(178, 24);
+            this.cbSchema.Size = new System.Drawing.Size(178, 28);
             this.cbSchema.TabIndex = 15;
             // 
             // label2
@@ -143,7 +143,7 @@
             this.label2.Location = new System.Drawing.Point(8, 9);
             this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(68, 20);
+            this.label2.Size = new System.Drawing.Size(75, 27);
             this.label2.TabIndex = 16;
             this.label2.Text = "Schema";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -155,7 +155,7 @@
             this.tbTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.tbTables.Name = "tbTables";
             this.tbTables.ReadOnly = true;
-            this.tbTables.Size = new System.Drawing.Size(61, 22);
+            this.tbTables.Size = new System.Drawing.Size(61, 26);
             this.tbTables.TabIndex = 18;
             // 
             // txtSearch
@@ -163,7 +163,7 @@
             this.txtSearch.Location = new System.Drawing.Point(1284, 117);
             this.txtSearch.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(446, 20);
+            this.txtSearch.Size = new System.Drawing.Size(446, 26);
             this.txtSearch.TabIndex = 19;
             this.txtSearch.TextChanged += new System.EventHandler(this.BtnSearch_TextChanged);
             // 
@@ -187,7 +187,7 @@
             this.chkTable.Location = new System.Drawing.Point(1246, 83);
             this.chkTable.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkTable.Name = "chkTable";
-            this.chkTable.Size = new System.Drawing.Size(67, 24);
+            this.chkTable.Size = new System.Drawing.Size(74, 24);
             this.chkTable.TabIndex = 23;
             this.chkTable.Text = "Table";
             this.chkTable.UseVisualStyleBackColor = true;
@@ -200,7 +200,7 @@
             this.chkData.Location = new System.Drawing.Point(1320, 83);
             this.chkData.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkData.Name = "chkData";
-            this.chkData.Size = new System.Drawing.Size(63, 24);
+            this.chkData.Size = new System.Drawing.Size(74, 24);
             this.chkData.TabIndex = 24;
             this.chkData.Text = "Data";
             this.chkData.UseVisualStyleBackColor = true;
@@ -213,7 +213,7 @@
             this.txtData.Location = new System.Drawing.Point(1393, 85);
             this.txtData.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtData.Name = "txtData";
-            this.txtData.Size = new System.Drawing.Size(336, 22);
+            this.txtData.Size = new System.Drawing.Size(336, 26);
             this.txtData.TabIndex = 25;
             // 
             // pbData
@@ -230,7 +230,7 @@
             this.chkExact.Location = new System.Drawing.Point(1166, 83);
             this.chkExact.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkExact.Name = "chkExact";
-            this.chkExact.Size = new System.Drawing.Size(68, 24);
+            this.chkExact.Size = new System.Drawing.Size(74, 24);
             this.chkExact.TabIndex = 27;
             this.chkExact.Text = "Exact";
             this.chkExact.UseVisualStyleBackColor = true;
@@ -239,10 +239,10 @@
             // lblPreview
             // 
             this.lblPreview.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPreview.Location = new System.Drawing.Point(274, 9);
+            this.lblPreview.Location = new System.Drawing.Point(274, 12);
             this.lblPreview.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblPreview.Name = "lblPreview";
-            this.lblPreview.Size = new System.Drawing.Size(63, 20);
+            this.lblPreview.Size = new System.Drawing.Size(74, 20);
             this.lblPreview.TabIndex = 30;
             this.lblPreview.Text = "Preview";
             this.lblPreview.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -254,7 +254,7 @@
             this.txtPreview.Location = new System.Drawing.Point(349, 10);
             this.txtPreview.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtPreview.Name = "txtPreview";
-            this.txtPreview.Size = new System.Drawing.Size(52, 22);
+            this.txtPreview.Size = new System.Drawing.Size(52, 26);
             this.txtPreview.TabIndex = 29;
             this.txtPreview.Text = "100";
             this.txtPreview.Validating += new System.ComponentModel.CancelEventHandler(this.TxtPreview_Validating);
@@ -338,7 +338,7 @@
             this.cbDataBases.Location = new System.Drawing.Point(465, 11);
             this.cbDataBases.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.cbDataBases.Name = "cbDataBases";
-            this.cbDataBases.Size = new System.Drawing.Size(1069, 24);
+            this.cbDataBases.Size = new System.Drawing.Size(1069, 28);
             this.cbDataBases.TabIndex = 37;
             this.cbDataBases.SelectionChangeCommitted += new System.EventHandler(this.CbDataBases_SelectionChangeCommitted);
             // 
@@ -466,7 +466,7 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(3, 45);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(112, 20);
+            this.label1.Size = new System.Drawing.Size(154, 20);
             this.label1.TabIndex = 48;
             this.label1.Text = "Connection String";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;

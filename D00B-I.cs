@@ -1327,6 +1327,7 @@ namespace D00B
                     Column.FormatString = strFormatString;
 
                     // Trigger the new formatting
+                    SetupHeaders();
                     FinishBackgroundSQL();
                 }
             }
@@ -1692,62 +1693,6 @@ namespace D00B
             // Operation succeeded
             lvTables.Select();
 
-            Size szRowHeader = TextRenderer.MeasureText("XXXXXXXXXX", m_Font);
-            dgvQuery.RowHeadersWidth = szRowHeader.Width;
-            dgvQuery.Columns.Clear();
-
-            for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
-            {
-                DBTableKey TK = m_TableKeys[idx];
-                DBTable Table = m_TableMap[TK];
-                foreach (DBColumn Column in Table.Columns)
-                {
-                    dgvQuery.Columns.Add(Column.Name, Column.Name);
-                    dgvQuery.Columns[iField].Width = m_Width[iField];
-                    dgvQuery.Columns[iField].ReadOnly = true;
-                    dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Format = Column.FormatString };
-                    Column.TypeCode = m_TypeCode[iField];
-                    iField++;
-                }
-            }
-
-            // Set the background color of the columns for the keys
-            int iColStart = 0;
-            foreach (DBTableKey TableKey in m_TableKeys)
-            {
-                DBTable Table = m_TableMap[TableKey];
-                int nCols = m_TableMap[TableKey].Columns.Count;
-                for (int idx = 0; idx < nCols; ++idx)
-                {
-                    int iCol = iColStart + idx;
-                    DBColumn Column = Table.Columns[idx];
-                    if (Column.IsPrimaryKey)
-                    {
-                        if (Table.ContainsFK(TableKey.Schema, TableKey.Table, Column.Name))
-                        {
-                            // The case where the the foreign key is in the primary table
-                            dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
-                            dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.DarkBlue;
-                        }
-                        else
-                        {
-                            dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
-                            dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.Yellow;
-                        }
-                    }
-                    else
-                    {
-                        DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
-                        if (m_TableMap[TableKey].HasKey(TK))
-                        {
-                            dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
-                            dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.Yellow;
-                        }
-                    }
-                }
-                iColStart += nCols;
-            }
-
             // Set the virtual list size
             dgvQuery.RowCount = m_nCount + 1;
             UpdateJoinTable();
@@ -1792,7 +1737,7 @@ namespace D00B
                 m_TypeCode = new TypeCode[nColumns];
 
                 // Column headers
-                Size szExtra = TextRenderer.MeasureText("XXXXX", m_Font);
+                Size szExtra = TextRenderer.MeasureText("XXXXXXX", m_Font);
                 for (int iField = 0; iField < nColumns; ++iField)
                 {
                     string strColHdr = Sql.Columns[iField];
@@ -1934,6 +1879,66 @@ namespace D00B
             }
         }
 
+        // Setup the column headers of the data grid view query results
+        private void SetupHeaders()
+        {
+            Size szRowHeader = TextRenderer.MeasureText("XXXXXXXXXX", m_Font);
+            dgvQuery.RowHeadersWidth = szRowHeader.Width;
+            dgvQuery.Columns.Clear();
+
+            for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
+            {
+                DBTableKey TK = m_TableKeys[idx];
+                DBTable Table = m_TableMap[TK];
+                foreach (DBColumn Column in Table.Columns)
+                {
+                    dgvQuery.Columns.Add(Column.Name, Column.Name);
+                    dgvQuery.Columns[iField].Width = m_Width[iField];
+                    dgvQuery.Columns[iField].ReadOnly = true;
+                    dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Format = Column.FormatString };
+                    Column.TypeCode = m_TypeCode[iField];
+                    iField++;
+                }
+            }
+
+            // Set the background color of the columns for the keys
+            int iColStart = 0;
+            foreach (DBTableKey TableKey in m_TableKeys)
+            {
+                DBTable Table = m_TableMap[TableKey];
+                int nCols = m_TableMap[TableKey].Columns.Count;
+                for (int idx = 0; idx < nCols; ++idx)
+                {
+                    int iCol = iColStart + idx;
+                    DBColumn Column = Table.Columns[idx];
+                    if (Column.IsPrimaryKey)
+                    {
+                        if (Table.ContainsFK(TableKey.Schema, TableKey.Table, Column.Name))
+                        {
+                            // The case where the the foreign key is in the primary table
+                            dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
+                            dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.DarkBlue;
+                        }
+                        else
+                        {
+                            dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
+                            dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.Yellow;
+                        }
+                    }
+                    else
+                    {
+                        DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
+                        if (m_TableMap[TableKey].HasKey(TK))
+                        {
+                            dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
+                            dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.Yellow;
+                        }
+                    }
+                }
+                iColStart += nCols;
+            }
+        }
+
         private void BkgSQL_ProgressChanged(object sender, ProgressChangedEventArgs e) 
         {
             // Set virtual list box count
@@ -1944,6 +1949,9 @@ namespace D00B
                 // Prepare the progress bar
                 pbData.Minimum = 1;
                 pbData.Maximum = m_Arr.RowLength;
+
+                // Setup the column headers
+                SetupHeaders();
             }
             else
             {
