@@ -11,7 +11,6 @@ namespace D00B
         private string m_strTable = string.Empty;
         private string m_strColumn = string.Empty;
         private string m_strJoinTag = string.Empty;
-
         public DBTableKey()
         {
         }
@@ -122,7 +121,8 @@ namespace D00B
     public class DBColumn : IComparable<DBColumn>, IEquatable<DBColumn>, IComparable
     {
         private string m_strName = string.Empty;
-        private string m_strFormatString = string.Empty;
+        private string m_strFormatString;
+        private int m_iAlignment;
         private TypeCode m_TypeCode;
         private bool m_bIsKey = false;
         private List<DBTableKey> m_Tables = new List<DBTableKey>();
@@ -145,7 +145,7 @@ namespace D00B
         int IComparable.CompareTo(object rhs)
         {
             if (!(rhs is DBColumn))
-                throw new InvalidOperationException("CompareTo: Not a Column");
+                throw new InvalidOperationException("CompareTo: Not a DBColumn");
             return CompareTo((DBColumn)rhs);
         }
         public static bool operator <(DBColumn lhs, DBColumn rhs) => lhs.CompareTo(rhs) < 0;
@@ -163,6 +163,7 @@ namespace D00B
         public DBColumn()
         {
             m_strFormatString = "G";
+            m_iAlignment = 0;
         }
 
         public DBColumn(string strName) : this()
@@ -203,6 +204,18 @@ namespace D00B
             set 
             { 
                 m_strFormatString = value; 
+            }
+        }
+
+        public int Alignment
+        {
+            get
+            {
+                return m_iAlignment;
+            }
+            set 
+            { 
+                m_iAlignment = value; 
             }
         }
 

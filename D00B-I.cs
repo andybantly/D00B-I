@@ -29,6 +29,9 @@ namespace D00B
         bool[] m_SortOrder;
         TypeCode[] m_TypeCode;
 
+        // Built during progress reporting
+        List<KeyValuePair<int, string>> m_ColumnFormatList;
+
         int m_nCount = -1;
         int m_nPreview = 100;
 
@@ -980,19 +983,24 @@ namespace D00B
                 lv.Columns.Add("Schema");
                 lv.Columns[lv.Columns.Count - 1].Width = Math.Max(TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width, m_nMaxSchemaWidth);
             }
+
             if (bTable)
             {
                 lv.Columns.Add("Table");
                 lv.Columns[lv.Columns.Count - 1].Width = Math.Max(TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width, m_nMaxTableWidth);
             }
+
             if (bColumn)
             {
                 lv.Columns.Add("Column");
                 lv.Columns[lv.Columns.Count - 1].Width = Math.Max(TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width, m_nMaxColumnWidth);
             }
+
             if (bFormat)
             {
                 lv.Columns.Add("Format");
+                lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
+                lv.Columns.Add("Align");
                 lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
             }
         }
@@ -1189,7 +1197,7 @@ namespace D00B
                 {
                     try
                     {
-                        e.Value = m_Arr[iCol][iRow]?.ToString(dgvQuery.Columns[iCol].DefaultCellStyle.Format); // IFormattable
+                        e.Value = m_Arr[iCol][iRow]?.ToString(m_ColumnFormatList[iCol].Key, m_ColumnFormatList[iCol].Value); // IFormattable
                     }
                     catch (Exception ex) 
                     {
@@ -1314,17 +1322,20 @@ namespace D00B
             int iColumn = ColumnIndex();
             DBColumn Column = Table.Columns[iColumn];
             string strFormatString = Column.FormatString;
+            int iAlignment = Column.Alignment;
 
             // Edit the format
-            Format FmtDlg = new Format(Column.Name, Column.TypeCode, strFormatString);
+            Format FmtDlg = new Format(Column.Name, Column.TypeCode, strFormatString, iAlignment);
             DialogResult Res = FmtDlg.ShowDialog();
             if (Res == DialogResult.OK)
             {
-                if (strFormatString != FmtDlg.FormatString)
+                if (strFormatString != FmtDlg.FormatString || iAlignment != FmtDlg.Alignment)
                 {
                     // Update the format string
                     strFormatString = FmtDlg.FormatString;
                     Column.FormatString = strFormatString;
+                    iAlignment = FmtDlg.Alignment;
+                    Column.Alignment = iAlignment;
 
                     // Trigger the new formatting
                     SetupHeaders();
@@ -1349,6 +1360,7 @@ namespace D00B
                     e.Item = new ListViewItem(Column.Name);
                     e.Item.UseItemStyleForSubItems = false;
                     e.Item.SubItems.Add(Column.FormatString);
+                    e.Item.SubItems.Add(Column.Alignment.ToString());
 
                     if (Column.IsPrimaryKey)
                     {
@@ -1737,7 +1749,7 @@ namespace D00B
                 m_TypeCode = new TypeCode[nColumns];
 
                 // Column headers
-                Size szExtra = TextRenderer.MeasureText("XXXXXXX", m_Font);
+                Size szExtra = TextRenderer.MeasureText("XXXXXXXX", m_Font);
                 for (int iField = 0; iField < nColumns; ++iField)
                 {
                     string strColHdr = Sql.Columns[iField];
@@ -1886,6 +1898,7 @@ namespace D00B
             dgvQuery.RowHeadersWidth = szRowHeader.Width;
             dgvQuery.Columns.Clear();
 
+            m_ColumnFormatList = new List<KeyValuePair<int, string>>();
             for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
             {
                 DBTableKey TK = m_TableKeys[idx];
@@ -1895,7 +1908,8 @@ namespace D00B
                     dgvQuery.Columns.Add(Column.Name, Column.Name);
                     dgvQuery.Columns[iField].Width = m_Width[iField];
                     dgvQuery.Columns[iField].ReadOnly = true;
-                    dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Format = Column.FormatString };
+                    m_ColumnFormatList.Add(new KeyValuePair<int, string>(Column.Alignment, Column.FormatString));
+                    //dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Format = Column.FormatString };
                     Column.TypeCode = m_TypeCode[iField];
                     iField++;
                 }

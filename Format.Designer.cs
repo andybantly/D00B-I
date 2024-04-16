@@ -31,6 +31,8 @@
             this.cbFormat = new System.Windows.Forms.ComboBox();
             this.FmtLabel = new System.Windows.Forms.Label();
             this.btnOK = new System.Windows.Forms.Button();
+            this.AlignLabel = new System.Windows.Forms.Label();
+            this.txtAlignment = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // cbFormat
@@ -59,7 +61,24 @@
             this.btnOK.TabIndex = 2;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
-            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
+            this.btnOK.Click += new System.EventHandler(this.BtnOK_Click);
+            // 
+            // AlignLabel
+            // 
+            this.AlignLabel.AutoSize = true;
+            this.AlignLabel.Location = new System.Drawing.Point(12, 85);
+            this.AlignLabel.Name = "AlignLabel";
+            this.AlignLabel.Size = new System.Drawing.Size(103, 20);
+            this.AlignLabel.TabIndex = 3;
+            this.AlignLabel.Text = "{0} Alignment";
+            // 
+            // txtAlignment
+            // 
+            this.txtAlignment.Location = new System.Drawing.Point(16, 108);
+            this.txtAlignment.Name = "txtAlignment";
+            this.txtAlignment.Size = new System.Drawing.Size(313, 26);
+            this.txtAlignment.TabIndex = 4;
+            this.txtAlignment.Validating += new System.ComponentModel.CancelEventHandler(this.Alignment_Validating);
             // 
             // Format
             // 
@@ -67,6 +86,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(341, 228);
+            this.Controls.Add(this.txtAlignment);
+            this.Controls.Add(this.AlignLabel);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.FmtLabel);
             this.Controls.Add(this.cbFormat);
@@ -86,5 +107,7 @@
         private System.Windows.Forms.ComboBox cbFormat;
         private System.Windows.Forms.Label FmtLabel;
         private System.Windows.Forms.Button btnOK;
+        private System.Windows.Forms.Label AlignLabel;
+        private System.Windows.Forms.TextBox txtAlignment;
     }
 }

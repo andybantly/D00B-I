@@ -134,13 +134,24 @@ namespace D00B
         }
         public override string ToString()
         {
-            return ToString("G", CultureInfo.CurrentCulture);
+            return ToString(0, "G", CultureInfo.CurrentCulture);
         }
         public string ToString(string strFormat)
         {
-            return ToString(strFormat, CultureInfo.CurrentCulture);
+            return ToString(0, strFormat, CultureInfo.CurrentCulture);
         }
+
+        public string ToString(int iAlignment, string strFormat)
+        {
+            return ToString(iAlignment, strFormat, CultureInfo.CurrentCulture);
+        }
+
         public string ToString(string strFormat, IFormatProvider FmtProvider)
+        {
+            return ToString(0, strFormat, CultureInfo.CurrentCulture);
+        }
+
+        public string ToString(int iAlignment, string strFormat, IFormatProvider FmtProvider)
         {
             if (Null)
                 return "NULL";
@@ -151,7 +162,7 @@ namespace D00B
             if (FmtProvider == null)
                 FmtProvider = CultureInfo.CurrentCulture;
 
-            string strFmtStr = string.Format("{{0:{0}}}", strFormat);
+            string strFmtStr = string.Format("{{0,{0}:{1}}}", iAlignment, strFormat);
 
             switch (TypeCode)
             {
