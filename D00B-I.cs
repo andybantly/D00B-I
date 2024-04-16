@@ -1909,7 +1909,7 @@ namespace D00B
                     dgvQuery.Columns[iField].Width = m_Width[iField];
                     dgvQuery.Columns[iField].ReadOnly = true;
                     m_ColumnFormatList.Add(new KeyValuePair<int, string>(Column.Alignment, Column.FormatString));
-                    //dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Format = Column.FormatString };
+                    dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight };
                     Column.TypeCode = m_TypeCode[iField];
                     iField++;
                 }
