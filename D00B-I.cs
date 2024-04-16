@@ -91,7 +91,6 @@ namespace D00B
             chkPrevAll.Checked = false;
             txtPreview.Text = m_nPreview.ToString();
 
-            m_nFontHeight = lvTables.Font.Size;
             m_Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Bold);
             dgvQuery.AllowUserToDeleteRows = false;
             dgvQuery.Font = m_Font;

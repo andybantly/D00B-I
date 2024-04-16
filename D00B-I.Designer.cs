@@ -60,20 +60,23 @@
             this.btnResetJoin = new System.Windows.Forms.Button();
             this.btnTestJoin = new System.Windows.Forms.Button();
             this.dgvQuery = new System.Windows.Forms.DataGridView();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvQuery)).BeginInit();
             this.SuspendLayout();
             // 
             // txtConnString
             // 
-            this.txtConnString.Location = new System.Drawing.Point(6, 42);
+            this.txtConnString.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtConnString.Location = new System.Drawing.Point(124, 42);
             this.txtConnString.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtConnString.Multiline = true;
             this.txtConnString.Name = "txtConnString";
-            this.txtConnString.Size = new System.Drawing.Size(1528, 27);
+            this.txtConnString.Size = new System.Drawing.Size(1259, 27);
             this.txtConnString.TabIndex = 6;
             // 
             // btnLoad
             // 
+            this.btnLoad.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLoad.Location = new System.Drawing.Point(1617, 3);
             this.btnLoad.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.btnLoad.Name = "btnLoad";
@@ -86,6 +89,7 @@
             // btnExport
             // 
             this.btnExport.Enabled = false;
+            this.btnExport.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnExport.Location = new System.Drawing.Point(1166, 305);
             this.btnExport.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.btnExport.Name = "btnExport";
@@ -104,19 +108,19 @@
             this.chkHdr.Location = new System.Drawing.Point(1636, 1960);
             this.chkHdr.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkHdr.Name = "chkHdr";
-            this.chkHdr.Size = new System.Drawing.Size(144, 24);
+            this.chkHdr.Size = new System.Drawing.Size(99, 17);
             this.chkHdr.TabIndex = 13;
             this.chkHdr.Text = "Include Header";
             this.chkHdr.UseVisualStyleBackColor = true;
             // 
             // chkPrevAll
             // 
-            this.chkPrevAll.AutoSize = true;
             this.chkPrevAll.Enabled = false;
-            this.chkPrevAll.Location = new System.Drawing.Point(416, 9);
+            this.chkPrevAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkPrevAll.Location = new System.Drawing.Point(413, 12);
             this.chkPrevAll.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkPrevAll.Name = "chkPrevAll";
-            this.chkPrevAll.Size = new System.Drawing.Size(52, 24);
+            this.chkPrevAll.Size = new System.Drawing.Size(45, 24);
             this.chkPrevAll.TabIndex = 14;
             this.chkPrevAll.Text = "All";
             this.chkPrevAll.UseVisualStyleBackColor = true;
@@ -125,30 +129,33 @@
             // cbSchema
             // 
             this.cbSchema.Enabled = false;
+            this.cbSchema.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cbSchema.FormattingEnabled = true;
-            this.cbSchema.Location = new System.Drawing.Point(84, 6);
+            this.cbSchema.Location = new System.Drawing.Point(84, 11);
             this.cbSchema.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.cbSchema.Name = "cbSchema";
-            this.cbSchema.Size = new System.Drawing.Size(178, 28);
+            this.cbSchema.Size = new System.Drawing.Size(178, 24);
             this.cbSchema.TabIndex = 15;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(8, 9);
             this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(68, 20);
             this.label2.TabIndex = 16;
             this.label2.Text = "Schema";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // tbTables
             // 
-            this.tbTables.Location = new System.Drawing.Point(1546, 6);
+            this.tbTables.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tbTables.Location = new System.Drawing.Point(1546, 14);
             this.tbTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.tbTables.Name = "tbTables";
             this.tbTables.ReadOnly = true;
-            this.tbTables.Size = new System.Drawing.Size(61, 26);
+            this.tbTables.Size = new System.Drawing.Size(61, 22);
             this.tbTables.TabIndex = 18;
             // 
             // txtSearch
@@ -156,13 +163,14 @@
             this.txtSearch.Location = new System.Drawing.Point(1284, 117);
             this.txtSearch.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(446, 26);
+            this.txtSearch.Size = new System.Drawing.Size(446, 20);
             this.txtSearch.TabIndex = 19;
             this.txtSearch.TextChanged += new System.EventHandler(this.BtnSearch_TextChanged);
             // 
             // btnSearch
             // 
             this.btnSearch.Enabled = false;
+            this.btnSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSearch.Location = new System.Drawing.Point(1166, 111);
             this.btnSearch.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.btnSearch.Name = "btnSearch";
@@ -174,12 +182,12 @@
             // 
             // chkTable
             // 
-            this.chkTable.AutoSize = true;
             this.chkTable.Enabled = false;
-            this.chkTable.Location = new System.Drawing.Point(1245, 80);
+            this.chkTable.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkTable.Location = new System.Drawing.Point(1246, 83);
             this.chkTable.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkTable.Name = "chkTable";
-            this.chkTable.Size = new System.Drawing.Size(74, 24);
+            this.chkTable.Size = new System.Drawing.Size(67, 24);
             this.chkTable.TabIndex = 23;
             this.chkTable.Text = "Table";
             this.chkTable.UseVisualStyleBackColor = true;
@@ -187,12 +195,12 @@
             // 
             // chkData
             // 
-            this.chkData.AutoSize = true;
             this.chkData.Enabled = false;
-            this.chkData.Location = new System.Drawing.Point(1324, 80);
+            this.chkData.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkData.Location = new System.Drawing.Point(1320, 83);
             this.chkData.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkData.Name = "chkData";
-            this.chkData.Size = new System.Drawing.Size(70, 24);
+            this.chkData.Size = new System.Drawing.Size(63, 24);
             this.chkData.TabIndex = 24;
             this.chkData.Text = "Data";
             this.chkData.UseVisualStyleBackColor = true;
@@ -201,27 +209,28 @@
             // txtData
             // 
             this.txtData.Enabled = false;
-            this.txtData.Location = new System.Drawing.Point(1395, 77);
+            this.txtData.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtData.Location = new System.Drawing.Point(1393, 85);
             this.txtData.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtData.Name = "txtData";
-            this.txtData.Size = new System.Drawing.Size(336, 26);
+            this.txtData.Size = new System.Drawing.Size(336, 22);
             this.txtData.TabIndex = 25;
             // 
             // pbData
             // 
-            this.pbData.Location = new System.Drawing.Point(1546, 42);
+            this.pbData.Location = new System.Drawing.Point(1395, 42);
             this.pbData.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.pbData.Name = "pbData";
-            this.pbData.Size = new System.Drawing.Size(183, 29);
+            this.pbData.Size = new System.Drawing.Size(334, 29);
             this.pbData.TabIndex = 26;
             // 
             // chkExact
             // 
-            this.chkExact.AutoSize = true;
-            this.chkExact.Location = new System.Drawing.Point(1164, 80);
+            this.chkExact.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkExact.Location = new System.Drawing.Point(1166, 83);
             this.chkExact.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkExact.Name = "chkExact";
-            this.chkExact.Size = new System.Drawing.Size(75, 24);
+            this.chkExact.Size = new System.Drawing.Size(68, 24);
             this.chkExact.TabIndex = 27;
             this.chkExact.Text = "Exact";
             this.chkExact.UseVisualStyleBackColor = true;
@@ -229,21 +238,23 @@
             // 
             // lblPreview
             // 
-            this.lblPreview.AutoSize = true;
+            this.lblPreview.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPreview.Location = new System.Drawing.Point(274, 9);
             this.lblPreview.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblPreview.Name = "lblPreview";
             this.lblPreview.Size = new System.Drawing.Size(63, 20);
             this.lblPreview.TabIndex = 30;
             this.lblPreview.Text = "Preview";
+            this.lblPreview.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // txtPreview
             // 
             this.txtPreview.Enabled = false;
-            this.txtPreview.Location = new System.Drawing.Point(348, 6);
+            this.txtPreview.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtPreview.Location = new System.Drawing.Point(349, 10);
             this.txtPreview.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtPreview.Name = "txtPreview";
-            this.txtPreview.Size = new System.Drawing.Size(52, 26);
+            this.txtPreview.Size = new System.Drawing.Size(52, 22);
             this.txtPreview.TabIndex = 29;
             this.txtPreview.Text = "100";
             this.txtPreview.Validating += new System.ComponentModel.CancelEventHandler(this.TxtPreview_Validating);
@@ -309,11 +320,11 @@
             this.lvResults.FullRowSelect = true;
             this.lvResults.GridLines = true;
             this.lvResults.HideSelection = false;
-            this.lvResults.Location = new System.Drawing.Point(1284, 152);
+            this.lvResults.Location = new System.Drawing.Point(1283, 147);
             this.lvResults.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvResults.MultiSelect = false;
             this.lvResults.Name = "lvResults";
-            this.lvResults.Size = new System.Drawing.Size(446, 184);
+            this.lvResults.Size = new System.Drawing.Size(446, 193);
             this.lvResults.TabIndex = 36;
             this.lvResults.UseCompatibleStateImageBehavior = false;
             this.lvResults.View = System.Windows.Forms.View.Details;
@@ -322,16 +333,18 @@
             // cbDataBases
             // 
             this.cbDataBases.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbDataBases.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cbDataBases.FormattingEnabled = true;
-            this.cbDataBases.Location = new System.Drawing.Point(466, 4);
+            this.cbDataBases.Location = new System.Drawing.Point(465, 11);
             this.cbDataBases.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.cbDataBases.Name = "cbDataBases";
-            this.cbDataBases.Size = new System.Drawing.Size(1068, 28);
+            this.cbDataBases.Size = new System.Drawing.Size(1069, 24);
             this.cbDataBases.TabIndex = 37;
             this.cbDataBases.SelectionChangeCommitted += new System.EventHandler(this.CbDataBases_SelectionChangeCommitted);
             // 
             // btnJoin
             // 
+            this.btnJoin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnJoin.Location = new System.Drawing.Point(1166, 154);
             this.btnJoin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btnJoin.Name = "btnJoin";
@@ -372,42 +385,47 @@
             // 
             // lb1
             // 
-            this.lb1.AutoSize = true;
-            this.lb1.Location = new System.Drawing.Point(8, 77);
+            this.lb1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb1.Location = new System.Drawing.Point(3, 80);
             this.lb1.Name = "lb1";
             this.lb1.Size = new System.Drawing.Size(179, 20);
             this.lb1.TabIndex = 41;
             this.lb1.Text = "All Schemas and Tables";
+            this.lb1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lb2
             // 
-            this.lb2.AutoSize = true;
-            this.lb2.Location = new System.Drawing.Point(294, 77);
+            this.lb2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb2.Location = new System.Drawing.Point(293, 80);
             this.lb2.Name = "lb2";
             this.lb2.Size = new System.Drawing.Size(161, 20);
             this.lb2.TabIndex = 42;
             this.lb2.Text = "Active Table Columns";
+            this.lb2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lb3
             // 
-            this.lb3.AutoSize = true;
-            this.lb3.Location = new System.Drawing.Point(584, 77);
+            this.lb3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb3.Location = new System.Drawing.Point(582, 80);
             this.lb3.Name = "lb3";
-            this.lb3.Size = new System.Drawing.Size(299, 20);
+            this.lb3.Size = new System.Drawing.Size(204, 20);
             this.lb3.TabIndex = 43;
             this.lb3.Text = "Adjacent Schemas, Tables, and Columns";
+            this.lb3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lb4
             // 
-            this.lb4.AutoSize = true;
-            this.lb4.Location = new System.Drawing.Point(870, 77);
+            this.lb4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb4.Location = new System.Drawing.Point(871, 80);
             this.lb4.Name = "lb4";
             this.lb4.Size = new System.Drawing.Size(265, 20);
             this.lb4.TabIndex = 44;
             this.lb4.Text = "Join Schemas, Tables, and Columns";
+            this.lb4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnResetJoin
             // 
+            this.btnResetJoin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnResetJoin.Location = new System.Drawing.Point(1166, 198);
             this.btnResetJoin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btnResetJoin.Name = "btnResetJoin";
@@ -419,6 +437,7 @@
             // 
             // btnTestJoin
             // 
+            this.btnTestJoin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnTestJoin.Location = new System.Drawing.Point(1166, 249);
             this.btnTestJoin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btnTestJoin.Name = "btnTestJoin";
@@ -442,11 +461,21 @@
             this.dgvQuery.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DgvQuery_CellValueNeeded);
             this.dgvQuery.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DgvQuery_ColumnHeaderMouseClick);
             // 
+            // label1
+            // 
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(3, 45);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(112, 20);
+            this.label1.TabIndex = 48;
+            this.label1.Text = "Connection String";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // D00B
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(1743, 780);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.dgvQuery);
             this.Controls.Add(this.btnTestJoin);
             this.Controls.Add(this.btnResetJoin);
@@ -524,6 +553,7 @@
         private System.Windows.Forms.Button btnResetJoin;
         private System.Windows.Forms.Button btnTestJoin;
         private System.Windows.Forms.DataGridView dgvQuery;
+        private System.Windows.Forms.Label label1;
     }
 }
 
