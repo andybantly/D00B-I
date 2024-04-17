@@ -107,6 +107,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CArray.cs" />
+    <Compile Include="CustomFormatBuilder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomFormatBuilder.Designer.cs">
+      <DependentUpon>CustomFormatBuilder.cs</DependentUpon>
+    </Compile>
     <Compile Include="CVariant.cs" />
     <Compile Include="D00B-I.cs">
       <SubType>Form</SubType>
@@ -137,6 +143,9 @@
     <Compile Include="Database.cs" />
     <Compile Include="SuspendRedraw.cs" />
     <Compile Include="Utility.cs" />
+    <EmbeddedResource Include="CustomFormatBuilder.resx">
+      <DependentUpon>CustomFormatBuilder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="D00B-I.resx">
       <DependentUpon>D00B-I.cs</DependentUpon>
       <SubType>Designer</SubType>

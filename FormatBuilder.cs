@@ -44,7 +44,15 @@ namespace D00B
                     break;
             }
 
-            cbFormat.SelectedIndex = 0;
+            for (int idx = 0; idx < cbFormat.Items.Count; ++idx)
+            {
+                string strFormat = cbFormat.Items[idx].ToString();
+                if (string.Compare(strFormat, FormatString, StringComparison.Ordinal) == 0)
+                {
+                    cbFormat.SelectedIndex = idx;
+                    break;
+                }
+            }
         }
 
         public string FormatString
@@ -91,10 +99,13 @@ namespace D00B
                 e.Cancel = false;
         }
 
-        private void CbFormat_SelectedIndexChanged(object sender, EventArgs e)
+        private void FormatBuilder_SelectedIndexChanged(object sender, EventArgs e)
         {
             string strDescription = string.Empty;
-            if (m_TypeCode == TypeCode.DateTime)
+            if (m_TypeCode == TypeCode.String) 
+            {
+            }
+            else if (m_TypeCode == TypeCode.DateTime)
             {
                 switch (cbFormat.Text)
                 {
@@ -148,11 +159,18 @@ namespace D00B
                         strDescription = "Year month pattern";
                         break;
                     default:
-                        strDescription = "Unknown specifier";
+                        strDescription = "Custom specifier";
                         break;
                 }
             }
             txtDescription.Text = strDescription;            
+        }
+
+        private void CustomFormat_Click(object sender, EventArgs e)
+        {
+            // https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
+            CustomFormatBuilder CFB = new CustomFormatBuilder(m_TypeCode);
+            CFB.ShowDialog();
         }
     }
 }

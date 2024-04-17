@@ -1139,6 +1139,12 @@ namespace D00B
             // Set the busy cursor
             Cursor.Current = Cursors.WaitCursor;
 
+            if (m_BkgSQL.IsBusy)
+            {
+                MessageBox.Show(string.Format("{0} is Busy, please wait until the query is completed.", Text), Text);
+                return;
+            }
+
             // Sort using the classes comparer
             Global.g_bSortOrder = m_SortOrder[e.ColumnIndex];
 
