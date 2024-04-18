@@ -8,6 +8,7 @@ namespace D00B
     {
         // Composite Formatting
         // {index[,alignment][:formatString]} <- Index will be 0 as each format is associated with a single column
+        private string m_strColumnName;
         private TypeCode m_TypeCode;
         public FormatBuilder(string strColumnName, TypeCode TypeCode, string strFormatString, int iAlignment)
         {
@@ -16,7 +17,9 @@ namespace D00B
             AlignLabel.Text = string.Format(AlignLabel.Text, strColumnName);
             FormatString = strFormatString;
             Alignment = iAlignment;
+            m_strColumnName = strColumnName;
             m_TypeCode = TypeCode;
+            btnCustom.Enabled = m_TypeCode != TypeCode.String;
 
             switch (m_TypeCode)
             {
@@ -168,8 +171,7 @@ namespace D00B
 
         private void CustomFormat_Click(object sender, EventArgs e)
         {
-            // https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
-            CustomFormatBuilder CFB = new CustomFormatBuilder(m_TypeCode);
+            CustomFormatBuilder CFB = new CustomFormatBuilder(m_strColumnName, m_TypeCode);
             CFB.ShowDialog();
         }
     }

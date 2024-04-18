@@ -41,9 +41,9 @@
             // 
             this.cbFormat.FormattingEnabled = true;
             this.cbFormat.Location = new System.Drawing.Point(10, 28);
-            this.cbFormat.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbFormat.Margin = new System.Windows.Forms.Padding(2);
             this.cbFormat.Name = "cbFormat";
-            this.cbFormat.Size = new System.Drawing.Size(211, 21);
+            this.cbFormat.Size = new System.Drawing.Size(211, 24);
             this.cbFormat.TabIndex = 0;
             this.cbFormat.SelectedIndexChanged += new System.EventHandler(this.FormatBuilder_SelectedIndexChanged);
             this.cbFormat.TextChanged += new System.EventHandler(this.FormatBuilder_SelectedIndexChanged);
@@ -51,10 +51,10 @@
             // FmtLabel
             // 
             this.FmtLabel.AutoSize = true;
-            this.FmtLabel.Location = new System.Drawing.Point(8, 14);
+            this.FmtLabel.Location = new System.Drawing.Point(8, 11);
             this.FmtLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.FmtLabel.Name = "FmtLabel";
-            this.FmtLabel.Size = new System.Drawing.Size(73, 13);
+            this.FmtLabel.Size = new System.Drawing.Size(90, 16);
             this.FmtLabel.TabIndex = 1;
             this.FmtLabel.Text = "{0} Formatting";
             // 
@@ -62,7 +62,7 @@
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnOK.Location = new System.Drawing.Point(142, 160);
-            this.btnOK.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnOK.Margin = new System.Windows.Forms.Padding(2);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(76, 23);
             this.btnOK.TabIndex = 2;
@@ -76,16 +76,16 @@
             this.AlignLabel.Location = new System.Drawing.Point(8, 55);
             this.AlignLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.AlignLabel.Name = "AlignLabel";
-            this.AlignLabel.Size = new System.Drawing.Size(70, 13);
+            this.AlignLabel.Size = new System.Drawing.Size(86, 16);
             this.AlignLabel.TabIndex = 3;
             this.AlignLabel.Text = "{0} Alignment";
             // 
             // txtAlignment
             // 
             this.txtAlignment.Location = new System.Drawing.Point(10, 70);
-            this.txtAlignment.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtAlignment.Margin = new System.Windows.Forms.Padding(2);
             this.txtAlignment.Name = "txtAlignment";
-            this.txtAlignment.Size = new System.Drawing.Size(210, 20);
+            this.txtAlignment.Size = new System.Drawing.Size(210, 22);
             this.txtAlignment.TabIndex = 4;
             this.txtAlignment.Validating += new System.ComponentModel.CancelEventHandler(this.Alignment_Validating);
             // 
@@ -93,7 +93,7 @@
             // 
             this.txtDescription.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtDescription.Location = new System.Drawing.Point(10, 101);
-            this.txtDescription.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtDescription.Margin = new System.Windows.Forms.Padding(2);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.ReadOnly = true;
@@ -103,7 +103,7 @@
             // btnCustom
             // 
             this.btnCustom.Location = new System.Drawing.Point(10, 161);
-            this.btnCustom.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCustom.Margin = new System.Windows.Forms.Padding(2);
             this.btnCustom.Name = "btnCustom";
             this.btnCustom.Size = new System.Drawing.Size(76, 23);
             this.btnCustom.TabIndex = 6;
@@ -124,7 +124,7 @@
             this.Controls.Add(this.FmtLabel);
             this.Controls.Add(this.cbFormat);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormatBuilder";

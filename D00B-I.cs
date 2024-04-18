@@ -1141,7 +1141,7 @@ namespace D00B
 
             if (m_BkgSQL.IsBusy)
             {
-                MessageBox.Show(string.Format("{0} is Busy, please wait until the query is completed.", Text), Text);
+                MessageBox.Show(string.Format("{0} is busy, please wait until the query is completed.", Text), Text);
                 return;
             }
 

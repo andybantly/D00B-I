@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace D00B
 {
-    public class Utility
+    public static class Utility
     {
         public enum Join // ILRFS
         {
