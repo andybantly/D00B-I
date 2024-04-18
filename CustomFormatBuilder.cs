@@ -130,5 +130,15 @@ namespace D00B
         {
             txtFormat.Text = string.Empty;
         }
+
+        private void lvFormat_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            txtFormat.Text += lvFormat.SelectedItems[0].Text;
+        }
+
+        public string FormatString
+        {
+            get { return txtFormat.Text; }
+        }
     }
 }

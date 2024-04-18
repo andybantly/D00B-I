@@ -172,7 +172,8 @@ namespace D00B
         private void CustomFormat_Click(object sender, EventArgs e)
         {
             CustomFormatBuilder CFB = new CustomFormatBuilder(m_strColumnName, m_TypeCode);
-            CFB.ShowDialog();
+            if (CFB.ShowDialog() == DialogResult.OK && !string.IsNullOrEmpty(CFB.FormatString))
+                cbFormat.Text = CFB.FormatString;
         }
     }
 }

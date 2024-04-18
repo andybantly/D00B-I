@@ -76,6 +76,7 @@
             this.lvFormat.TabIndex = 11;
             this.lvFormat.UseCompatibleStateImageBehavior = false;
             this.lvFormat.View = System.Windows.Forms.View.Details;
+            this.lvFormat.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvFormat_MouseDoubleClick);
             // 
             // txtCustomFormat
             // 
