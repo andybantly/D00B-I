@@ -72,7 +72,7 @@ namespace D00B
         private void D00B_Load(object sender, EventArgs e)
         {
             // Output the licensing disclaimer
-            Debug.WriteLine(@"D00B-I.exe Copyright (C) 2023-Present Andrew S. Bantly");
+            Debug.WriteLine(@"D00B-I.exe Copyright (C) 2022-Present Andrew S. Bantly");
             Debug.WriteLine(@"Andrew ""Andy"" S. Bantly can be reached at andybantly@hotmail.com");
             Debug.WriteLine(@"D00B-I.exe comes with ABSOLUTELY NO WARRANTY");
             Debug.WriteLine(@"This is free software, and you are welcome to redistribute it");
