@@ -1,5 +1,6 @@
 ﻿using Microsoft.Office.Interop.Excel;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -26,8 +27,9 @@ namespace D00B
             }
         }
 
-        static public bool ExportToExcel(CArray Arr, string[] Header, string strTableName)
+        static public bool ExportToExcel(CArray Arr, string[] Header, List<KeyValuePair<int, string>> ColumnFormatList, string strTableName, out double dDuration)
         {
+            dDuration = 0.0;
             DateTime st = DateTime.Now;
             bool bRet = true;
             try
@@ -50,13 +52,11 @@ namespace D00B
                     int iCol = -1;
                     for (iCol = 0; iCol < Arr.ColLength; ++iCol)
                         oArray[0, iCol] = Header[iCol];
+
                     for (int iRow = 0; iRow < Arr.RowLength; ++iRow)
-                    {
                         for (iCol = 0; iCol < Arr.ColLength; ++iCol)
-                        {
-                            oArray[iRow + 1, iCol] = Arr[iCol][iRow].ToString();
-                        }
-                    }
+                            oArray[iRow + 1, iCol] = Arr[iCol][iRow].ToString(ColumnFormatList[iCol].Key, ColumnFormatList[iCol].Value);
+
                     Range Column1 = oSheet.Cells[1, 1];
                     Range Column2 = oSheet.Cells[Arr.RowLength + 1, Arr.ColLength];
                     Range Rng = oSheet.Range[Column1, Column2];
@@ -95,8 +95,7 @@ namespace D00B
             }
 
             DateTime et = DateTime.Now;
-            double diff = (et - st).TotalSeconds;
-            MessageBox.Show(string.Format("Export took {0} seconds", diff));
+            dDuration = (et - st).TotalSeconds;
 
             return bRet;
         }

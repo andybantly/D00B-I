@@ -108,7 +108,7 @@
             this.chkHdr.Location = new System.Drawing.Point(1636, 1960);
             this.chkHdr.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkHdr.Name = "chkHdr";
-            this.chkHdr.Size = new System.Drawing.Size(140, 24);
+            this.chkHdr.Size = new System.Drawing.Size(121, 20);
             this.chkHdr.TabIndex = 13;
             this.chkHdr.Text = "Include Header";
             this.chkHdr.UseVisualStyleBackColor = true;
@@ -163,7 +163,7 @@
             this.txtSearch.Location = new System.Drawing.Point(1284, 117);
             this.txtSearch.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(446, 26);
+            this.txtSearch.Size = new System.Drawing.Size(446, 22);
             this.txtSearch.TabIndex = 19;
             this.txtSearch.TextChanged += new System.EventHandler(this.BtnSearch_TextChanged);
             // 
@@ -303,7 +303,7 @@
             this.lvAdjTables.FullRowSelect = true;
             this.lvAdjTables.GridLines = true;
             this.lvAdjTables.HideSelection = false;
-            this.lvAdjTables.Location = new System.Drawing.Point(585, 103);
+            this.lvAdjTables.Location = new System.Drawing.Point(586, 103);
             this.lvAdjTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvAdjTables.MultiSelect = false;
             this.lvAdjTables.Name = "lvAdjTables";
@@ -370,7 +370,7 @@
             this.lvJoinTables.FullRowSelect = true;
             this.lvJoinTables.GridLines = true;
             this.lvJoinTables.HideSelection = false;
-            this.lvJoinTables.Location = new System.Drawing.Point(874, 103);
+            this.lvJoinTables.Location = new System.Drawing.Point(876, 103);
             this.lvJoinTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvJoinTables.MultiSelect = false;
             this.lvJoinTables.Name = "lvJoinTables";
@@ -455,7 +455,7 @@
             this.dgvQuery.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dgvQuery.Name = "dgvQuery";
             this.dgvQuery.RowHeadersWidth = 62;
-            this.dgvQuery.Size = new System.Drawing.Size(1726, 333);
+            this.dgvQuery.Size = new System.Drawing.Size(1723, 333);
             this.dgvQuery.TabIndex = 47;
             this.dgvQuery.VirtualMode = true;
             this.dgvQuery.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DgvQuery_CellValueNeeded);

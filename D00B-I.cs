@@ -61,6 +61,7 @@ namespace D00B
         private int m_lvColumnsWidth;
         private int m_lvAdjTablesWidth;
         private int m_lvJoinTablesWidth;
+        private int m_dx;
 
         public D00B()
         {
@@ -142,8 +143,12 @@ namespace D00B
             m_txtConnStringWidth = txtConnString.Width;
             m_lvTablesWidth = lvTables.Width;
             m_lvColumnsWidth = lvColumns.Width;
+            m_dx = lvColumns.Left - lvTables.Right;
             m_lvAdjTablesWidth = lvAdjTables.Width;
             m_lvJoinTablesWidth = lvJoinTables.Width;
+
+            // Resize initially for small artifacts of alignment issues
+            OnSizing();
         }
         private void OnSizing()
         {
@@ -216,15 +221,15 @@ namespace D00B
             lvTables.Width = m_lvTablesWidth + dX;
             lb1.Left = lvTables.Left;
 
-            lvColumns.Left = lvTables.Right + 1;
+            lvColumns.Left = lvTables.Right + m_dx;
             lvColumns.Width = m_lvColumnsWidth + dX;
             lb2.Left = lvColumns.Left;
 
-            lvAdjTables.Left = lvColumns.Right + 1;
+            lvAdjTables.Left = lvColumns.Right + m_dx;
             lvAdjTables.Width = m_lvAdjTablesWidth + dX;
             lb3.Left = lvAdjTables.Left;
 
-            lvJoinTables.Left = lvAdjTables.Right + 1;
+            lvJoinTables.Left = lvAdjTables.Right + m_dx;
             lvJoinTables.Width = m_lvJoinTablesWidth + dX;
             lb4.Left = lvJoinTables.Left;
         }
@@ -960,10 +965,10 @@ namespace D00B
 
         private void BtnExport_Click(object sender, EventArgs e)
         {
-            if (dgvQuery.RowCount > 0 && ExportListView.ExportToExcel(m_Arr, m_Header, "SQL"))
-                MessageBox.Show("Successfully exported to Excel");
+            if (dgvQuery.RowCount > 0 && ExportListView.ExportToExcel(m_Arr, m_Header, m_ColumnFormatList, "SQL", out double dDuration))
+                MessageBox.Show(string.Format("Successfully exported to Excel in {0} seconds", dDuration), Text);
             else
-                MessageBox.Show("Failed to export to Excel");
+                MessageBox.Show("Failed to export to Excel", Text);
         }
 
         private void ChkPrevAll_CheckedChanged(object sender, EventArgs e)
