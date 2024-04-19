@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Object Oriented Database Explorer")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("GravyLabs LLC")]
-[assembly: AssemblyProduct("DooB-Eye")]
-[assembly: AssemblyCopyright("Copyright © GravyLabs 2023")]
+[assembly: AssemblyProduct("DóòB-👁")]
+[assembly: AssemblyCopyright("Copyright © GravyLabs 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

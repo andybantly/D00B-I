@@ -73,12 +73,12 @@ namespace D00B
         {
             // Output the licensing disclaimer
             Debug.WriteLine(@"D00B-I.exe Copyright (C) 2023-Present Andrew S. Bantly");
-            Debug.WriteLine("Andrew S. Bantly can be reached at andybantly@hotmail.com");
-            Debug.WriteLine("D00B-I.exe comes with ABSOLUTELY NO WARRANTY");
-            Debug.WriteLine("This is free software, and you are welcome to redistribute it");
-            Debug.WriteLine("under of the GNU General Public License as published by");
-            Debug.WriteLine("the Free Software Foundation; version 2 of the License.");
-            Debug.WriteLine("");
+            Debug.WriteLine(@"Andrew ""Andy"" S. Bantly can be reached at andybantly@hotmail.com");
+            Debug.WriteLine(@"D00B-I.exe comes with ABSOLUTELY NO WARRANTY");
+            Debug.WriteLine(@"This is free software, and you are welcome to redistribute it");
+            Debug.WriteLine(@"under of the GNU General Public License as published by");
+            Debug.WriteLine(@"the Free Software Foundation; version 2 of the License.");
+            Debug.WriteLine(@"");
             Debug.WriteLine(@"""We can forgive a man for making a useful thing as long as he does not admire it. The only excuse for making a useless thing is that one admires it intensely. All art is quite useless"" - Oscar Wilde, The Picture of Dorian Gray");
 
             ClearUI();

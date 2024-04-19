@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(D00B));
             this.txtConnString = new System.Windows.Forms.TextBox();
             this.btnLoad = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
@@ -508,6 +509,7 @@
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.txtConnString);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.Name = "D00B";
             this.Text = "DóòB-👁";
