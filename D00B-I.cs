@@ -1911,11 +1911,13 @@ namespace D00B
                 DBTable Table = m_TableMap[TK];
                 foreach (DBColumn Column in Table.Columns)
                 {
+                    if (!m_BkgSQL.CancellationPending)
+                        Column.TypeCode = m_TypeCode[iField];
                     dgvQuery.Columns.Add(Column.Name, Column.Name);
-                    dgvQuery.Columns[iField].Width = m_Width[iField];
+                    if (!m_BkgSQL.CancellationPending)
+                        dgvQuery.Columns[iField].Width = m_Width[iField];
                     dgvQuery.Columns[iField].ReadOnly = true;
                     m_ColumnFormatList.Add(new KeyValuePair<int, string>(Column.Alignment, Column.FormatString));
-                    Column.TypeCode = m_TypeCode[iField];
                     dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Alignment = Column.TypeCode != TypeCode.String ? DataGridViewContentAlignment.MiddleRight : DataGridViewContentAlignment.MiddleLeft };
                     iField++;
                 }
@@ -1970,13 +1972,25 @@ namespace D00B
                 pbData.Minimum = 1;
                 pbData.Maximum = m_Arr.RowLength;
 
-                // Setup the column headers
+                // Setup the column headers // move column widths, prevent from null
                 SetupHeaders();
             }
             else
             {
-                // Set the wait cursor, rowcount, and progress percentage
-                pbData.Value = m_nCount;
+                // Update column widths
+                for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
+                {
+                    DBTableKey TK = m_TableKeys[idx];
+                    DBTable Table = m_TableMap[TK];
+                    foreach (DBColumn Column in Table.Columns)
+                    {
+                        if (dgvQuery.Columns.Count > 0 && !m_BkgSQL.CancellationPending)
+                        {
+                            if (m_Width[iField] > dgvQuery.Columns[iField].Width)
+                                dgvQuery.Columns[iField].Width = m_Width[iField];
+                        }
+                    }
+                }
                 dgvQuery.RowCount = m_nCount + 1;
                 Cursor.Current = Cursors.WaitCursor;
             }
