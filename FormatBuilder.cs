@@ -43,19 +43,59 @@ namespace D00B
                     cbFormat.Items.Add("Y");
                     cbFormat.Items.Add("y");
                     break;
+
+                case TypeCode.Boolean:
+                case TypeCode.Char:
+                case TypeCode.Byte:
+                case TypeCode.SByte:
+                case TypeCode.Int16:
+                case TypeCode.UInt16:
+                case TypeCode.Int32:
+                case TypeCode.UInt32:
+                case TypeCode.Int64:
+                case TypeCode.UInt64:
+                case TypeCode.Single:
+                case TypeCode.Double:
+                case TypeCode.Decimal:
+                    cbFormat.Items.Add("B");
+                    cbFormat.Items.Add("b");
+                    cbFormat.Items.Add("C");
+                    cbFormat.Items.Add("c");
+                    cbFormat.Items.Add("D");
+                    cbFormat.Items.Add("d");
+                    cbFormat.Items.Add("E");
+                    cbFormat.Items.Add("e");
+                    cbFormat.Items.Add("F");
+                    cbFormat.Items.Add("f");
+                    cbFormat.Items.Add("G");
+                    cbFormat.Items.Add("g");
+                    cbFormat.Items.Add("N");
+                    cbFormat.Items.Add("n");
+                    cbFormat.Items.Add("P");
+                    cbFormat.Items.Add("p");
+                    cbFormat.Items.Add("R");
+                    cbFormat.Items.Add("r");
+                    cbFormat.Items.Add("X");
+                    cbFormat.Items.Add("x");
+                    break;
+
                 default:
                     break;
             }
 
+            bool bFound = false;
             for (int idx = 0; idx < cbFormat.Items.Count; ++idx)
             {
                 string strFormat = cbFormat.Items[idx].ToString();
                 if (string.Compare(strFormat, FormatString, StringComparison.Ordinal) == 0)
                 {
                     cbFormat.SelectedIndex = idx;
+                    bFound = true;
                     break;
                 }
             }
+            if (!bFound)
+                cbFormat.SelectedIndex = cbFormat.Items.Count - 1;
         }
 
         public string FormatString
@@ -106,8 +146,7 @@ namespace D00B
         {
             string strDescription = string.Empty;
             if (m_TypeCode == TypeCode.String) 
-            {
-            }
+                strDescription = "Custom specifier";
             else if (m_TypeCode == TypeCode.DateTime)
             {
                 switch (cbFormat.Text)
@@ -160,6 +199,55 @@ namespace D00B
                     case "Y":
                     case "y":
                         strDescription = "Year month pattern";
+                        break;
+                    default:
+                        strDescription = "Custom specifier";
+                        break;
+                }
+            }
+            else
+            {
+                switch (cbFormat.Text)
+                {
+                    case "B":
+                    case "b":
+                        strDescription = "Binary. Result: A binary string";
+                        break;
+                    case "C":
+                    case "c":
+                        strDescription = "Currency. Result: A currency value";
+                        break;
+                    case "D":
+                    case "d":
+                        strDescription = "Decimal. Result: Integer digits with optional negative sign";
+                        break;
+                    case "E":
+                    case "e":
+                        strDescription = "Exponential (scientific). Result: Exponential notation";
+                        break;
+                    case "F":
+                    case "f":
+                        strDescription = "Fixed-point. Result: Integral and decimal digits with optional negative sign";
+                        break;
+                    case "G":
+                    case "g":
+                        strDescription = "General. Result: The more compact of either fixed-point or scientific notation";
+                        break;
+                    case "N":
+                    case "n":
+                        strDescription = "Number. Result: Integral and decimal digits, group separators, and a decimal separator with optional negative sign";
+                        break;
+                    case "P":
+                    case "p":
+                        strDescription = "Percent. Result: Number multiplied by 100 and displayed with a percent symbol";
+                        break;
+                    case "R":
+                    case "r":
+                        strDescription = "Round-trip. Result: A string that can round-trip to an identical number";
+                        break;
+                    case "X":
+                    case "x":
+                        strDescription = "Hexadecimal. Result: A hexadecimal string";
                         break;
                     default:
                         strDescription = "Custom specifier";
