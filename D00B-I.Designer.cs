@@ -281,6 +281,7 @@
             // 
             // lvColumns
             // 
+            this.lvColumns.CheckBoxes = true;
             this.lvColumns.Enabled = false;
             this.lvColumns.FullRowSelect = true;
             this.lvColumns.GridLines = true;
@@ -295,7 +296,8 @@
             this.lvColumns.View = System.Windows.Forms.View.Details;
             this.lvColumns.VirtualMode = true;
             this.lvColumns.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.LvColumns_RetrieveVirtualItem);
-            this.lvColumns.SelectedIndexChanged += new System.EventHandler(this.LvColumns_SelectedIndexChanged);
+            this.lvColumns.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.LvColumns_KeyPress);
+            this.lvColumns.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LvColumns_MouseClick);
             this.lvColumns.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.LvColumns_EditFormat);
             // 
             // lvAdjTables

@@ -24,7 +24,6 @@ namespace D00B
         Font m_Font;
 
         CArray m_Arr;
-        string[] m_Header;
         int[] m_Width;
         bool[] m_SortOrder;
         TypeCode[] m_TypeCode;
@@ -921,7 +920,7 @@ namespace D00B
         {
             // Clear storages used for UI
             m_Arr = null;
-            m_Header = null;
+            m_ColumnFormatList = null;
             m_Width = null;
             m_SortOrder = null;
         }
@@ -965,7 +964,16 @@ namespace D00B
 
         private void BtnExport_Click(object sender, EventArgs e)
         {
-            if (dgvQuery.RowCount > 0 && ExportListView.ExportToExcel(m_Arr, m_Header, m_ColumnFormatList, "SQL", out double dDuration))
+            List<KeyValuePair<string, bool>> Header = new List<KeyValuePair<string, bool>>();
+            for (int idx = 0; idx < m_TableKeys.Count; idx++)
+            {
+                DBTableKey TK = m_TableKeys[idx];
+                DBTable Table = m_TableMap[TK];
+                foreach (DBColumn Column in Table.Columns)
+                    Header.Add(new KeyValuePair<string, bool>(Column.Name, Column.Include));
+            }
+
+            if (dgvQuery.RowCount > 0 && ExportListView.ExportToExcel(m_Arr, Header, m_ColumnFormatList, "SQL", out double dDuration))
                 MessageBox.Show(string.Format("Successfully exported to Excel in {0} seconds", dDuration), Text);
             else
                 MessageBox.Show("Failed to export to Excel", Text);
@@ -1322,15 +1330,44 @@ namespace D00B
         {
             UpdateUI(true);
         }
-        private void LvColumns_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdateUI(true);
-        }
-        private void LvColumns_EditFormat(object sender, MouseEventArgs e)
+        private void ToggleColumn(int iColumn)
         {
             DBTableKey TableKey = m_TableKeys[0];
             DBTable Table = m_TableMap[TableKey];
+            DBColumn Column = Table.Columns[iColumn];
+            Column.Include = !Column.Include;
+
+            // Trigger the new column visibility
+            SetupHeaders();
+            FinishBackgroundSQL();
+        }
+        private void LvColumns_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Location.X > 20)
+                return;
             int iColumn = ColumnIndex();
+            if (iColumn < 0)
+                return;
+            ListViewItem Item = lvColumns.GetItemAt(e.Location.X, e.Location.Y);
+            ListViewItem SelItem = lvColumns.Items[iColumn];
+            if (Item.Text == SelItem.Text)
+                ToggleColumn(iColumn);
+        }
+
+        private void LvColumns_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            int iColumn = ColumnIndex();
+            if (iColumn < 0)
+                return;
+            ToggleColumn(iColumn);
+        }
+        private void LvColumns_EditFormat(object sender, MouseEventArgs e)
+        {
+            int iColumn = ColumnIndex();
+            if (iColumn < 0)
+                return;
+            DBTableKey TableKey = m_TableKeys[0];
+            DBTable Table = m_TableMap[TableKey];
             DBColumn Column = Table.Columns[iColumn];
             string strFormatString = Column.FormatString;
             int iAlignment = Column.Alignment;
@@ -1369,6 +1406,7 @@ namespace D00B
                     DBTable Table = m_TableMap[TableKey];
                     DBColumn Column = Table.Columns[iRow];
                     e.Item = new ListViewItem(Column.Name);
+                    e.Item.Checked = Column.Include;
                     e.Item.UseItemStyleForSubItems = false;
                     e.Item.SubItems.Add(Column.FormatString);
                     e.Item.SubItems.Add(Column.Alignment.ToString());
@@ -1754,7 +1792,6 @@ namespace D00B
 
                 int nColumns = Sql.Columns.Count;
                 m_Arr = new CArray(nCount, nColumns);
-                m_Header = new string[nColumns];
                 m_Width = new int[nColumns];
                 m_SortOrder = new bool[nColumns];
                 m_TypeCode = new TypeCode[nColumns];
@@ -1764,7 +1801,6 @@ namespace D00B
                 for (int iField = 0; iField < nColumns; ++iField)
                 {
                     string strColHdr = Sql.Columns[iField];
-                    m_Header[iField] = strColHdr;
                     m_SortOrder[iField] = false;
                     Size sz = szExtra + TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), m_Font);
                     if (sz.Width > m_Width[iField])
@@ -1924,6 +1960,7 @@ namespace D00B
                     dgvQuery.Columns[iField].ReadOnly = true;
                     m_ColumnFormatList.Add(new KeyValuePair<int, string>(Column.Alignment, Column.FormatString));
                     dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Alignment = Column.TypeCode != TypeCode.String ? DataGridViewContentAlignment.MiddleRight : DataGridViewContentAlignment.MiddleLeft };
+                    dgvQuery.Columns[iField].Visible = Column.Include;
                     iField++;
                 }
             }

@@ -121,11 +121,30 @@ namespace D00B
     public class DBColumn : IComparable<DBColumn>, IEquatable<DBColumn>, IComparable
     {
         private string m_strName = string.Empty;
+        private bool m_bInclude;
         private string m_strFormatString;
         private int m_iAlignment;
         private TypeCode m_TypeCode;
         private bool m_bIsKey = false;
         private List<DBTableKey> m_Tables = new List<DBTableKey>();
+
+        public DBColumn()
+        {
+            m_strFormatString = "G";
+            m_iAlignment = 0;
+            m_bInclude = true;
+        }
+
+        public DBColumn(string strName) : this()
+        {
+            if (!string.IsNullOrEmpty(strName))
+                m_strName = strName;
+        }
+
+        public DBColumn(string strName, bool bIsKey) : this(strName)
+        {
+            m_bIsKey = bIsKey;
+        }
 
         public override string ToString()
         {
@@ -160,29 +179,6 @@ namespace D00B
         public static bool operator ==(DBColumn lhs, DBColumn rhs) => lhs.Equals(rhs);
         public static bool operator !=(DBColumn lhs, DBColumn rhs) => !(lhs == rhs);
 
-        public DBColumn()
-        {
-            m_strFormatString = "G";
-            m_iAlignment = 0;
-        }
-
-        public DBColumn(string strName) : this()
-        {
-            if (!string.IsNullOrEmpty(strName))
-                m_strName = strName;
-        }
-
-        public DBColumn(string strName, bool bIsKey) : this(strName)
-        {
-            m_bIsKey = bIsKey;
-        }
-
-        public string Name
-        {
-            get { return m_strName; }
-            set { m_strName = string.IsNullOrEmpty(value) ? value : string.Empty; }
-        }
-
         public bool IsPrimaryKey
         {
             get { return m_bIsKey; }
@@ -193,6 +189,23 @@ namespace D00B
         {
             get { return m_Tables; }
             set { m_Tables = value; }
+        }
+        public string Name
+        {
+            get { return m_strName; }
+            set { m_strName = string.IsNullOrEmpty(value) ? value : string.Empty; }
+        }
+
+        public bool Include
+        {
+            get
+            {
+                return m_bInclude;
+            }
+            set 
+            {
+                m_bInclude = value; 
+            }
         }
 
         public string FormatString

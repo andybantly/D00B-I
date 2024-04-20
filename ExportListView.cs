@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 // Add a COM reference to "Microsoft Excel ##.# Object"
@@ -27,11 +28,20 @@ namespace D00B
             }
         }
 
-        static public bool ExportToExcel(CArray Arr, string[] Header, List<KeyValuePair<int, string>> ColumnFormatList, string strTableName, out double dDuration)
+        static public bool ExportToExcel(CArray Arr, List<KeyValuePair<string, bool>> Header, List<KeyValuePair<int, string>> ColumnFormatList, string strTableName, out double dDuration)
         {
             dDuration = 0.0;
             DateTime st = DateTime.Now;
             bool bRet = true;
+
+            int nColLength = 0;
+            int iCol = -1;
+            for (iCol = 0; iCol < Arr.ColLength; ++iCol)
+                if (Header[iCol].Value)
+                    nColLength++;
+            if (nColLength == 0)
+                return true;
+
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
@@ -47,18 +57,19 @@ namespace D00B
 
                 try
                 {
-                    object[,] oArray = new object[Arr.RowLength + 1, Arr.ColLength];
-
-                    int iCol = -1;
-                    for (iCol = 0; iCol < Arr.ColLength; ++iCol)
-                        oArray[0, iCol] = Header[iCol];
+                    int idx;
+                    object[,] oArray = new object[Arr.RowLength + 1, nColLength];
+                    for (iCol = 0, idx = 0; iCol < Arr.ColLength; ++iCol)
+                        if (Header[iCol].Value)
+                            oArray[0, idx++] = Header[iCol].Key;
 
                     for (int iRow = 0; iRow < Arr.RowLength; ++iRow)
-                        for (iCol = 0; iCol < Arr.ColLength; ++iCol)
-                            oArray[iRow + 1, iCol] = Arr[iCol][iRow].ToString(ColumnFormatList[iCol].Key, ColumnFormatList[iCol].Value);
+                        for (iCol = 0, idx = 0; iCol < Arr.ColLength; ++iCol)
+                            if (Header[iCol].Value)
+                                oArray[iRow + 1, idx++] = Arr[iCol][iRow].ToString(ColumnFormatList[iCol].Key, ColumnFormatList[iCol].Value);
 
                     Range Column1 = oSheet.Cells[1, 1];
-                    Range Column2 = oSheet.Cells[Arr.RowLength + 1, Arr.ColLength];
+                    Range Column2 = oSheet.Cells[Arr.RowLength + 1, nColLength];
                     Range Rng = oSheet.Range[Column1, Column2];
                     Rng.Value = oArray;
 
