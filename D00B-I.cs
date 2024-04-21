@@ -6,6 +6,7 @@ using System.Security.Principal;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace D00B
 {
@@ -29,7 +30,9 @@ namespace D00B
         TypeCode[] m_TypeCode;
 
         // Built during progress reporting
-        List<KeyValuePair<int, string>> m_ColumnFormatList;
+        List<int> m_ColumnAlignment;
+        List<string> m_ColumnFormatString;
+        List<IFormatProvider> m_ColumnFormatProvider;
 
         int m_nCount = -1;
         int m_nPreview = 100;
@@ -214,7 +217,7 @@ namespace D00B
             txtConnString.Width = m_txtConnStringWidth + PtDiff.X;
 
             // Move and size the labels and list views
-            int dX = PtDiff.X / 4;
+            int dX = PtDiff.X / 3;
 
             // Move and resize the list views
             lvTables.Width = m_lvTablesWidth + dX;
@@ -228,9 +231,9 @@ namespace D00B
             lvAdjTables.Width = m_lvAdjTablesWidth + dX;
             lb3.Left = lvAdjTables.Left;
 
-            lvJoinTables.Left = lvAdjTables.Right + m_dx;
-            lvJoinTables.Width = m_lvJoinTablesWidth + dX;
-            lb4.Left = lvJoinTables.Left;
+            //lvJoinTables.Left = lvAdjTables.Right + m_dx;
+            //lvJoinTables.Width = m_lvJoinTablesWidth + dX;
+            //lb4.Left = lvJoinTables.Left;
         }
 
         void UpdateUI(bool bEnabled)
@@ -920,7 +923,9 @@ namespace D00B
         {
             // Clear storages used for UI
             m_Arr = null;
-            m_ColumnFormatList = null;
+            m_ColumnAlignment = null;
+            m_ColumnFormatString = null;
+            m_ColumnFormatProvider = null;
             m_Width = null;
             m_SortOrder = null;
         }
@@ -973,7 +978,7 @@ namespace D00B
                     Header.Add(new KeyValuePair<string, bool>(Column.Name, Column.Include));
             }
 
-            if (dgvQuery.RowCount > 0 && ExportListView.ExportToExcel(m_Arr, Header, m_ColumnFormatList, "SQL", out double dDuration))
+            if (dgvQuery.RowCount > 0 && ExportListView.ExportToExcel(m_Arr, Header, m_ColumnAlignment, m_ColumnFormatString, m_ColumnFormatProvider, "SQL", out double dDuration))
                 MessageBox.Show(string.Format("Successfully exported to Excel in {0} seconds", dDuration), Text);
             else
                 MessageBox.Show("Failed to export to Excel", Text);
@@ -1014,6 +1019,8 @@ namespace D00B
                 lv.Columns.Add("Format");
                 lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
                 lv.Columns.Add("Align");
+                lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
+                lv.Columns.Add("Culture");
                 lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
             }
         }
@@ -1216,7 +1223,7 @@ namespace D00B
                 {
                     try
                     {
-                        e.Value = m_Arr[iCol][iRow]?.ToString(m_ColumnFormatList[iCol].Key, m_ColumnFormatList[iCol].Value); // IFormattable
+                        e.Value = m_Arr[iCol][iRow]?.ToString(m_ColumnAlignment[iCol], m_ColumnFormatString[iCol], m_ColumnFormatProvider[iCol]); // IFormattable
                     }
                     catch (Exception ex) 
                     {
@@ -1348,6 +1355,7 @@ namespace D00B
             int iColumn = ColumnIndex();
             if (iColumn < 0)
                 return;
+            lvColumns.SelectedIndices.Add(iColumn);
             ListViewItem Item = lvColumns.GetItemAt(e.Location.X, e.Location.Y);
             ListViewItem SelItem = lvColumns.Items[iColumn];
             if (Item.Text == SelItem.Text)
@@ -1369,21 +1377,21 @@ namespace D00B
             DBTableKey TableKey = m_TableKeys[0];
             DBTable Table = m_TableMap[TableKey];
             DBColumn Column = Table.Columns[iColumn];
+            string strCultureName = Column.CultureName;
             string strFormatString = Column.FormatString;
             int iAlignment = Column.Alignment;
 
             // Edit the format
-            FormatBuilder FmtDlg = new FormatBuilder(Column.Name, Column.TypeCode, strFormatString, iAlignment);
+            FormatBuilder FmtDlg = new FormatBuilder(Column.Name, Column.TypeCode, strFormatString, iAlignment, strCultureName);
             DialogResult Res = FmtDlg.ShowDialog();
             if (Res == DialogResult.OK)
             {
-                if (strFormatString != FmtDlg.FormatString || iAlignment != FmtDlg.Alignment)
+                if (strFormatString != FmtDlg.FormatString || iAlignment != FmtDlg.Alignment || strCultureName != FmtDlg.CultureName)
                 {
                     // Update the format string
-                    strFormatString = FmtDlg.FormatString;
-                    Column.FormatString = strFormatString;
-                    iAlignment = FmtDlg.Alignment;
-                    Column.Alignment = iAlignment;
+                    Column.FormatString = FmtDlg.FormatString;
+                    Column.Alignment = FmtDlg.Alignment; ;
+                    Column.CultureName = FmtDlg.CultureName;
 
                     // Trigger the new formatting
                     SetupHeaders();
@@ -1410,6 +1418,7 @@ namespace D00B
                     e.Item.UseItemStyleForSubItems = false;
                     e.Item.SubItems.Add(Column.FormatString);
                     e.Item.SubItems.Add(Column.Alignment.ToString());
+                    e.Item.SubItems.Add(Column.CultureName);
 
                     if (Column.IsPrimaryKey)
                     {
@@ -1945,7 +1954,9 @@ namespace D00B
             dgvQuery.RowHeadersWidth = szRowHeader.Width;
             dgvQuery.Columns.Clear();
 
-            m_ColumnFormatList = new List<KeyValuePair<int, string>>();
+            m_ColumnAlignment = new List<int>();
+            m_ColumnFormatString = new List<string>();
+            m_ColumnFormatProvider = new List<IFormatProvider>();
             for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
             {
                 DBTableKey TK = m_TableKeys[idx];
@@ -1958,7 +1969,9 @@ namespace D00B
                     if (!m_BkgSQL.CancellationPending)
                         dgvQuery.Columns[iField].Width = m_Width[iField];
                     dgvQuery.Columns[iField].ReadOnly = true;
-                    m_ColumnFormatList.Add(new KeyValuePair<int, string>(Column.Alignment, Column.FormatString));
+                    m_ColumnAlignment.Add(Column.Alignment);
+                    m_ColumnFormatString.Add(Column.FormatString);
+                    m_ColumnFormatProvider.Add(new CultureInfo(Column.CultureName));
                     dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Alignment = Column.TypeCode != TypeCode.String ? DataGridViewContentAlignment.MiddleRight : DataGridViewContentAlignment.MiddleLeft };
                     dgvQuery.Columns[iField].Visible = Column.Include;
                     iField++;

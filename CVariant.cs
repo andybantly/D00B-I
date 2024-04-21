@@ -148,7 +148,7 @@ namespace D00B
 
         public string ToString(string strFormat, IFormatProvider FmtProvider)
         {
-            return ToString(0, strFormat, CultureInfo.CurrentCulture);
+            return ToString(0, strFormat, FmtProvider);
         }
 
         public string ToString(int iAlignment, string strFormat, IFormatProvider FmtProvider)

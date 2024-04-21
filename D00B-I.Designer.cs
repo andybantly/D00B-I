@@ -290,7 +290,7 @@
             this.lvColumns.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvColumns.MultiSelect = false;
             this.lvColumns.Name = "lvColumns";
-            this.lvColumns.Size = new System.Drawing.Size(286, 235);
+            this.lvColumns.Size = new System.Drawing.Size(564, 235);
             this.lvColumns.TabIndex = 34;
             this.lvColumns.UseCompatibleStateImageBehavior = false;
             this.lvColumns.View = System.Windows.Forms.View.Details;
@@ -306,11 +306,11 @@
             this.lvAdjTables.FullRowSelect = true;
             this.lvAdjTables.GridLines = true;
             this.lvAdjTables.HideSelection = false;
-            this.lvAdjTables.Location = new System.Drawing.Point(586, 103);
+            this.lvAdjTables.Location = new System.Drawing.Point(868, 103);
             this.lvAdjTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvAdjTables.MultiSelect = false;
             this.lvAdjTables.Name = "lvAdjTables";
-            this.lvAdjTables.Size = new System.Drawing.Size(286, 235);
+            this.lvAdjTables.Size = new System.Drawing.Size(290, 235);
             this.lvAdjTables.TabIndex = 35;
             this.lvAdjTables.UseCompatibleStateImageBehavior = false;
             this.lvAdjTables.View = System.Windows.Forms.View.Details;
@@ -373,15 +373,16 @@
             this.lvJoinTables.FullRowSelect = true;
             this.lvJoinTables.GridLines = true;
             this.lvJoinTables.HideSelection = false;
-            this.lvJoinTables.Location = new System.Drawing.Point(876, 103);
+            this.lvJoinTables.Location = new System.Drawing.Point(868, 311);
             this.lvJoinTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvJoinTables.MultiSelect = false;
             this.lvJoinTables.Name = "lvJoinTables";
-            this.lvJoinTables.Size = new System.Drawing.Size(286, 235);
+            this.lvJoinTables.Size = new System.Drawing.Size(286, 29);
             this.lvJoinTables.TabIndex = 40;
             this.lvJoinTables.UseCompatibleStateImageBehavior = false;
             this.lvJoinTables.View = System.Windows.Forms.View.Details;
             this.lvJoinTables.VirtualMode = true;
+            this.lvJoinTables.Visible = false;
             this.lvJoinTables.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.LvJoinTables_RetrieveVirtualItem);
             this.lvJoinTables.SelectedIndexChanged += new System.EventHandler(this.LvJoinTables_SelectedIndexChanged);
             this.lvJoinTables.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.LvJoinTables_MouseDoubleClick);
@@ -409,7 +410,7 @@
             // lb3
             // 
             this.lb3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb3.Location = new System.Drawing.Point(582, 80);
+            this.lb3.Location = new System.Drawing.Point(864, 80);
             this.lb3.Name = "lb3";
             this.lb3.Size = new System.Drawing.Size(204, 20);
             this.lb3.TabIndex = 43;
@@ -419,12 +420,13 @@
             // lb4
             // 
             this.lb4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb4.Location = new System.Drawing.Point(871, 80);
+            this.lb4.Location = new System.Drawing.Point(881, 286);
             this.lb4.Name = "lb4";
             this.lb4.Size = new System.Drawing.Size(265, 20);
             this.lb4.TabIndex = 44;
             this.lb4.Text = "Join Schemas, Tables, and Columns";
             this.lb4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lb4.Visible = false;
             // 
             // btnResetJoin
             // 

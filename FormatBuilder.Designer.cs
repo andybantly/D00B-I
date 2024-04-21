@@ -35,15 +35,17 @@
             this.txtAlignment = new System.Windows.Forms.TextBox();
             this.txtDescription = new System.Windows.Forms.TextBox();
             this.btnCustom = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cbCultures = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // cbFormat
             // 
             this.cbFormat.FormattingEnabled = true;
-            this.cbFormat.Location = new System.Drawing.Point(10, 28);
+            this.cbFormat.Location = new System.Drawing.Point(10, 76);
             this.cbFormat.Margin = new System.Windows.Forms.Padding(2);
             this.cbFormat.Name = "cbFormat";
-            this.cbFormat.Size = new System.Drawing.Size(211, 24);
+            this.cbFormat.Size = new System.Drawing.Size(268, 24);
             this.cbFormat.TabIndex = 0;
             this.cbFormat.SelectedIndexChanged += new System.EventHandler(this.FormatBuilder_SelectedIndexChanged);
             this.cbFormat.TextChanged += new System.EventHandler(this.FormatBuilder_SelectedIndexChanged);
@@ -51,7 +53,7 @@
             // FmtLabel
             // 
             this.FmtLabel.AutoSize = true;
-            this.FmtLabel.Location = new System.Drawing.Point(8, 11);
+            this.FmtLabel.Location = new System.Drawing.Point(8, 59);
             this.FmtLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.FmtLabel.Name = "FmtLabel";
             this.FmtLabel.Size = new System.Drawing.Size(90, 16);
@@ -61,7 +63,7 @@
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(142, 160);
+            this.btnOK.Location = new System.Drawing.Point(202, 252);
             this.btnOK.Margin = new System.Windows.Forms.Padding(2);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(76, 23);
@@ -73,7 +75,7 @@
             // AlignLabel
             // 
             this.AlignLabel.AutoSize = true;
-            this.AlignLabel.Location = new System.Drawing.Point(8, 55);
+            this.AlignLabel.Location = new System.Drawing.Point(8, 102);
             this.AlignLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.AlignLabel.Name = "AlignLabel";
             this.AlignLabel.Size = new System.Drawing.Size(86, 16);
@@ -82,27 +84,27 @@
             // 
             // txtAlignment
             // 
-            this.txtAlignment.Location = new System.Drawing.Point(10, 70);
+            this.txtAlignment.Location = new System.Drawing.Point(10, 117);
             this.txtAlignment.Margin = new System.Windows.Forms.Padding(2);
             this.txtAlignment.Name = "txtAlignment";
-            this.txtAlignment.Size = new System.Drawing.Size(210, 22);
+            this.txtAlignment.Size = new System.Drawing.Size(268, 22);
             this.txtAlignment.TabIndex = 4;
             this.txtAlignment.Validating += new System.ComponentModel.CancelEventHandler(this.Alignment_Validating);
             // 
             // txtDescription
             // 
             this.txtDescription.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtDescription.Location = new System.Drawing.Point(10, 101);
+            this.txtDescription.Location = new System.Drawing.Point(10, 143);
             this.txtDescription.Margin = new System.Windows.Forms.Padding(2);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.ReadOnly = true;
-            this.txtDescription.Size = new System.Drawing.Size(208, 56);
+            this.txtDescription.Size = new System.Drawing.Size(268, 105);
             this.txtDescription.TabIndex = 5;
             // 
             // btnCustom
             // 
-            this.btnCustom.Location = new System.Drawing.Point(10, 161);
+            this.btnCustom.Location = new System.Drawing.Point(10, 252);
             this.btnCustom.Margin = new System.Windows.Forms.Padding(2);
             this.btnCustom.Name = "btnCustom";
             this.btnCustom.Size = new System.Drawing.Size(76, 23);
@@ -111,11 +113,32 @@
             this.btnCustom.UseVisualStyleBackColor = true;
             this.btnCustom.Click += new System.EventHandler(this.CustomFormat_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 9);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(48, 16);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "Culture";
+            // 
+            // cbCultures
+            // 
+            this.cbCultures.FormattingEnabled = true;
+            this.cbCultures.Location = new System.Drawing.Point(9, 26);
+            this.cbCultures.Margin = new System.Windows.Forms.Padding(2);
+            this.cbCultures.Name = "cbCultures";
+            this.cbCultures.Size = new System.Drawing.Size(268, 24);
+            this.cbCultures.TabIndex = 7;
+            // 
             // FormatBuilder
             // 
             this.AcceptButton = this.btnOK;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(227, 192);
+            this.ClientSize = new System.Drawing.Size(289, 286);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.cbCultures);
             this.Controls.Add(this.btnCustom);
             this.Controls.Add(this.txtDescription);
             this.Controls.Add(this.txtAlignment);
@@ -143,5 +166,7 @@
         private System.Windows.Forms.TextBox txtAlignment;
         private System.Windows.Forms.TextBox txtDescription;
         private System.Windows.Forms.Button btnCustom;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox cbCultures;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Office.Core;
 using System;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace D00B
@@ -8,19 +9,53 @@ namespace D00B
     {
         // Composite Formatting
         // {index[,alignment][:formatString]} <- Index will be 0 as each format is associated with a single column
+
+        CultureInfo[] m_AllCultures;
         private string m_strColumnName;
+        private string m_strCultureName;
         private TypeCode m_TypeCode;
-        public FormatBuilder(string strColumnName, TypeCode TypeCode, string strFormatString, int iAlignment)
+
+        public FormatBuilder(string strColumnName, TypeCode TypeCode, string strFormatString, int iAlignment, string strCultureName)
         {
             InitializeComponent();
+
+            // Set up the cultures
+            CultureName = strCultureName;
+            m_AllCultures = CultureInfo.GetCultures(CultureTypes.NeutralCultures | CultureTypes.SpecificCultures);
+            SetupCultures();
+
+            // Setup the built in formats
             FmtLabel.Text = string.Format(FmtLabel.Text, strColumnName);
             AlignLabel.Text = string.Format(AlignLabel.Text, strColumnName);
+            
             FormatString = strFormatString;
             Alignment = iAlignment;
             m_strColumnName = strColumnName;
             m_TypeCode = TypeCode;
+
             btnCustom.Enabled = m_TypeCode != TypeCode.String;
 
+            // Setup the default formats for the typecode
+            SetupFormat();
+        }
+
+        private void SetupCultures()
+        {
+            int iDefault = -1;
+            cbCultures.Items.Clear();
+            for (int iCultureInfo = 0; iCultureInfo < m_AllCultures.Length; ++iCultureInfo)
+            {
+                CultureInfo Culture = m_AllCultures[iCultureInfo];
+                cbCultures.Items.Add(string.Format("{0}", Culture.DisplayName));
+                if (Culture.Name == CultureName)
+                    iDefault = iCultureInfo;
+            }
+            if (iDefault != 1)
+                cbCultures.SelectedIndex = iDefault;
+        }
+
+        private void SetupFormat()
+        {
             switch (m_TypeCode)
             {
                 case TypeCode.DateTime:
@@ -97,7 +132,6 @@ namespace D00B
             if (!bFound)
                 cbFormat.SelectedIndex = cbFormat.Items.Count - 1;
         }
-
         public string FormatString
         {
             get
@@ -121,6 +155,18 @@ namespace D00B
             set
             {
                 txtAlignment.Text = value.ToString();
+            }
+        }
+
+        public string CultureName
+        {
+            get
+            {
+                return m_strCultureName;
+            }
+            set
+            {
+                m_strCultureName = value;
             }
         }
         private void BtnOK_Click(object sender, EventArgs e)
