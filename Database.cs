@@ -259,7 +259,7 @@ namespace D00B
         }
     }
 
-    internal class DBTable : IComparable<DBTable>, IEquatable<DBTable>, IComparable
+    public class DBTable : IComparable<DBTable>, IEquatable<DBTable>, IComparable
     {
         DBTableKey m_TableKey = new DBTableKey();
         private string m_strRows = string.Empty;

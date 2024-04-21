@@ -53,15 +53,12 @@
             this.cbDataBases = new System.Windows.Forms.ComboBox();
             this.btnJoin = new System.Windows.Forms.Button();
             this.txtQuery = new System.Windows.Forms.TextBox();
-            this.lvJoinTables = new System.Windows.Forms.ListView();
             this.lb1 = new System.Windows.Forms.Label();
             this.lb2 = new System.Windows.Forms.Label();
             this.lb3 = new System.Windows.Forms.Label();
-            this.lb4 = new System.Windows.Forms.Label();
-            this.btnResetJoin = new System.Windows.Forms.Button();
-            this.btnTestJoin = new System.Windows.Forms.Button();
             this.dgvQuery = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
+            this.btnResetJoin = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvQuery)).BeginInit();
             this.SuspendLayout();
             // 
@@ -296,6 +293,7 @@
             this.lvColumns.View = System.Windows.Forms.View.Details;
             this.lvColumns.VirtualMode = true;
             this.lvColumns.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.LvColumns_RetrieveVirtualItem);
+            this.lvColumns.SelectedIndexChanged += new System.EventHandler(this.LvColumns_SelectedIndexChanged);
             this.lvColumns.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.LvColumns_KeyPress);
             this.lvColumns.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LvColumns_MouseClick);
             this.lvColumns.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.LvColumns_EditFormat);
@@ -367,34 +365,14 @@
             this.txtQuery.Size = new System.Drawing.Size(1726, 99);
             this.txtQuery.TabIndex = 39;
             // 
-            // lvJoinTables
-            // 
-            this.lvJoinTables.Enabled = false;
-            this.lvJoinTables.FullRowSelect = true;
-            this.lvJoinTables.GridLines = true;
-            this.lvJoinTables.HideSelection = false;
-            this.lvJoinTables.Location = new System.Drawing.Point(868, 311);
-            this.lvJoinTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
-            this.lvJoinTables.MultiSelect = false;
-            this.lvJoinTables.Name = "lvJoinTables";
-            this.lvJoinTables.Size = new System.Drawing.Size(286, 29);
-            this.lvJoinTables.TabIndex = 40;
-            this.lvJoinTables.UseCompatibleStateImageBehavior = false;
-            this.lvJoinTables.View = System.Windows.Forms.View.Details;
-            this.lvJoinTables.VirtualMode = true;
-            this.lvJoinTables.Visible = false;
-            this.lvJoinTables.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.LvJoinTables_RetrieveVirtualItem);
-            this.lvJoinTables.SelectedIndexChanged += new System.EventHandler(this.LvJoinTables_SelectedIndexChanged);
-            this.lvJoinTables.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.LvJoinTables_MouseDoubleClick);
-            // 
             // lb1
             // 
             this.lb1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lb1.Location = new System.Drawing.Point(3, 80);
             this.lb1.Name = "lb1";
-            this.lb1.Size = new System.Drawing.Size(179, 20);
+            this.lb1.Size = new System.Drawing.Size(289, 20);
             this.lb1.TabIndex = 41;
-            this.lb1.Text = "All Schemas and Tables";
+            this.lb1.Text = "Tables";
             this.lb1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lb2
@@ -402,9 +380,9 @@
             this.lb2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lb2.Location = new System.Drawing.Point(293, 80);
             this.lb2.Name = "lb2";
-            this.lb2.Size = new System.Drawing.Size(161, 20);
+            this.lb2.Size = new System.Drawing.Size(289, 20);
             this.lb2.TabIndex = 42;
-            this.lb2.Text = "Active Table Columns";
+            this.lb2.Text = "Columns";
             this.lb2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lb3
@@ -412,45 +390,10 @@
             this.lb3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lb3.Location = new System.Drawing.Point(864, 80);
             this.lb3.Name = "lb3";
-            this.lb3.Size = new System.Drawing.Size(204, 20);
+            this.lb3.Size = new System.Drawing.Size(289, 20);
             this.lb3.TabIndex = 43;
-            this.lb3.Text = "Adjacent Schemas, Tables, and Columns";
+            this.lb3.Text = "Neighbor";
             this.lb3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lb4
-            // 
-            this.lb4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb4.Location = new System.Drawing.Point(881, 286);
-            this.lb4.Name = "lb4";
-            this.lb4.Size = new System.Drawing.Size(265, 20);
-            this.lb4.TabIndex = 44;
-            this.lb4.Text = "Join Schemas, Tables, and Columns";
-            this.lb4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lb4.Visible = false;
-            // 
-            // btnResetJoin
-            // 
-            this.btnResetJoin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnResetJoin.Location = new System.Drawing.Point(1166, 198);
-            this.btnResetJoin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.btnResetJoin.Name = "btnResetJoin";
-            this.btnResetJoin.Size = new System.Drawing.Size(114, 35);
-            this.btnResetJoin.TabIndex = 45;
-            this.btnResetJoin.Text = "Reset Join";
-            this.btnResetJoin.UseVisualStyleBackColor = true;
-            this.btnResetJoin.Click += new System.EventHandler(this.BtnResetJoin_Click);
-            // 
-            // btnTestJoin
-            // 
-            this.btnTestJoin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTestJoin.Location = new System.Drawing.Point(1166, 249);
-            this.btnTestJoin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.btnTestJoin.Name = "btnTestJoin";
-            this.btnTestJoin.Size = new System.Drawing.Size(114, 35);
-            this.btnTestJoin.TabIndex = 46;
-            this.btnTestJoin.Text = "Test Join";
-            this.btnTestJoin.UseVisualStyleBackColor = true;
-            this.btnTestJoin.Click += new System.EventHandler(this.BtnTestJoin_Click);
             // 
             // dgvQuery
             // 
@@ -476,19 +419,29 @@
             this.label1.Text = "Connection String";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // btnResetJoin
+            // 
+            this.btnResetJoin.Enabled = false;
+            this.btnResetJoin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnResetJoin.Location = new System.Drawing.Point(1166, 206);
+            this.btnResetJoin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.btnResetJoin.Name = "btnResetJoin";
+            this.btnResetJoin.Size = new System.Drawing.Size(114, 35);
+            this.btnResetJoin.TabIndex = 49;
+            this.btnResetJoin.Text = "Reset Join";
+            this.btnResetJoin.UseVisualStyleBackColor = true;
+            this.btnResetJoin.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnResetJoin_Click);
+            // 
             // D00B
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(1743, 780);
+            this.Controls.Add(this.btnResetJoin);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dgvQuery);
-            this.Controls.Add(this.btnTestJoin);
-            this.Controls.Add(this.btnResetJoin);
-            this.Controls.Add(this.lb4);
             this.Controls.Add(this.lb3);
             this.Controls.Add(this.lb2);
             this.Controls.Add(this.lb1);
-            this.Controls.Add(this.lvJoinTables);
             this.Controls.Add(this.txtQuery);
             this.Controls.Add(this.btnJoin);
             this.Controls.Add(this.cbDataBases);
@@ -551,15 +504,12 @@
         private System.Windows.Forms.ComboBox cbDataBases;
         private System.Windows.Forms.Button btnJoin;
         private System.Windows.Forms.TextBox txtQuery;
-        private System.Windows.Forms.ListView lvJoinTables;
         private System.Windows.Forms.Label lb1;
         private System.Windows.Forms.Label lb2;
         private System.Windows.Forms.Label lb3;
-        private System.Windows.Forms.Label lb4;
-        private System.Windows.Forms.Button btnResetJoin;
-        private System.Windows.Forms.Button btnTestJoin;
         private System.Windows.Forms.DataGridView dgvQuery;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnResetJoin;
     }
 }
 

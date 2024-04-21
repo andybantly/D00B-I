@@ -18,11 +18,6 @@ namespace D00B
         List<DBJoinKey> m_JoinKeysFr = new List<DBJoinKey>();
         List<DBJoinKey> m_JoinKeysTo = new List<DBJoinKey>();
         int m_nCT = 0; // Number of correlation tables
-        float m_nFontHeight;
-        int m_nMaxSchemaWidth = 0;
-        int m_nMaxTableWidth = 0;
-        int m_nMaxColumnWidth = 0;
-        Font m_Font;
 
         CArray m_Arr;
         int[] m_Width;
@@ -49,8 +44,6 @@ namespace D00B
         private int m_chkDataLeft;
         private int m_btnSearchLeft;
         private int m_btnJoinLeft;
-        private int m_btnResetJoinLeft;
-        private int m_btnTestJoinLeft;
         private int m_btnExportLeft;
         private int m_tbTablesLeft;
         private int m_dgvQueryWidth;
@@ -62,7 +55,6 @@ namespace D00B
         private int m_lvTablesWidth;
         private int m_lvColumnsWidth;
         private int m_lvAdjTablesWidth;
-        private int m_lvJoinTablesWidth;
         private int m_dx;
 
         public D00B()
@@ -97,20 +89,16 @@ namespace D00B
             chkPrevAll.Checked = false;
             txtPreview.Text = m_nPreview.ToString();
 
-            m_nFontHeight = 10.0F;
-            m_Font = Utility.MakeFont(m_nFontHeight, FontFamily.GenericMonospace, FontStyle.Regular);
             dgvQuery.AllowUserToDeleteRows = false;
-            dgvQuery.Font = m_Font;
+            dgvQuery.Font = Utility.m_Font;
             lvTables.View = View.Details;
-            lvTables.Font = m_Font;
+            lvTables.Font = Utility.m_Font;
             lvColumns.View = View.Details;
-            lvColumns.Font = m_Font;
+            lvColumns.Font = Utility.m_Font;
             lvAdjTables.View = View.Details;
-            lvAdjTables.Font = m_Font;
-            lvJoinTables.View = View.Details;
-            lvJoinTables.Font = m_Font;
+            lvAdjTables.Font = Utility.m_Font;
             lvResults.View = View.Details;
-            lvResults.Font = m_Font;
+            lvResults.Font = Utility.m_Font;
         }
         private void D00B_Resize(object sender, EventArgs e)
         {
@@ -133,8 +121,6 @@ namespace D00B
             m_chkDataLeft = chkData.Left;
             m_btnSearchLeft = btnSearch.Left;
             m_btnJoinLeft = btnJoin.Left;
-            m_btnResetJoinLeft = btnResetJoin.Left;
-            m_btnTestJoinLeft = btnTestJoin.Left;
             m_btnExportLeft = btnExport.Left;
             m_tbTablesLeft = tbTables.Left;
             m_dgvQueryWidth = dgvQuery.Width;
@@ -147,7 +133,6 @@ namespace D00B
             m_lvColumnsWidth = lvColumns.Width;
             m_dx = lvColumns.Left - lvTables.Right;
             m_lvAdjTablesWidth = lvAdjTables.Width;
-            m_lvJoinTablesWidth = lvJoinTables.Width;
 
             // Resize initially for small artifacts of alignment issues
             OnSizing();
@@ -190,12 +175,6 @@ namespace D00B
             // Move the join button
             btnJoin.Left = m_btnJoinLeft + PtDiff.X;
 
-            // Move the reset join button
-            btnResetJoin.Left = m_btnResetJoinLeft + PtDiff.X;
-
-            // Move the test join button
-            btnTestJoin.Left = m_btnTestJoinLeft + PtDiff.X;
-
             // Move the export button
             btnExport.Left = m_btnExportLeft + PtDiff.X;
 
@@ -230,10 +209,6 @@ namespace D00B
             lvAdjTables.Left = lvColumns.Right + m_dx;
             lvAdjTables.Width = m_lvAdjTablesWidth + dX;
             lb3.Left = lvAdjTables.Left;
-
-            //lvJoinTables.Left = lvAdjTables.Right + m_dx;
-            //lvJoinTables.Width = m_lvJoinTablesWidth + dX;
-            //lb4.Left = lvJoinTables.Left;
         }
 
         void UpdateUI(bool bEnabled)
@@ -243,7 +218,6 @@ namespace D00B
             chkPrevAll.Enabled = true;
             lvTables.Enabled = bEnabled;
             lvAdjTables.Enabled = bEnabled;
-            lvJoinTables.Enabled = bEnabled;
             dgvQuery.Enabled = bEnabled;
             txtPreview.Enabled = bEnabled;
             lblPreview.Enabled = bEnabled;
@@ -261,17 +235,13 @@ namespace D00B
             pbData.Enabled = bEnabled;
             chkExact.Enabled = bEnabled;
             lvColumns.Enabled = bEnabled;
-            btnJoin.Enabled = bEnabled && ColumnIndex() != -1 && lvAdjTables.Items.Count > 0;
-            btnResetJoin.Enabled = bEnabled && m_JoinKeysFr.Count > 0;
-            btnTestJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1 && JoinTablesIndex() != -1;
-            btnJoin.Visible = false;
-            btnResetJoin.Visible = false;
-            btnTestJoin.Visible = false;
+            btnJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1;
+            btnResetJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1;
         }
 
         private int UpdateMaxWidth(string strField, int nCurrentWidth)
         {
-            Size szExtra = TextRenderer.MeasureText(strField, m_Font);
+            Size szExtra = TextRenderer.MeasureText(strField, Utility.m_Font);
             if (szExtra.Width > nCurrentWidth)
                 nCurrentWidth = szExtra.Width;
             return nCurrentWidth;
@@ -291,9 +261,9 @@ namespace D00B
                     strQueryString = string.Format("select distinct schema_name(t.schema_id) as schema_name, t.name as table_name, p.[Rows] 'Rows' from sys.tables as t INNER JOIN sys.indexes as i ON t.OBJECT_ID = i.object_id INNER JOIN sys.partitions p ON i.object_id = p.OBJECT_ID AND i.index_id = p.index_id where p.[Rows] >= 0 and schema_name(t.schema_id) = '{0}' order by schema_name;", cbSchema.Text);
                 SQL SqlTables = new SQL(strConnectionString, strQueryString);
 
-                m_nMaxSchemaWidth = 0;
-                m_nMaxTableWidth = 0;
-                m_nMaxColumnWidth = 0;
+                Utility.m_nMaxSchemaWidth = 0;
+                Utility.m_nMaxTableWidth = 0;
+                Utility.m_nMaxColumnWidth = 0;
                 int iSelectedIndex = 0;
                 m_TableMap = new Dictionary<DBTableKey, DBTable>();
                 if (SqlTables.ExecuteReader(out string strError))
@@ -329,8 +299,8 @@ namespace D00B
                         }
 
                         // Measure the header text
-                        m_nMaxSchemaWidth = UpdateMaxWidth(strSchema, m_nMaxSchemaWidth);
-                        m_nMaxTableWidth = UpdateMaxWidth(strTable, m_nMaxTableWidth);
+                        Utility.m_nMaxSchemaWidth = UpdateMaxWidth(strSchema, Utility.m_nMaxSchemaWidth);
+                        Utility.m_nMaxTableWidth = UpdateMaxWidth(strTable, Utility.m_nMaxTableWidth);
                     }
                 }
                 else
@@ -366,8 +336,8 @@ namespace D00B
                         }
 
                         // Measure the header text
-                        m_nMaxSchemaWidth = UpdateMaxWidth(strSchema, m_nMaxSchemaWidth);
-                        m_nMaxTableWidth = UpdateMaxWidth(strTable, m_nMaxTableWidth);
+                        Utility.m_nMaxSchemaWidth = UpdateMaxWidth(strSchema, Utility.m_nMaxSchemaWidth);
+                        Utility.m_nMaxTableWidth = UpdateMaxWidth(strTable, Utility.m_nMaxTableWidth);
                     }
                 }
                 else
@@ -460,20 +430,6 @@ namespace D00B
             }
         }
 
-        private void SetupJoinTables()
-        {
-            // Setup the join table headers
-            SetupListViewHeaders(lvJoinTables);
-        }
-
-        private void UpdateJoinTable()
-        {
-            int nTotalColumns = 0;
-            foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap) { nTotalColumns += KVP.Value.Columns.Count; }
-            lvJoinTables.VirtualListSize = nTotalColumns;
-            lvJoinTables.SelectedIndices.Clear();
-        }
-
         private void RefreshIndex()
         {
             if (!int.TryParse(txtPreview.Text, out int _))
@@ -484,13 +440,12 @@ namespace D00B
                 // Suspend retrieval of virtual items
                 dgvQuery.Rows.Clear();
                 lvTables.VirtualListSize = 0;
-                lvJoinTables.VirtualListSize = 0;
 
                 // Collect information about the database
                 CountTablesAndRows();
 
                 // Setup the table headers
-                SetupListViewHeaders(lvTables, true, true, false);
+                Utility.SetupListViewHeaders(lvTables, true, true, false);
 
                 // Enable/Disable
                 tbTables.Text = string.Format("{0}", m_TableMap.Count);
@@ -721,7 +676,7 @@ namespace D00B
         private void UpdateAdjTables(string strSchema, string strTable)
         {
             // Setup the adjacent table headers
-            SetupListViewHeaders(lvAdjTables);
+            Utility.SetupListViewHeaders(lvAdjTables);
 
             DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
             bool bInclude = m_TableMap.ContainsKey(TK);
@@ -882,13 +837,6 @@ namespace D00B
                 return lvAdjTables.SelectedItems[0].Index;
             return -1;
         }
-        private int JoinTablesIndex()
-        {
-            ListView.SelectedIndexCollection Col = lvJoinTables.SelectedIndices;
-            if (Col == null || Col.Count == 0)
-                return -1;
-            return Col[0];
-        }
         private int ResultTableIndex()
         {
             if (lvResults.SelectedItems.Count > 0)
@@ -908,7 +856,7 @@ namespace D00B
                 ClearUI();
                 ClearData();
                 RefreshIndex();
-                SetupJoinTables();
+                //SetupJoinTables();
                 SetupSearchResults();
             }
             catch (Exception ex) 
@@ -936,7 +884,6 @@ namespace D00B
             lvTables.Clear();
             lvColumns.Clear();
             lvAdjTables.Clear();
-            lvJoinTables.Clear();
             lvResults.Clear();
             dgvQuery.Columns.Clear();
             dgvQuery.Rows.Clear();
@@ -993,42 +940,10 @@ namespace D00B
             UpdateUI(LoadView());
         }
 
-        private void SetupListViewHeaders(ListView lv, bool bSchema = true, bool bTable = true, bool bColumn = true, bool bFormat = false)
-        {
-            lv.Clear();
-            if (bSchema)
-            {
-                lv.Columns.Add("Schema");
-                lv.Columns[lv.Columns.Count - 1].Width = Math.Max(TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width, m_nMaxSchemaWidth);
-            }
-
-            if (bTable)
-            {
-                lv.Columns.Add("Table");
-                lv.Columns[lv.Columns.Count - 1].Width = Math.Max(TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width, m_nMaxTableWidth);
-            }
-
-            if (bColumn)
-            {
-                lv.Columns.Add("Column");
-                lv.Columns[lv.Columns.Count - 1].Width = Math.Max(TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width, m_nMaxColumnWidth);
-            }
-
-            if (bFormat)
-            {
-                lv.Columns.Add("Format");
-                lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
-                lv.Columns.Add("Align");
-                lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
-                lv.Columns.Add("Culture");
-                lv.Columns[lv.Columns.Count - 1].Width = TextRenderer.MeasureText("XXXXXXXXXX", m_Font).Width;
-            }
-        }
-
         private void SetupSearchResults()
         {
             // Setup the search results headers
-            SetupListViewHeaders(lvResults);
+            Utility.SetupListViewHeaders(lvResults);
         }
         private void FillSearchResults()
         {
@@ -1270,73 +1185,6 @@ namespace D00B
             }
             finally { }
         }
-        private void LvJoinTables_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
-        {
-            int nRows, idx;
-            try
-            {
-                // Pivot table
-                nRows = 0;
-                foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
-                {
-                    if (nRows + KVP.Value.Columns.Count <= e.ItemIndex)
-                        nRows += KVP.Value.Columns.Count;
-                    else
-                    {
-                        DBTableKey TableKey = KVP.Key;
-                        DBTable Table = KVP.Value;
-
-                        idx = e.ItemIndex - nRows;
-                        e.Item = new ListViewItem(TableKey.Schema);
-                        e.Item.UseItemStyleForSubItems = false;
-                        e.Item.SubItems.Add(TableKey.Table);
-                        DBColumn Column = Table.Columns[idx];
-                        e.Item.SubItems.Add(Column.Name);
-
-                        if (Table.Rows == "0")
-                        {
-                            e.Item.BackColor = Color.Red;
-                            e.Item.SubItems[1].BackColor = Color.Red;
-                        }
-
-                        if (Column.IsPrimaryKey)
-                        {
-                            if (Table.ContainsFK(TableKey.Schema, TableKey.Table, Column.Name))
-                            {
-                                // The case where the the foreign key is in the primary table
-                                e.Item.SubItems[2].ForeColor = Color.DarkBlue;
-                                e.Item.SubItems[2].BackColor = Color.Yellow;
-                            }
-                            else
-                            {
-                                e.Item.SubItems[2].ForeColor = Color.DarkBlue;
-                                e.Item.SubItems[2].BackColor = Color.Yellow;
-                            }
-                        }
-                        else
-                        {
-                            DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
-                            if (m_TableMap[TableKey].HasKey(TK))
-                            {
-                                e.Item.SubItems[2].ForeColor = Color.DarkBlue;
-                                e.Item.SubItems[2].BackColor = Color.Yellow;
-                            }
-                        }
-
-                        break;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(string.Format("{0} : {1}", e.ItemIndex, ex.Message));
-            }
-            finally { }
-        }
-        private void LvJoinTables_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdateUI(true);
-        }
         private void ToggleColumn(int iColumn)
         {
             DBTableKey TableKey = m_TableKeys[0];
@@ -1347,6 +1195,10 @@ namespace D00B
             // Trigger the new column visibility
             SetupHeaders();
             FinishBackgroundSQL();
+        }
+        private void LvColumns_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateUI(true);
         }
         private void LvColumns_MouseClick(object sender, MouseEventArgs e)
         {
@@ -1456,6 +1308,7 @@ namespace D00B
         private void LvTables_SelectedIndexChanged(object sender, EventArgs e)
         {
             ChangeTables();
+            UpdateUI(true);
         }
 
         private void ChangeTables()
@@ -1465,8 +1318,7 @@ namespace D00B
             dgvQuery.Rows.Clear();
             CancelBackgroundSQL();
 
-            // Start a new list and add the selected table
-            // and prepare for joins
+            // Start a new list and add the selected table and prepare for joins
             m_nCT = 0;
             m_TableKeys = new List<DBTableKey>();
             m_JoinKeysFr = new List<DBJoinKey>();
@@ -1485,13 +1337,13 @@ namespace D00B
 
             // Setup the column and format list
             lvColumns.VirtualListSize = 0;
-            m_nMaxColumnWidth = 0;
+            Utility.m_nMaxColumnWidth = 0;
             DBTable Table = m_TableMap[TableKey];
             foreach (DBColumn Column in Table.Columns)
-                m_nMaxColumnWidth = UpdateMaxWidth(Column.Name, m_nMaxColumnWidth);
+                Utility.m_nMaxColumnWidth = UpdateMaxWidth(Column.Name, Utility.m_nMaxColumnWidth);
 
             // Setup the column headers
-            SetupListViewHeaders(lvColumns, false, false, true, true);
+            Utility.SetupListViewHeaders(lvColumns, false, false, true, true);
 
             // Select the table
             SelectIndex();
@@ -1515,23 +1367,6 @@ namespace D00B
             }
         }
 
-        private void LvJoinTables_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            int iJoinTabIdx = JoinTablesIndex();
-            if (iJoinTabIdx == -1)
-                return;
-
-            string strSchema = lvJoinTables.Items[iJoinTabIdx].Text;
-            string strTable = lvJoinTables.Items[iJoinTabIdx].SubItems[1].Text;
-            DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
-            if (m_TableMap.ContainsKey(TK))
-            {
-                int iSelectedIndex = m_TableMap[TK].SelectedIndex;
-                lvTables.SelectedIndices.Add(iSelectedIndex);
-                SelectIndex();
-                lvTables.EnsureVisible(iSelectedIndex);
-            }
-        }
         private void TxtPreview_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             bool bValid = int.TryParse(txtPreview.Text, out m_nPreview);
@@ -1589,25 +1424,21 @@ namespace D00B
                     string strJoinSchema = string.Empty;
                     string strJoinTable = string.Empty;
                     string strJoinColumn = string.Empty;
-                    if (JoinTablesIndex() != -1)
+                    /*if (JoinTablesIndex() != -1)
                     {
                         strJoinSchema = lvJoinTables.Items[JoinTablesIndex()].Text;
                         strJoinTable = lvJoinTables.Items[JoinTablesIndex()].SubItems[1].Text;
                         strJoinColumn = lvJoinTables.Items[JoinTablesIndex()].SubItems[2].Text;
-                    }
+                    }*/
 
-                    DlgJoin dlgJoin = new DlgJoin
+                    DlgJoin dlgJoin = new DlgJoin(m_TableMap)
                     {
                         SourceSchema = strSrcSchema,
                         SourceTable = strSrcTable,
-                        SourceColumn = strSrcColumn,
-                        JoinSchema = strJoinSchema,
-                        JoinTable = strJoinTable,
-                        JoinColumn = strJoinColumn
+                        SourceColumn = strSrcColumn
                     };
 
                     DialogResult res = dlgJoin.ShowDialog();
-
                     if (res == DialogResult.OK)
                     {
                         DBJoinKey FKJoin, TKJoin;
@@ -1637,7 +1468,7 @@ namespace D00B
         }
 
         private void BtnResetJoin_Click(object sender, EventArgs e)
-        {
+        {/*
             m_nCT = 0;
             m_TableKeys = new List<DBTableKey>();
             ParseKey(TableCurSel(TableIndex()), out string strSchema, out string strTable);
@@ -1654,9 +1485,10 @@ namespace D00B
             m_JoinKeysTo = new List<DBJoinKey>();
 
             // Select the table
-            SelectIndex();
+            SelectIndex();*/
         }
-        private void BtnTestJoin_Click(object sender, EventArgs e)
+
+        /*private void BtnTestJoin_Click(object sender, EventArgs e)
         {
             bool bJoin = false;
             if (TableIndex() != -1 && ColumnIndex() != -1 && JoinTablesIndex() != -1)
@@ -1684,7 +1516,7 @@ namespace D00B
                 }
             }
             MessageBox.Show(bJoin ? "YES" : "NO");
-        }
+        }*/
 
         private void LvAdjTables_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1709,8 +1541,8 @@ namespace D00B
                         if (Column.Name == strColumn)
                         {
                             iRow += iColumn;
-                            lvJoinTables.SelectedIndices.Add(iRow);
-                            lvJoinTables.EnsureVisible(iRow);
+                            //lvJoinTables.SelectedIndices.Add(iRow);
+                            //lvJoinTables.EnsureVisible(iRow);
                             break;
                         }
                         iColumn++;
@@ -1765,7 +1597,7 @@ namespace D00B
 
             // Set the virtual list size
             dgvQuery.RowCount = m_nCount + 1;
-            UpdateJoinTable();
+            //UpdateJoinTable();
         }
 
         private void BkgSQL_DoWork(object sender, DoWorkEventArgs e) 
@@ -1806,12 +1638,12 @@ namespace D00B
                 m_TypeCode = new TypeCode[nColumns];
 
                 // Column headers
-                Size szExtra = TextRenderer.MeasureText("XXXXXXXX", m_Font);
+                Size szExtra = TextRenderer.MeasureText("XXXXXXXX", Utility.m_Font);
                 for (int iField = 0; iField < nColumns; ++iField)
                 {
                     string strColHdr = Sql.Columns[iField];
                     m_SortOrder[iField] = false;
-                    Size sz = szExtra + TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), m_Font);
+                    Size sz = szExtra + TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), Utility.m_Font);
                     if (sz.Width > m_Width[iField])
                         m_Width[iField] = Math.Min(65535, sz.Width);
                     m_TypeCode[iField] = Sql.ColumnType(iField);
@@ -1950,7 +1782,7 @@ namespace D00B
         // Setup the column headers of the data grid view query results
         private void SetupHeaders()
         {
-            Size szRowHeader = TextRenderer.MeasureText("XXXXXXXXXX", m_Font);
+            Size szRowHeader = TextRenderer.MeasureText("XXXXXXXXXX", Utility.m_Font);
             dgvQuery.RowHeadersWidth = szRowHeader.Width;
             dgvQuery.Columns.Clear();
 
