@@ -132,48 +132,6 @@ namespace D00B
             if (!bFound)
                 cbFormat.SelectedIndex = cbFormat.Items.Count - 1;
         }
-        public string FormatString
-        {
-            get
-            {
-                return cbFormat.Text;
-            }
-
-            set
-            {
-                cbFormat.Text = value;
-            }
-        }
-
-        public int Alignment
-        {
-            get
-            {
-                return Convert.ToInt32(txtAlignment.Text);
-            }
-
-            set
-            {
-                txtAlignment.Text = value.ToString();
-            }
-        }
-
-        public string CultureName
-        {
-            get
-            {
-                return m_strCultureName;
-            }
-            set
-            {
-                m_strCultureName = value;
-            }
-        }
-        private void BtnOK_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
         private void Alignment_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             TextBox TextAlign = sender as TextBox;
@@ -190,7 +148,7 @@ namespace D00B
 
         private void FormatBuilder_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string strDescription = string.Empty;
+            string strDescription;
             if (m_TypeCode == TypeCode.String) 
                 strDescription = "Custom specifier";
             else if (m_TypeCode == TypeCode.DateTime)
@@ -308,6 +266,52 @@ namespace D00B
             CustomFormatBuilder CFB = new CustomFormatBuilder(m_strColumnName, m_TypeCode);
             if (CFB.ShowDialog() == DialogResult.OK && !string.IsNullOrEmpty(CFB.FormatString))
                 cbFormat.Text = CFB.FormatString;
+        }
+
+        private void Culture_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            m_strCultureName = m_AllCultures[cbCultures.SelectedIndex].Name;
+        }
+        public string FormatString
+        {
+            get
+            {
+                return cbFormat.Text;
+            }
+
+            set
+            {
+                cbFormat.Text = value;
+            }
+        }
+
+        public int Alignment
+        {
+            get
+            {
+                return Convert.ToInt32(txtAlignment.Text);
+            }
+
+            set
+            {
+                txtAlignment.Text = value.ToString();
+            }
+        }
+
+        public string CultureName
+        {
+            get
+            {
+                return m_strCultureName;
+            }
+            set
+            {
+                m_strCultureName = value;
+            }
+        }
+        private void BtnOK_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

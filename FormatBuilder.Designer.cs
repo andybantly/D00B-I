@@ -42,7 +42,7 @@
             // cbFormat
             // 
             this.cbFormat.FormattingEnabled = true;
-            this.cbFormat.Location = new System.Drawing.Point(10, 76);
+            this.cbFormat.Location = new System.Drawing.Point(10, 73);
             this.cbFormat.Margin = new System.Windows.Forms.Padding(2);
             this.cbFormat.Name = "cbFormat";
             this.cbFormat.Size = new System.Drawing.Size(268, 24);
@@ -53,7 +53,7 @@
             // FmtLabel
             // 
             this.FmtLabel.AutoSize = true;
-            this.FmtLabel.Location = new System.Drawing.Point(8, 59);
+            this.FmtLabel.Location = new System.Drawing.Point(8, 56);
             this.FmtLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.FmtLabel.Name = "FmtLabel";
             this.FmtLabel.Size = new System.Drawing.Size(90, 16);
@@ -131,6 +131,7 @@
             this.cbCultures.Name = "cbCultures";
             this.cbCultures.Size = new System.Drawing.Size(268, 24);
             this.cbCultures.TabIndex = 7;
+            this.cbCultures.SelectedIndexChanged += new System.EventHandler(this.Culture_SelectedIndexChanged);
             // 
             // FormatBuilder
             // 
