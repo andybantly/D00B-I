@@ -312,7 +312,6 @@
             this.lvAdjTables.TabIndex = 35;
             this.lvAdjTables.UseCompatibleStateImageBehavior = false;
             this.lvAdjTables.View = System.Windows.Forms.View.Details;
-            this.lvAdjTables.SelectedIndexChanged += new System.EventHandler(this.LvAdjTables_SelectedIndexChanged);
             this.lvAdjTables.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.LvAdjTables_MouseDoubleClick);
             // 
             // lvResults

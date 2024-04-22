@@ -1421,15 +1421,6 @@ namespace D00B
                     string strSrcSchema = lvTables.Items[TableIndex()].Text;
                     string strSrcTable = lvTables.Items[TableIndex()].SubItems[1].Text;
                     string strSrcColumn = lvColumns.Items[ColumnIndex()].Text;
-                    string strJoinSchema = string.Empty;
-                    string strJoinTable = string.Empty;
-                    string strJoinColumn = string.Empty;
-                    /*if (JoinTablesIndex() != -1)
-                    {
-                        strJoinSchema = lvJoinTables.Items[JoinTablesIndex()].Text;
-                        strJoinTable = lvJoinTables.Items[JoinTablesIndex()].SubItems[1].Text;
-                        strJoinColumn = lvJoinTables.Items[JoinTablesIndex()].SubItems[2].Text;
-                    }*/
 
                     DlgJoin dlgJoin = new DlgJoin(m_TableMap)
                     {
@@ -1441,6 +1432,10 @@ namespace D00B
                     DialogResult res = dlgJoin.ShowDialog();
                     if (res == DialogResult.OK)
                     {
+                        string strJoinSchema = dlgJoin.JoinSchema;
+                        string strJoinTable = dlgJoin.JoinTable;
+                        string strJoinColumn = dlgJoin.JoinColumn;
+
                         DBJoinKey FKJoin, TKJoin;
                         FKJoin = new DBJoinKey(strSrcSchema, strSrcTable, strSrcColumn, dlgJoin.JoinType);
                         FKJoin.JoinTag = string.Format("T{0}", m_nCT++);
@@ -1468,87 +1463,8 @@ namespace D00B
         }
 
         private void BtnResetJoin_Click(object sender, EventArgs e)
-        {/*
-            m_nCT = 0;
-            m_TableKeys = new List<DBTableKey>();
-            ParseKey(TableCurSel(TableIndex()), out string strSchema, out string strTable);
-            if (string.IsNullOrEmpty(strSchema))
-                return;
-            DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty)
-            {
-                JoinTag = string.Format("T{0}", ++m_nCT)
-            };
-            m_TableKeys.Add(TableKey);
-
-            // Prepare for joins
-            m_JoinKeysFr = new List<DBJoinKey>();
-            m_JoinKeysTo = new List<DBJoinKey>();
-
-            // Select the table
-            SelectIndex();*/
-        }
-
-        /*private void BtnTestJoin_Click(object sender, EventArgs e)
         {
-            bool bJoin = false;
-            if (TableIndex() != -1 && ColumnIndex() != -1 && JoinTablesIndex() != -1)
-            {
-                string strSrcSchema = lvTables.Items[TableIndex()].Text;
-                string strSrcTable = lvTables.Items[TableIndex()].SubItems[1].Text;
-                string strSrcColumn = lvColumns.Items[ColumnIndex()].Text;
-                string strJoinSchema = lvJoinTables.Items[JoinTablesIndex()].Text;
-                string strJoinTable = lvJoinTables.Items[JoinTablesIndex()].SubItems[1].Text;
-                string strJoinColumn = lvJoinTables.Items[JoinTablesIndex()].SubItems[2].Text;
-
-                bJoin = strSrcSchema == strJoinSchema &&
-                    strSrcTable == strJoinTable &&
-                    strSrcColumn == strJoinColumn;
-                if (!bJoin)
-                {
-                    Maze Path = new Maze(m_TableMap);
-                    Path.SourceSchema = strSrcSchema;
-                    Path.SourceTable = strSrcTable;
-                    Path.SourceColumn = strSrcColumn;
-                    Path.JoinSchema = strJoinSchema;
-                    Path.JoinTable = strJoinTable;
-                    Path.JoinColumn = strJoinColumn;
-                    Path.DFS();
-                }
-            }
-            MessageBox.Show(bJoin ? "YES" : "NO");
-        }*/
-
-        private void LvAdjTables_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            int iAdjTableIndex = AdjTablesIndex();
-            if (iAdjTableIndex == -1)
-                return;
-            string strSchema = lvAdjTables.Items[iAdjTableIndex].SubItems[0].Text;
-            string strTable = lvAdjTables.Items[iAdjTableIndex].SubItems[1].Text;
-            DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
-
-            int iRow = 0;
-            foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
-            {
-                if (KVP.Key != TK)
-                    iRow += KVP.Value.Columns.Count;
-                else
-                {
-                    string strColumn = lvAdjTables.Items[iAdjTableIndex].SubItems[2].Text;
-                    int iColumn = 0;
-                    foreach (DBColumn Column in KVP.Value.Columns)
-                    {
-                        if (Column.Name == strColumn)
-                        {
-                            iRow += iColumn;
-                            //lvJoinTables.SelectedIndices.Add(iRow);
-                            //lvJoinTables.EnsureVisible(iRow);
-                            break;
-                        }
-                        iColumn++;
-                    }
-                }
-            }
+            ChangeTables();
         }
 
         #region THREADING
