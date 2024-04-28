@@ -242,8 +242,6 @@ namespace D00B
             lvColumns.Enabled = bEnabled;
             btnJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1;
             btnResetJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1;
-            btnJoin.Visible = false;
-            btnResetJoin.Visible = false;
         }
 
         private int UpdateMaxWidth(string strField, int nCurrentWidth)
@@ -525,7 +523,7 @@ namespace D00B
                     m_TableMap[TableKey].Rows = strRows;
                     bool bCount = false;
 
-                    if (TableIndex() != -1 && ColumnIndex() != -1 && m_TableKeys.Count > 1)
+                    if (m_TableKeys.Count > 1)
                     {
                         // When switching tables during a join, the number of table keys is less than the join keys
                         // ? - loop through tables first, then joins
@@ -627,7 +625,7 @@ namespace D00B
                             strQueryString = string.Format("select top {0} * from [{1}].[{2}] {3}", nCount, strSchema, strTable, strOT);
 
                         // Join and preview the output
-                        if (TableIndex() != -1 && ColumnIndex() != -1 && m_TableKeys.Count > 1)
+                        if (m_TableKeys.Count > 1)
                         {
                             for (int idx = 0; idx < m_TableKeys.Count - 1; idx++)
                             {
