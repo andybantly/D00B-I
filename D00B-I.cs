@@ -44,6 +44,7 @@ namespace D00B
         private int m_chkDataLeft;
         private int m_btnSearchLeft;
         private int m_btnJoinLeft;
+        private int m_btnResetJoinLeft;
         private int m_btnExportLeft;
         private int m_tbTablesLeft;
         private int m_dgvQueryWidth;
@@ -121,6 +122,7 @@ namespace D00B
             m_chkDataLeft = chkData.Left;
             m_btnSearchLeft = btnSearch.Left;
             m_btnJoinLeft = btnJoin.Left;
+            m_btnResetJoinLeft = btnResetJoin.Left;
             m_btnExportLeft = btnExport.Left;
             m_tbTablesLeft = tbTables.Left;
             m_dgvQueryWidth = dgvQuery.Width;
@@ -174,6 +176,9 @@ namespace D00B
 
             // Move the join button
             btnJoin.Left = m_btnJoinLeft + PtDiff.X;
+
+            // Move the reset join button
+            btnResetJoin.Left = m_btnResetJoinLeft + PtDiff.X;
 
             // Move the export button
             btnExport.Left = m_btnExportLeft + PtDiff.X;
@@ -237,11 +242,13 @@ namespace D00B
             lvColumns.Enabled = bEnabled;
             btnJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1;
             btnResetJoin.Enabled = bEnabled && TableIndex() != -1 && ColumnIndex() != -1;
+            btnJoin.Visible = false;
+            btnResetJoin.Visible = false;
         }
 
         private int UpdateMaxWidth(string strField, int nCurrentWidth)
         {
-            Size szExtra = TextRenderer.MeasureText(strField, Utility.m_Font);
+            Size szExtra = TextRenderer.MeasureText(strField, Utility.m_Font) + TextRenderer.MeasureText("XXXX", Utility.m_Font); ;
             if (szExtra.Width > nCurrentWidth)
                 nCurrentWidth = szExtra.Width;
             return nCurrentWidth;
@@ -415,7 +422,7 @@ namespace D00B
                             string strCol = SqlCol.GetValue("COLUMN_NAME").ToString();
                             string strTableOwner = SqlCol.GetValue("TABLE_OWNER").ToString();
                             DBTableKey TK = new DBTableKey(strTableOwner, Table.TableName, strCol);
-                            Columns.Add(new DBColumn(strCol, Table.ContainsPK(strTableOwner, Table.TableName, strCol)));
+                            Columns.Add(new DBColumn(strCol, Table.ContainsPK(TK)));
                         }
                         Table.Columns = Columns;
                         SqlCol.Close();
@@ -700,7 +707,7 @@ namespace D00B
                                 ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, FK.Table);
                                 ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, FK.Column);
 
-                                TK = new DBTableKey(strSchema, FK.Table, string.Empty); // Essentially the parent function
+                                TK = new DBTableKey(FK.Schema, FK.Table, string.Empty); // Essentially the parent function
                                 if (m_TableMap.ContainsKey(TK))
                                 {
                                     Table = m_TableMap[TK];
@@ -766,7 +773,7 @@ namespace D00B
                         DBTable TableR = KVP2.Value;
                         foreach (DBTableKey TK1 in TableL.Keys)
                         {
-                            if (TableR.ContainsFK(TK1.Schema, TK1.Table, TK1.Column))
+                            if (TableR.ContainsFK(TK1))
                             {
                                 foreach (DBTableKey TK2 in TableR.Keys)
                                 {

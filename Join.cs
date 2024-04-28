@@ -1,10 +1,7 @@
-﻿using Microsoft.Office.Interop.Excel;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Diagnostics;
 using System.Drawing;
-using System.Security.Policy;
 using System.Windows.Forms;
 
 /*
@@ -25,6 +22,7 @@ namespace D00B
     public partial class DlgJoin : Form
     {
         private Dictionary<DBTableKey, DBTable> m_TableMap;
+        private bool m_bIncludeAll = true;
         private string m_strSrcSchema = string.Empty;
         private string m_strSrcTable = string.Empty;
         private string m_strSrcColumn = string.Empty;
@@ -36,6 +34,26 @@ namespace D00B
         {
             InitializeComponent();
             m_TableMap = TableMap;
+        }
+
+        private int UpdateUI()
+        {
+            int iTable = JoinTablesIndex();
+            optInner.Enabled = iTable > -1;
+            optFull.Enabled = iTable > -1;
+            optLeft.Enabled = iTable > -1;
+            optRight.Enabled = iTable > -1;
+            optSelf.Enabled = iTable > -1;
+            m_bIncludeAll = rbAll.Checked;
+            return iTable;
+        }
+
+        private int CountListItems()
+        {
+            int nCount = 0;
+            foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
+                nCount += KVP.Value.Columns.Count;
+            return nCount;
         }
 
         private void DlgJoin_Load(object sender, EventArgs e)
@@ -57,9 +75,7 @@ namespace D00B
             lvJoinTables.Font = Utility.m_Font;
             Utility.SetupListViewHeaders(lvJoinTables);
 
-            int nTotalColumns = 0;
-            foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap) { nTotalColumns += KVP.Value.Columns.Count; }
-            lvJoinTables.VirtualListSize = nTotalColumns;
+            lvJoinTables.VirtualListSize = CountListItems();
             lvJoinTables.SelectedIndices.Clear();
         }
 
@@ -108,7 +124,126 @@ namespace D00B
                 txtJoin.Text = string.Format("Add a {0} JOIN from\r\n\r\n[{1}].[{2}].{3}\r\n\r\nTo\r\n\r\n[{1}].[{2}].{3}",
                     strType, m_strSrcSchema, m_strSrcTable, m_strSrcColumn);
         }
+        private void LvJoinTables_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        {
+            int nRows, idx;
+            try
+            {
+                nRows = 0;
+                foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
+                {
+                    if (nRows + KVP.Value.Columns.Count <= e.ItemIndex)
+                        nRows += KVP.Value.Columns.Count;
+                    else
+                    {
+                        DBTableKey TableKey = KVP.Key;
+                        DBTable Table = KVP.Value;
 
+                        bool bNeighbor = false;
+                        idx = e.ItemIndex - nRows;
+                        DBColumn Column = Table.Columns[idx];
+                        e.Item = new ListViewItem(TableKey.Schema);
+                        e.Item.UseItemStyleForSubItems = false;
+                        e.Item.SubItems.Add(TableKey.Table);
+                        e.Item.SubItems.Add(Column.Name);
+
+                        DBTableKey FK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
+                        if (Column.IsPrimaryKey)
+                        {
+                            if (Table.ContainsFK(FK))
+                            {
+                                // The case where the the foreign key is in the primary table
+                                e.Item.SubItems[2].ForeColor = Color.DarkBlue;
+                                e.Item.SubItems[2].BackColor = Color.Yellow;
+                            }
+                            else
+                            {
+                                e.Item.SubItems[2].ForeColor = Color.DarkBlue;
+                                e.Item.SubItems[2].BackColor = Color.Yellow;
+                            }
+                        }
+                        else
+                        {
+                            if (m_TableMap[TableKey].HasKey(FK))
+                            {
+                                e.Item.SubItems[2].ForeColor = Color.DarkBlue;
+                                e.Item.SubItems[2].BackColor = Color.Yellow;
+                            }
+
+                            if (bNeighbor)
+                            {
+                                e.Item.ForeColor = Color.White;
+                                e.Item.BackColor = Color.Purple;
+                                e.Item.SubItems[1].ForeColor = Color.White;
+                                e.Item.SubItems[1].BackColor = Color.Purple;
+                            }
+                        }
+
+                        if (Table.Rows == "0")
+                        {
+                            if (!bNeighbor)
+                                e.Item.BackColor = Color.Red;
+                            e.Item.SubItems[1].BackColor = Color.Red;
+                        }
+
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(string.Format("{0} : {1}", e.ItemIndex, ex.Message));
+            }
+            finally { }
+        }
+
+        private void JoinTables_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int iTable = UpdateUI();
+            if (iTable < 0)
+                return;
+        }
+
+        private void BtnAdd_Click(object sender, EventArgs e)
+        {
+            int nRows, idx, iItemIndex = JoinTablesIndex();
+            try
+            {
+                nRows = 0;
+                foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
+                {
+                    if (nRows + KVP.Value.Columns.Count <= iItemIndex)
+                        nRows += KVP.Value.Columns.Count;
+                    else
+                    {
+                        DBTableKey TableKey = KVP.Key;
+                        DBTable Table = KVP.Value;
+
+                        idx = iItemIndex - nRows;
+                        DBColumn Column = Table.Columns[idx];
+
+                        JoinSchema = TableKey.Schema;
+                        JoinTable = TableKey.Table;
+                        JoinColumn = Column.Name;
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(string.Format("{0} : {1}", iItemIndex, ex.Message));
+            }
+            finally { }
+        }
+
+        private void Include_Changed(object sender, EventArgs e)
+        {
+            lvJoinTables.VirtualListSize = 0;
+            m_bIncludeAll = rbAll.Checked;
+            lvJoinTables.VirtualListSize = CountListItems();
+            lvJoinTables.SelectedIndices.Clear();
+            UpdateUI();
+        }
         public string SourceSchema
         {
             get { return m_strSrcSchema; }
@@ -145,68 +280,5 @@ namespace D00B
             get { return m_Join; }
         }
 
-        private void LvJoinTables_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
-        {
-            int nRows, idx;
-            try
-            {
-                // Pivot table
-                nRows = 0;
-                foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
-                {
-                    if (nRows + KVP.Value.Columns.Count <= e.ItemIndex)
-                        nRows += KVP.Value.Columns.Count;
-                    else
-                    {
-                        DBTableKey TableKey = KVP.Key;
-                        DBTable Table = KVP.Value;
-
-                        idx = e.ItemIndex - nRows;
-                        e.Item = new ListViewItem(TableKey.Schema);
-                        e.Item.UseItemStyleForSubItems = false;
-                        e.Item.SubItems.Add(TableKey.Table);
-                        DBColumn Column = Table.Columns[idx];
-                        e.Item.SubItems.Add(Column.Name);
-
-                        if (Table.Rows == "0")
-                        {
-                            e.Item.BackColor = Color.Red;
-                            e.Item.SubItems[1].BackColor = Color.Red;
-                        }
-
-                        if (Column.IsPrimaryKey)
-                        {
-                            if (Table.ContainsFK(TableKey.Schema, TableKey.Table, Column.Name))
-                            {
-                                // The case where the the foreign key is in the primary table
-                                e.Item.SubItems[2].ForeColor = Color.DarkBlue;
-                                e.Item.SubItems[2].BackColor = Color.Yellow;
-                            }
-                            else
-                            {
-                                e.Item.SubItems[2].ForeColor = Color.DarkBlue;
-                                e.Item.SubItems[2].BackColor = Color.Yellow;
-                            }
-                        }
-                        else
-                        {
-                            DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
-                            if (m_TableMap[TableKey].HasKey(TK))
-                            {
-                                e.Item.SubItems[2].ForeColor = Color.DarkBlue;
-                                e.Item.SubItems[2].BackColor = Color.Yellow;
-                            }
-                        }
-
-                        break;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(string.Format("{0} : {1}", e.ItemIndex, ex.Message));
-            }
-            finally { }
-        }
     }
 }

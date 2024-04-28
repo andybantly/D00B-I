@@ -290,9 +290,17 @@ namespace D00B
         {
             return m_MapPKtoFK.ContainsKey(new DBTableKey(strOwner, strTable, strColumn));
         }
+        public bool ContainsPK(DBTableKey PK)
+        {
+            return m_MapPKtoFK.ContainsKey(PK);
+        }
         public bool ContainsFK(string strOwner, string strTable, string strColumn)
         {
             return m_MapFKtoPK.ContainsKey(new DBTableKey(strOwner, strTable, strColumn));
+        }
+        public bool ContainsFK(DBTableKey FK)
+        {
+            return m_MapFKtoPK.ContainsKey(FK);
         }
         public List<DBTableKey> PKKeyList(string strOwner, string strTable, string strColumn)
         {

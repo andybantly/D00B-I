@@ -30,18 +30,25 @@
         {
             this.btnOK = new System.Windows.Forms.Button();
             this.txtJoin = new System.Windows.Forms.TextBox();
-            this.optInner = new System.Windows.Forms.RadioButton();
-            this.optLeft = new System.Windows.Forms.RadioButton();
-            this.optRight = new System.Windows.Forms.RadioButton();
-            this.optFull = new System.Windows.Forms.RadioButton();
-            this.optSelf = new System.Windows.Forms.RadioButton();
             this.lvJoinTables = new System.Windows.Forms.ListView();
+            this.gbJoin = new System.Windows.Forms.GroupBox();
+            this.optSelf = new System.Windows.Forms.RadioButton();
+            this.optFull = new System.Windows.Forms.RadioButton();
+            this.optRight = new System.Windows.Forms.RadioButton();
+            this.optLeft = new System.Windows.Forms.RadioButton();
+            this.optInner = new System.Windows.Forms.RadioButton();
+            this.gbInclude = new System.Windows.Forms.GroupBox();
+            this.rbNeighbors = new System.Windows.Forms.RadioButton();
+            this.rbAll = new System.Windows.Forms.RadioButton();
+            this.btnAdd = new System.Windows.Forms.Button();
+            this.gbJoin.SuspendLayout();
+            this.gbInclude.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(679, 349);
+            this.btnOK.Location = new System.Drawing.Point(679, 348);
             this.btnOK.Margin = new System.Windows.Forms.Padding(1);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(101, 28);
@@ -52,83 +59,13 @@
             // txtJoin
             // 
             this.txtJoin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtJoin.Location = new System.Drawing.Point(18, 207);
+            this.txtJoin.Location = new System.Drawing.Point(18, 185);
             this.txtJoin.Margin = new System.Windows.Forms.Padding(1);
             this.txtJoin.Multiline = true;
             this.txtJoin.Name = "txtJoin";
             this.txtJoin.ReadOnly = true;
-            this.txtJoin.Size = new System.Drawing.Size(762, 128);
+            this.txtJoin.Size = new System.Drawing.Size(762, 133);
             this.txtJoin.TabIndex = 1;
-            // 
-            // optInner
-            // 
-            this.optInner.AutoSize = true;
-            this.optInner.Enabled = false;
-            this.optInner.Location = new System.Drawing.Point(24, 185);
-            this.optInner.Margin = new System.Windows.Forms.Padding(1);
-            this.optInner.Name = "optInner";
-            this.optInner.Size = new System.Drawing.Size(57, 20);
-            this.optInner.TabIndex = 2;
-            this.optInner.TabStop = true;
-            this.optInner.Text = "Inner";
-            this.optInner.UseVisualStyleBackColor = true;
-            this.optInner.CheckedChanged += new System.EventHandler(this.Opt_CheckedChanged);
-            // 
-            // optLeft
-            // 
-            this.optLeft.AutoSize = true;
-            this.optLeft.Enabled = false;
-            this.optLeft.Location = new System.Drawing.Point(84, 185);
-            this.optLeft.Margin = new System.Windows.Forms.Padding(1);
-            this.optLeft.Name = "optLeft";
-            this.optLeft.Size = new System.Drawing.Size(49, 20);
-            this.optLeft.TabIndex = 3;
-            this.optLeft.TabStop = true;
-            this.optLeft.Text = "Left";
-            this.optLeft.UseVisualStyleBackColor = true;
-            this.optLeft.CheckedChanged += new System.EventHandler(this.Opt_CheckedChanged);
-            // 
-            // optRight
-            // 
-            this.optRight.AutoSize = true;
-            this.optRight.Enabled = false;
-            this.optRight.Location = new System.Drawing.Point(135, 185);
-            this.optRight.Margin = new System.Windows.Forms.Padding(1);
-            this.optRight.Name = "optRight";
-            this.optRight.Size = new System.Drawing.Size(59, 20);
-            this.optRight.TabIndex = 4;
-            this.optRight.TabStop = true;
-            this.optRight.Text = "Right";
-            this.optRight.UseVisualStyleBackColor = true;
-            this.optRight.CheckedChanged += new System.EventHandler(this.Opt_CheckedChanged);
-            // 
-            // optFull
-            // 
-            this.optFull.AutoSize = true;
-            this.optFull.Enabled = false;
-            this.optFull.Location = new System.Drawing.Point(196, 185);
-            this.optFull.Margin = new System.Windows.Forms.Padding(1);
-            this.optFull.Name = "optFull";
-            this.optFull.Size = new System.Drawing.Size(49, 20);
-            this.optFull.TabIndex = 5;
-            this.optFull.TabStop = true;
-            this.optFull.Text = "Full";
-            this.optFull.UseVisualStyleBackColor = true;
-            this.optFull.CheckedChanged += new System.EventHandler(this.Opt_CheckedChanged);
-            // 
-            // optSelf
-            // 
-            this.optSelf.AutoSize = true;
-            this.optSelf.Enabled = false;
-            this.optSelf.Location = new System.Drawing.Point(247, 185);
-            this.optSelf.Margin = new System.Windows.Forms.Padding(1);
-            this.optSelf.Name = "optSelf";
-            this.optSelf.Size = new System.Drawing.Size(51, 20);
-            this.optSelf.TabIndex = 6;
-            this.optSelf.TabStop = true;
-            this.optSelf.Text = "Self";
-            this.optSelf.UseVisualStyleBackColor = true;
-            this.optSelf.CheckedChanged += new System.EventHandler(this.Opt_CheckedChanged);
             // 
             // lvJoinTables
             // 
@@ -145,19 +82,142 @@
             this.lvJoinTables.View = System.Windows.Forms.View.Details;
             this.lvJoinTables.VirtualMode = true;
             this.lvJoinTables.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.LvJoinTables_RetrieveVirtualItem);
+            this.lvJoinTables.SelectedIndexChanged += new System.EventHandler(this.JoinTables_SelectedIndexChanged);
+            // 
+            // gbJoin
+            // 
+            this.gbJoin.Controls.Add(this.optSelf);
+            this.gbJoin.Controls.Add(this.optFull);
+            this.gbJoin.Controls.Add(this.optRight);
+            this.gbJoin.Controls.Add(this.optLeft);
+            this.gbJoin.Controls.Add(this.optInner);
+            this.gbJoin.Location = new System.Drawing.Point(18, 322);
+            this.gbJoin.Name = "gbJoin";
+            this.gbJoin.Size = new System.Drawing.Size(307, 55);
+            this.gbJoin.TabIndex = 47;
+            this.gbJoin.TabStop = false;
+            this.gbJoin.Text = "Join Type";
+            // 
+            // optSelf
+            // 
+            this.optSelf.AutoSize = true;
+            this.optSelf.Enabled = false;
+            this.optSelf.Location = new System.Drawing.Point(240, 19);
+            this.optSelf.Margin = new System.Windows.Forms.Padding(1);
+            this.optSelf.Name = "optSelf";
+            this.optSelf.Size = new System.Drawing.Size(51, 20);
+            this.optSelf.TabIndex = 11;
+            this.optSelf.TabStop = true;
+            this.optSelf.Text = "Self";
+            this.optSelf.UseVisualStyleBackColor = true;
+            // 
+            // optFull
+            // 
+            this.optFull.AutoSize = true;
+            this.optFull.Enabled = false;
+            this.optFull.Location = new System.Drawing.Point(189, 19);
+            this.optFull.Margin = new System.Windows.Forms.Padding(1);
+            this.optFull.Name = "optFull";
+            this.optFull.Size = new System.Drawing.Size(49, 20);
+            this.optFull.TabIndex = 10;
+            this.optFull.TabStop = true;
+            this.optFull.Text = "Full";
+            this.optFull.UseVisualStyleBackColor = true;
+            // 
+            // optRight
+            // 
+            this.optRight.AutoSize = true;
+            this.optRight.Enabled = false;
+            this.optRight.Location = new System.Drawing.Point(128, 19);
+            this.optRight.Margin = new System.Windows.Forms.Padding(1);
+            this.optRight.Name = "optRight";
+            this.optRight.Size = new System.Drawing.Size(59, 20);
+            this.optRight.TabIndex = 9;
+            this.optRight.TabStop = true;
+            this.optRight.Text = "Right";
+            this.optRight.UseVisualStyleBackColor = true;
+            // 
+            // optLeft
+            // 
+            this.optLeft.AutoSize = true;
+            this.optLeft.Enabled = false;
+            this.optLeft.Location = new System.Drawing.Point(77, 19);
+            this.optLeft.Margin = new System.Windows.Forms.Padding(1);
+            this.optLeft.Name = "optLeft";
+            this.optLeft.Size = new System.Drawing.Size(49, 20);
+            this.optLeft.TabIndex = 8;
+            this.optLeft.TabStop = true;
+            this.optLeft.Text = "Left";
+            this.optLeft.UseVisualStyleBackColor = true;
+            // 
+            // optInner
+            // 
+            this.optInner.AutoSize = true;
+            this.optInner.Enabled = false;
+            this.optInner.Location = new System.Drawing.Point(17, 19);
+            this.optInner.Margin = new System.Windows.Forms.Padding(1);
+            this.optInner.Name = "optInner";
+            this.optInner.Size = new System.Drawing.Size(57, 20);
+            this.optInner.TabIndex = 7;
+            this.optInner.TabStop = true;
+            this.optInner.Text = "Inner";
+            this.optInner.UseVisualStyleBackColor = true;
+            // 
+            // gbInclude
+            // 
+            this.gbInclude.Controls.Add(this.rbNeighbors);
+            this.gbInclude.Controls.Add(this.rbAll);
+            this.gbInclude.Location = new System.Drawing.Point(331, 322);
+            this.gbInclude.Name = "gbInclude";
+            this.gbInclude.Size = new System.Drawing.Size(168, 55);
+            this.gbInclude.TabIndex = 48;
+            this.gbInclude.TabStop = false;
+            this.gbInclude.Text = "Include";
+            // 
+            // rbNeighbors
+            // 
+            this.rbNeighbors.AutoSize = true;
+            this.rbNeighbors.Location = new System.Drawing.Point(66, 19);
+            this.rbNeighbors.Name = "rbNeighbors";
+            this.rbNeighbors.Size = new System.Drawing.Size(91, 20);
+            this.rbNeighbors.TabIndex = 1;
+            this.rbNeighbors.TabStop = true;
+            this.rbNeighbors.Text = "Neighbors";
+            this.rbNeighbors.UseVisualStyleBackColor = true;
+            this.rbNeighbors.CheckedChanged += new System.EventHandler(this.Include_Changed);
+            // 
+            // rbAll
+            // 
+            this.rbAll.AutoSize = true;
+            this.rbAll.Location = new System.Drawing.Point(6, 19);
+            this.rbAll.Name = "rbAll";
+            this.rbAll.Size = new System.Drawing.Size(43, 20);
+            this.rbAll.TabIndex = 0;
+            this.rbAll.TabStop = true;
+            this.rbAll.Text = "All";
+            this.rbAll.UseVisualStyleBackColor = true;
+            this.rbAll.CheckedChanged += new System.EventHandler(this.Include_Changed);
+            // 
+            // btnAdd
+            // 
+            this.btnAdd.Location = new System.Drawing.Point(516, 348);
+            this.btnAdd.Name = "btnAdd";
+            this.btnAdd.Size = new System.Drawing.Size(101, 28);
+            this.btnAdd.TabIndex = 49;
+            this.btnAdd.Text = "Add Join";
+            this.btnAdd.UseVisualStyleBackColor = true;
+            this.btnAdd.Click += new System.EventHandler(this.BtnAdd_Click);
             // 
             // DlgJoin
             // 
             this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(795, 387);
+            this.ClientSize = new System.Drawing.Size(795, 386);
+            this.Controls.Add(this.btnAdd);
+            this.Controls.Add(this.gbInclude);
+            this.Controls.Add(this.gbJoin);
             this.Controls.Add(this.lvJoinTables);
-            this.Controls.Add(this.optSelf);
-            this.Controls.Add(this.optFull);
-            this.Controls.Add(this.optRight);
-            this.Controls.Add(this.optLeft);
-            this.Controls.Add(this.optInner);
             this.Controls.Add(this.txtJoin);
             this.Controls.Add(this.btnOK);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -167,6 +227,10 @@
             this.Name = "DlgJoin";
             this.Text = "Table Join";
             this.Load += new System.EventHandler(this.DlgJoin_Load);
+            this.gbJoin.ResumeLayout(false);
+            this.gbJoin.PerformLayout();
+            this.gbInclude.ResumeLayout(false);
+            this.gbInclude.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -176,11 +240,16 @@
 
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.TextBox txtJoin;
-        private System.Windows.Forms.RadioButton optInner;
-        private System.Windows.Forms.RadioButton optLeft;
-        private System.Windows.Forms.RadioButton optRight;
-        private System.Windows.Forms.RadioButton optFull;
-        private System.Windows.Forms.RadioButton optSelf;
         private System.Windows.Forms.ListView lvJoinTables;
+        private System.Windows.Forms.GroupBox gbJoin;
+        private System.Windows.Forms.RadioButton optSelf;
+        private System.Windows.Forms.RadioButton optFull;
+        private System.Windows.Forms.RadioButton optRight;
+        private System.Windows.Forms.RadioButton optLeft;
+        private System.Windows.Forms.RadioButton optInner;
+        private System.Windows.Forms.GroupBox gbInclude;
+        private System.Windows.Forms.RadioButton rbNeighbors;
+        private System.Windows.Forms.RadioButton rbAll;
+        private System.Windows.Forms.Button btnAdd;
     }
 }
