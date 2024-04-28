@@ -64,6 +64,7 @@
             this.txtJoin.Multiline = true;
             this.txtJoin.Name = "txtJoin";
             this.txtJoin.ReadOnly = true;
+            this.txtJoin.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtJoin.Size = new System.Drawing.Size(762, 133);
             this.txtJoin.TabIndex = 1;
             // 

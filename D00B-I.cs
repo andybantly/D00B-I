@@ -1437,26 +1437,30 @@ namespace D00B
                     DialogResult res = dlgJoin.ShowDialog();
                     if (res == DialogResult.OK)
                     {
-                        string strJoinSchema = dlgJoin.JoinSchema;
-                        string strJoinTable = dlgJoin.JoinTable;
-                        string strJoinColumn = dlgJoin.JoinColumn;
+                        List<DBJoinKey> JoinKeys = dlgJoin.JoinKeys;
+                        foreach (DBJoinKey JoinKey in JoinKeys)
+                        {
+                            string strJoinSchema = JoinKey.Schema;
+                            string strJoinTable = JoinKey.Table;
+                            string strJoinColumn = JoinKey.Column;
 
-                        DBJoinKey FKJoin, TKJoin;
-                        FKJoin = new DBJoinKey(strSrcSchema, strSrcTable, strSrcColumn, dlgJoin.JoinType);
-                        FKJoin.JoinTag = string.Format("T{0}", m_nCT++);
-                        m_JoinKeysFr.Add(FKJoin);
-                        if (dlgJoin.JoinType != Utility.Join.Self)
-                            TKJoin = new DBJoinKey(strJoinSchema, strJoinTable, strJoinColumn, dlgJoin.JoinType);
-                        else
-                            TKJoin = new DBJoinKey(strSrcSchema, strSrcTable, strSrcColumn, dlgJoin.JoinType);
-                        TKJoin.JoinTag = string.Format("T{0}", m_nCT);
-                        m_JoinKeysTo.Add(TKJoin);
+                            DBJoinKey FKJoin, TKJoin;
+                            FKJoin = new DBJoinKey(strSrcSchema, strSrcTable, strSrcColumn, JoinKey.JoinType);
+                            FKJoin.JoinTag = string.Format("T{0}", m_nCT++);
+                            m_JoinKeysFr.Add(FKJoin);
+                            if (JoinKey.JoinType != Utility.Join.Self)
+                                TKJoin = new DBJoinKey(strJoinSchema, strJoinTable, strJoinColumn, JoinKey.JoinType);
+                            else
+                                TKJoin = new DBJoinKey(strSrcSchema, strSrcTable, strSrcColumn, JoinKey.JoinType);
+                            TKJoin.JoinTag = string.Format("T{0}", m_nCT);
+                            m_JoinKeysTo.Add(TKJoin);
 
-                        // Add the join table to the list of tables
-                        if (dlgJoin.JoinType != Utility.Join.Self)
-                            m_TableKeys.Add(new DBTableKey(strJoinSchema, strJoinTable, string.Empty));
-                        else
-                            m_TableKeys.Add(new DBTableKey(strSrcSchema, strSrcTable, string.Empty));
+                            // Add the join table to the list of tables
+                            if (JoinKey.JoinType != Utility.Join.Self)
+                                m_TableKeys.Add(new DBTableKey(strJoinSchema, strJoinTable, string.Empty));
+                            else
+                                m_TableKeys.Add(new DBTableKey(strSrcSchema, strSrcTable, string.Empty));
+                        }
 
                         // Select the table
                         SelectIndex();

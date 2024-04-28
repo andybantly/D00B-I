@@ -26,14 +26,12 @@ namespace D00B
         private string m_strSrcSchema = string.Empty;
         private string m_strSrcTable = string.Empty;
         private string m_strSrcColumn = string.Empty;
-        private string m_strJoinSchema = string.Empty;
-        private string m_strJoinTable = string.Empty;
-        private string m_strJoinColumn = string.Empty;
-        private Utility.Join m_Join;
+        List<DBJoinKey> m_JoinKeys;
         public DlgJoin(Dictionary<DBTableKey, DBTable> TableMap)
         {
             InitializeComponent();
             m_TableMap = TableMap;
+            m_JoinKeys = new List<DBJoinKey>();
         }
 
         private int UpdateUI()
@@ -59,7 +57,7 @@ namespace D00B
         private void DlgJoin_Load(object sender, EventArgs e)
         {
             lvJoinTables.VirtualListSize = 0;
-            bool bRHS = m_strJoinSchema != string.Empty;
+            bool bRHS = JoinTablesIndex() > -1;
             optInner.Enabled = bRHS;
             optLeft.Enabled = bRHS;
             optRight.Enabled = bRHS;
@@ -87,43 +85,6 @@ namespace D00B
             return Col[0];
         }
 
-        private void Opt_CheckedChanged(object sender, EventArgs e)
-        {
-            string strType;
-            if (optInner.Checked)
-            {
-                strType = "INNER";
-                m_Join = Utility.Join.Inner;
-            }
-            else if (optLeft.Checked)
-            {
-                strType = "LEFT";
-                m_Join = Utility.Join.Left;
-            }
-            else if (optRight.Checked)
-            {
-                strType = "RIGHT";
-                m_Join = Utility.Join.Right;
-            }
-            else if (optFull.Checked)
-            {
-                strType = "FULL";
-                m_Join = Utility.Join.Full;
-            }
-            else
-            {
-                strType = "SELF";
-                m_Join = Utility.Join.Self;
-            }
-
-            if (m_Join != Utility.Join.Self)
-                txtJoin.Text = string.Format("Add a {0} JOIN from\r\n\r\n[{1}].[{2}].{3}\r\n\r\nTo\r\n\r\n[{4}].[{5}].{6}",
-                    strType, m_strSrcSchema, m_strSrcTable, m_strSrcColumn,
-                    m_strJoinSchema, m_strJoinTable, m_strJoinColumn);
-            else
-                txtJoin.Text = string.Format("Add a {0} JOIN from\r\n\r\n[{1}].[{2}].{3}\r\n\r\nTo\r\n\r\n[{1}].[{2}].{3}",
-                    strType, m_strSrcSchema, m_strSrcTable, m_strSrcColumn);
-        }
         private void LvJoinTables_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             int nRows, idx;
@@ -222,9 +183,48 @@ namespace D00B
                         idx = iItemIndex - nRows;
                         DBColumn Column = Table.Columns[idx];
 
-                        JoinSchema = TableKey.Schema;
-                        JoinTable = TableKey.Table;
-                        JoinColumn = Column.Name;
+                        string strType;
+                        Utility.Join Join;
+                        if (optInner.Checked)
+                        {
+                            strType = "INNER";
+                            Join = Utility.Join.Inner;
+                        }
+                        else if (optLeft.Checked)
+                        {
+                            strType = "LEFT";
+                            Join = Utility.Join.Left;
+                        }
+                        else if (optRight.Checked)
+                        {
+                            strType = "RIGHT";
+                            Join = Utility.Join.Right;
+                        }
+                        else if (optFull.Checked)
+                        {
+                            strType = "FULL";
+                            Join = Utility.Join.Full;
+                        }
+                        else
+                        {
+                            strType = "SELF";
+                            Join = Utility.Join.Self;
+                        }
+
+                        if (Join != Utility.Join.Self)
+                            m_JoinKeys.Add(new DBJoinKey(TableKey.Schema, TableKey.Table, Column.Name, Join));
+                        else
+                            m_JoinKeys.Add(new DBJoinKey(SourceSchema, SourceTable, SourceColumn, Join));
+
+                        txtJoin.Text = string.Empty;
+                        foreach (DBJoinKey JoinKey in m_JoinKeys)
+                        {
+                            if (txtJoin.Text.Length > 0)
+                                txtJoin.Text += "\r\n";
+                            txtJoin.Text += string.Format("{0} JOIN from [{1}].[{2}].{3} To [{4}].[{5}].{6}",
+                                strType, m_strSrcSchema, m_strSrcTable, m_strSrcColumn,
+                                JoinKey.Schema, JoinKey.Table, JoinKey.Column);
+                        }
                         break;
                     }
                 }
@@ -259,26 +259,13 @@ namespace D00B
             get { return m_strSrcColumn; }
             set { if (!string.IsNullOrEmpty(value)) m_strSrcColumn = value; }
         }
-        public string JoinSchema
-        {
-            get { return m_strJoinSchema; }
-            set { if (!string.IsNullOrEmpty(value)) m_strJoinSchema = value; }
-        }
-        public string JoinTable
-        {
-            get { return m_strJoinTable; }
-            set { if (!string.IsNullOrEmpty(value)) m_strJoinTable = value; }
-        }
-        public string JoinColumn
-        {
-            get { return m_strJoinColumn; }
-            set { if (!string.IsNullOrEmpty(value)) m_strJoinColumn = value; }
-        }
 
-        public Utility.Join JoinType
+        public List<DBJoinKey> JoinKeys
         {
-            get { return m_Join; }
+            get
+            {
+                return m_JoinKeys;
+            }
         }
-
     }
 }
