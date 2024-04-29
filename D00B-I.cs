@@ -14,6 +14,7 @@ namespace D00B
     {
         BackgroundWorker m_BkgSQL;
         Dictionary<DBTableKey, DBTable> m_TableMap;
+        private List<ListViewItem> m_AdjTables;
         List<DBTableKey> m_TableKeys = new List<DBTableKey>();
         List<DBJoinKey> m_JoinKeysFr = new List<DBJoinKey>();
         List<DBJoinKey> m_JoinKeysTo = new List<DBJoinKey>();
@@ -682,7 +683,7 @@ namespace D00B
         {
             // Setup the adjacent table headers
             Utility.SetupListViewHeaders(lvAdjTables);
-
+            m_AdjTables = new List<ListViewItem>();
             DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
             bool bInclude = m_TableMap.ContainsKey(TK);
             if (bInclude)
@@ -730,6 +731,7 @@ namespace D00B
                                 Item.SubItems.Add(SubItem);
                                 Item.SubItems.Add(SubItem2);
                                 lvAdjTables.Items.Add(Item); // DBTableKey FK
+                                m_AdjTables.Add(Item);
                             }
                         }
                     }
@@ -747,7 +749,7 @@ namespace D00B
                             {
                                 Item.BackColor = Color.Red;
                                 SubItem.BackColor = Color.Red;
-                                SubItem2.BackColor = Color.Red;
+                                SubItem2.BackColor = Color.Yellow;
                             }
                             else
                                 SubItem2.BackColor = Color.Yellow;
@@ -756,6 +758,7 @@ namespace D00B
                         Item.SubItems.Add(SubItem);
                         Item.SubItems.Add(SubItem2);
                         lvAdjTables.Items.Add(Item); // DBTableKey TK
+                        m_AdjTables.Add(Item);
                     }
                 }
 
@@ -799,6 +802,7 @@ namespace D00B
                                         Item.SubItems.Add(SubItem);
                                         Item.SubItems.Add(SubItem2);
                                         lvAdjTables.Items.Add(Item); // DBTableKey TK2
+                                        m_AdjTables.Add(Item);
                                     }
                                 }
                             }
@@ -1427,7 +1431,7 @@ namespace D00B
                     string strSrcTable = lvTables.Items[TableIndex()].SubItems[1].Text;
                     string strSrcColumn = lvColumns.Items[ColumnIndex()].Text;
 
-                    DlgJoin dlgJoin = new DlgJoin(m_TableMap)
+                    DlgJoin dlgJoin = new DlgJoin(m_TableMap, m_AdjTables)
                     {
                         SourceSchema = strSrcSchema,
                         SourceTable = strSrcTable,

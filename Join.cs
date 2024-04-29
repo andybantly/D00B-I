@@ -22,16 +22,19 @@ namespace D00B
     public partial class DlgJoin : Form
     {
         private Dictionary<DBTableKey, DBTable> m_TableMap;
+        private List<ListViewItem> m_AdjTables;
         private bool m_bIncludeAll = true;
         private string m_strSrcSchema = string.Empty;
         private string m_strSrcTable = string.Empty;
         private string m_strSrcColumn = string.Empty;
         List<DBJoinKey> m_JoinKeys;
-        public DlgJoin(Dictionary<DBTableKey, DBTable> TableMap)
+        public DlgJoin(Dictionary<DBTableKey, DBTable> TableMap, List<ListViewItem> AdjTables)
         {
             InitializeComponent();
             m_TableMap = TableMap;
+            m_AdjTables = AdjTables;
             m_JoinKeys = new List<DBJoinKey>();
+            rbAll.Checked = true;
         }
 
         private int UpdateUI()
@@ -49,21 +52,27 @@ namespace D00B
         private int CountListItems()
         {
             int nCount = 0;
-            foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
-                nCount += KVP.Value.Columns.Count;
+            if (m_bIncludeAll)
+            {
+                foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
+                    nCount += KVP.Value.Columns.Count;
+            }
+            else
+                nCount = m_AdjTables.Count;
+
             return nCount;
         }
 
         private void DlgJoin_Load(object sender, EventArgs e)
         {
             lvJoinTables.VirtualListSize = 0;
+
             bool bRHS = JoinTablesIndex() > -1;
             optInner.Enabled = bRHS;
             optLeft.Enabled = bRHS;
             optRight.Enabled = bRHS;
             optFull.Enabled = bRHS;
             optSelf.Enabled = true;
-
             optInner.Checked = bRHS;
             optSelf.Checked = !bRHS;
 
@@ -90,66 +99,71 @@ namespace D00B
             int nRows, idx;
             try
             {
-                nRows = 0;
-                foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
+                if (m_bIncludeAll)
                 {
-                    if (nRows + KVP.Value.Columns.Count <= e.ItemIndex)
-                        nRows += KVP.Value.Columns.Count;
-                    else
+                    nRows = 0;
+                    foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
                     {
-                        DBTableKey TableKey = KVP.Key;
-                        DBTable Table = KVP.Value;
-
-                        bool bNeighbor = false;
-                        idx = e.ItemIndex - nRows;
-                        DBColumn Column = Table.Columns[idx];
-                        e.Item = new ListViewItem(TableKey.Schema);
-                        e.Item.UseItemStyleForSubItems = false;
-                        e.Item.SubItems.Add(TableKey.Table);
-                        e.Item.SubItems.Add(Column.Name);
-
-                        DBTableKey FK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
-                        if (Column.IsPrimaryKey)
+                        if (nRows + KVP.Value.Columns.Count <= e.ItemIndex)
+                            nRows += KVP.Value.Columns.Count;
+                        else
                         {
-                            if (Table.ContainsFK(FK))
+                            DBTableKey TableKey = KVP.Key;
+                            DBTable Table = KVP.Value;
+
+                            bool bNeighbor = false;
+                            idx = e.ItemIndex - nRows;
+                            DBColumn Column = Table.Columns[idx];
+                            e.Item = new ListViewItem(TableKey.Schema);
+                            e.Item.UseItemStyleForSubItems = false;
+                            e.Item.SubItems.Add(TableKey.Table);
+                            e.Item.SubItems.Add(Column.Name);
+
+                            DBTableKey FK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
+                            if (Column.IsPrimaryKey)
                             {
-                                // The case where the the foreign key is in the primary table
-                                e.Item.SubItems[2].ForeColor = Color.DarkBlue;
-                                e.Item.SubItems[2].BackColor = Color.Yellow;
+                                if (Table.ContainsFK(FK))
+                                {
+                                    // The case where the the foreign key is in the primary table
+                                    e.Item.SubItems[2].ForeColor = Color.DarkBlue;
+                                    e.Item.SubItems[2].BackColor = Color.Yellow;
+                                }
+                                else
+                                {
+                                    e.Item.SubItems[2].ForeColor = Color.DarkBlue;
+                                    e.Item.SubItems[2].BackColor = Color.Yellow;
+                                }
                             }
                             else
                             {
-                                e.Item.SubItems[2].ForeColor = Color.DarkBlue;
-                                e.Item.SubItems[2].BackColor = Color.Yellow;
+                                if (m_TableMap[TableKey].HasKey(FK))
+                                {
+                                    e.Item.SubItems[2].ForeColor = Color.DarkBlue;
+                                    e.Item.SubItems[2].BackColor = Color.Yellow;
+                                }
+
+                                if (bNeighbor)
+                                {
+                                    e.Item.ForeColor = Color.White;
+                                    e.Item.BackColor = Color.Purple;
+                                    e.Item.SubItems[1].ForeColor = Color.White;
+                                    e.Item.SubItems[1].BackColor = Color.Purple;
+                                }
                             }
-                        }
-                        else
-                        {
-                            if (m_TableMap[TableKey].HasKey(FK))
+
+                            if (Table.Rows == "0")
                             {
-                                e.Item.SubItems[2].ForeColor = Color.DarkBlue;
-                                e.Item.SubItems[2].BackColor = Color.Yellow;
+                                if (!bNeighbor)
+                                    e.Item.BackColor = Color.Red;
+                                e.Item.SubItems[1].BackColor = Color.Red;
                             }
 
-                            if (bNeighbor)
-                            {
-                                e.Item.ForeColor = Color.White;
-                                e.Item.BackColor = Color.Purple;
-                                e.Item.SubItems[1].ForeColor = Color.White;
-                                e.Item.SubItems[1].BackColor = Color.Purple;
-                            }
+                            break;
                         }
-
-                        if (Table.Rows == "0")
-                        {
-                            if (!bNeighbor)
-                                e.Item.BackColor = Color.Red;
-                            e.Item.SubItems[1].BackColor = Color.Red;
-                        }
-
-                        break;
                     }
                 }
+                else
+                    e.Item = m_AdjTables[e.ItemIndex];
             }
             catch (Exception ex)
             {
