@@ -1233,15 +1233,12 @@ namespace D00B
                 return;
             ToggleColumn(iColumn);
         }
-        private void LvColumns_EditFormat(object sender, MouseEventArgs e)
+
+        // Lookup the column based on the column index which could be in any of the tables that are joined
+        private DBColumn LookupColumn(int iItemIndex, out int iTable)
         {
-            int iItemIndex = ColumnIndex();
-            if (iItemIndex < 0)
-                return;
-            // Make this a function
             DBTableKey TableKey;
             DBTable Table;
-            int iTable;
             for (iTable = 0; iTable < m_TableKeys.Count; ++iTable)
             {
                 TableKey = m_TableKeys[iTable];
@@ -1253,8 +1250,18 @@ namespace D00B
             }
             TableKey = m_TableKeys[iTable];
             Table = m_TableMap[TableKey];
+            return Table.Columns[iItemIndex];
+        }
 
-            DBColumn Column = Table.Columns[iItemIndex];
+        private void LvColumns_EditFormat(object sender, MouseEventArgs e)
+        {
+            int iItemIndex = ColumnIndex();
+            if (iItemIndex < 0)
+                return;
+
+            // Lookup the column based on the column index
+            DBColumn Column = LookupColumn(iItemIndex, out int _);
+
             string strCultureName = Column.CultureName;
             string strFormatString = Column.FormatString;
             int iAlignment = Column.Alignment;
@@ -1285,27 +1292,10 @@ namespace D00B
             {
                 if (m_Arr != null)
                 {
-                    // Make this a function - see cell format editing (same code)
-                    DBTableKey TableKey;
-                    DBTable Table;
-                    int iTable;
-                    for (iTable = 0; iTable < m_TableKeys.Count; ++iTable)
-                    {
-                        TableKey = m_TableKeys[iTable];
-                        Table = m_TableMap[TableKey];
-                        if (Table.Columns.Count - 1 < iItemIndex)
-                            iItemIndex -= Table.Columns.Count;
-                        else
-                            break;
-                    }
-                    TableKey = m_TableKeys[iTable];
-                    Table = m_TableMap[TableKey];
-
-                    string strSchema = TableKey.Schema;
-                    string strTable = TableKey.Table;
-                    string strColumn = string.Empty;
-
-                    DBColumn Column = Table.Columns[iItemIndex];
+                    // Lookup the column and table based on the item index
+                    DBColumn Column = LookupColumn(iItemIndex, out int iTable);
+                    DBTableKey TableKey = m_TableKeys[iTable];
+                    DBTable Table = m_TableMap[TableKey];
 
                     e.Item = new ListViewItem(Column.Name);
                     e.Item.Checked = Column.Include;
@@ -1559,7 +1549,6 @@ namespace D00B
 
             // Set the virtual list size
             dgvQuery.RowCount = m_nCount + 1;
-            //UpdateJoinTable();
         }
 
         private void BkgSQL_DoWork(object sender, DoWorkEventArgs e) 
@@ -1826,6 +1815,9 @@ namespace D00B
             }
             else
             {
+                // Update the progress bar
+                pbData.Value = m_nCount;
+
                 // Update column widths
                 for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
                 {
