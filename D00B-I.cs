@@ -247,9 +247,9 @@ namespace D00B
 
         private int UpdateMaxWidth(string strField, int nCurrentWidth)
         {
-            Size szExtra = TextRenderer.MeasureText(strField, Utility.m_Font) + TextRenderer.MeasureText("XXXX", Utility.m_Font); ;
-            if (szExtra.Width > nCurrentWidth)
-                nCurrentWidth = szExtra.Width;
+            Size szWidth = TextRenderer.MeasureText(strField, Utility.m_Font);
+            if (szWidth.Width > nCurrentWidth)
+                nCurrentWidth = szWidth.Width;
             return nCurrentWidth;
         }
         private void CountTablesAndRows()
@@ -504,10 +504,12 @@ namespace D00B
                     string strColumn = string.Empty;
                     string strOT = TableKey.JoinTag;
 
-                    // Colums
+                    // Columns
                     DBTable Table = m_TableMap[TableKey];
-                    lvColumns.VirtualListSize = Table.Columns.Count;
-                    lvColumns.SelectedIndices.Clear();
+                    int nTotColumns = 0;
+                    for (int iTable = 0; iTable < m_TableKeys.Count; ++iTable)
+                        nTotColumns += m_TableMap[m_TableKeys[iTable]].Columns.Count;
+                    lvColumns.VirtualListSize = nTotColumns;
 
                     // Update the current tables adjacent tables and find out where we can go
                     UpdateAdjTables(strSchema, strTable);
@@ -683,6 +685,7 @@ namespace D00B
         {
             // Setup the adjacent table headers
             Utility.SetupListViewHeaders(lvAdjTables);
+
             m_AdjTables = new List<ListViewItem>();
             DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
             bool bInclude = m_TableMap.ContainsKey(TK);
@@ -1232,12 +1235,26 @@ namespace D00B
         }
         private void LvColumns_EditFormat(object sender, MouseEventArgs e)
         {
-            int iColumn = ColumnIndex();
-            if (iColumn < 0)
+            int iItemIndex = ColumnIndex();
+            if (iItemIndex < 0)
                 return;
-            DBTableKey TableKey = m_TableKeys[0];
-            DBTable Table = m_TableMap[TableKey];
-            DBColumn Column = Table.Columns[iColumn];
+            // Make this a function
+            DBTableKey TableKey;
+            DBTable Table;
+            int iTable;
+            for (iTable = 0; iTable < m_TableKeys.Count; ++iTable)
+            {
+                TableKey = m_TableKeys[iTable];
+                Table = m_TableMap[TableKey];
+                if (Table.Columns.Count - 1 < iItemIndex)
+                    iItemIndex -= Table.Columns.Count;
+                else
+                    break;
+            }
+            TableKey = m_TableKeys[iTable];
+            Table = m_TableMap[TableKey];
+
+            DBColumn Column = Table.Columns[iItemIndex];
             string strCultureName = Column.CultureName;
             string strFormatString = Column.FormatString;
             int iAlignment = Column.Alignment;
@@ -1263,17 +1280,33 @@ namespace D00B
 
         private void LvColumns_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            int iRow = e.ItemIndex;
+            int iItemIndex = e.ItemIndex;
             try
             {
                 if (m_Arr != null)
                 {
-                    DBTableKey TableKey = m_TableKeys[0]; // Loop through this for all table columns
+                    // Make this a function - see cell format editing (same code)
+                    DBTableKey TableKey;
+                    DBTable Table;
+                    int iTable;
+                    for (iTable = 0; iTable < m_TableKeys.Count; ++iTable)
+                    {
+                        TableKey = m_TableKeys[iTable];
+                        Table = m_TableMap[TableKey];
+                        if (Table.Columns.Count - 1 < iItemIndex)
+                            iItemIndex -= Table.Columns.Count;
+                        else
+                            break;
+                    }
+                    TableKey = m_TableKeys[iTable];
+                    Table = m_TableMap[TableKey];
+
                     string strSchema = TableKey.Schema;
                     string strTable = TableKey.Table;
                     string strColumn = string.Empty;
-                    DBTable Table = m_TableMap[TableKey];
-                    DBColumn Column = Table.Columns[iRow];
+
+                    DBColumn Column = Table.Columns[iItemIndex];
+
                     e.Item = new ListViewItem(Column.Name);
                     e.Item.Checked = Column.Include;
                     e.Item.UseItemStyleForSubItems = false;

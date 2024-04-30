@@ -181,10 +181,39 @@ namespace D00B
 
         private void BtnAdd_Click(object sender, EventArgs e)
         {
-            int nRows, idx, iItemIndex = JoinTablesIndex();
-            try
+            int iItemIndex = JoinTablesIndex();
+
+            string strType;
+            Utility.Join Join;
+            if (optInner.Checked)
             {
-                nRows = 0;
+                strType = "INNER";
+                Join = Utility.Join.Inner;
+            }
+            else if (optLeft.Checked)
+            {
+                strType = "LEFT";
+                Join = Utility.Join.Left;
+            }
+            else if (optRight.Checked)
+            {
+                strType = "RIGHT";
+                Join = Utility.Join.Right;
+            }
+            else if (optFull.Checked)
+            {
+                strType = "FULL";
+                Join = Utility.Join.Full;
+            }
+            else
+            {
+                strType = "SELF";
+                Join = Utility.Join.Self;
+            }
+
+            if (m_bIncludeAll)
+            {
+                int nRows = 0;
                 foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
                 {
                     if (nRows + KVP.Value.Columns.Count <= iItemIndex)
@@ -194,60 +223,35 @@ namespace D00B
                         DBTableKey TableKey = KVP.Key;
                         DBTable Table = KVP.Value;
 
-                        idx = iItemIndex - nRows;
+                        int idx = iItemIndex - nRows;
                         DBColumn Column = Table.Columns[idx];
-
-                        string strType;
-                        Utility.Join Join;
-                        if (optInner.Checked)
-                        {
-                            strType = "INNER";
-                            Join = Utility.Join.Inner;
-                        }
-                        else if (optLeft.Checked)
-                        {
-                            strType = "LEFT";
-                            Join = Utility.Join.Left;
-                        }
-                        else if (optRight.Checked)
-                        {
-                            strType = "RIGHT";
-                            Join = Utility.Join.Right;
-                        }
-                        else if (optFull.Checked)
-                        {
-                            strType = "FULL";
-                            Join = Utility.Join.Full;
-                        }
-                        else
-                        {
-                            strType = "SELF";
-                            Join = Utility.Join.Self;
-                        }
 
                         if (Join != Utility.Join.Self)
                             m_JoinKeys.Add(new DBJoinKey(TableKey.Schema, TableKey.Table, Column.Name, Join));
                         else
                             m_JoinKeys.Add(new DBJoinKey(SourceSchema, SourceTable, SourceColumn, Join));
-
-                        txtJoin.Text = string.Empty;
-                        foreach (DBJoinKey JoinKey in m_JoinKeys)
-                        {
-                            if (txtJoin.Text.Length > 0)
-                                txtJoin.Text += "\r\n";
-                            txtJoin.Text += string.Format("{0} JOIN from [{1}].[{2}].{3} To [{4}].[{5}].{6}",
-                                strType, m_strSrcSchema, m_strSrcTable, m_strSrcColumn,
-                                JoinKey.Schema, JoinKey.Table, JoinKey.Column);
-                        }
                         break;
                     }
                 }
             }
-            catch (Exception ex)
+            else
             {
-                Debug.WriteLine(string.Format("{0} : {1}", iItemIndex, ex.Message));
+                ListViewItem lvi = m_AdjTables[iItemIndex];
+                if (Join != Utility.Join.Self)
+                    m_JoinKeys.Add(new DBJoinKey(lvi.Text, lvi.SubItems[1].Text, lvi.SubItems[2].Text, Join));
+                else
+                    m_JoinKeys.Add(new DBJoinKey(SourceSchema, SourceTable, SourceColumn, Join));
             }
-            finally { }
+
+            txtJoin.Text = string.Empty;
+            foreach (DBJoinKey JoinKey in m_JoinKeys)
+            {
+                if (txtJoin.Text.Length > 0)
+                    txtJoin.Text += "\r\n";
+                txtJoin.Text += string.Format("{0} JOIN from [{1}].[{2}].{3} To [{4}].[{5}].{6}",
+                    strType, m_strSrcSchema, m_strSrcTable, m_strSrcColumn,
+                    JoinKey.Schema, JoinKey.Table, JoinKey.Column);
+            }
         }
 
         private void Include_Changed(object sender, EventArgs e)
