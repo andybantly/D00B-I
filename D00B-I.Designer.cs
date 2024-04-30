@@ -75,7 +75,7 @@
             // btnLoad
             // 
             this.btnLoad.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLoad.Location = new System.Drawing.Point(1617, 3);
+            this.btnLoad.Location = new System.Drawing.Point(1624, 4);
             this.btnLoad.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.btnLoad.Name = "btnLoad";
             this.btnLoad.Size = new System.Drawing.Size(114, 35);
@@ -106,7 +106,7 @@
             this.chkHdr.Location = new System.Drawing.Point(1636, 1960);
             this.chkHdr.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkHdr.Name = "chkHdr";
-            this.chkHdr.Size = new System.Drawing.Size(99, 17);
+            this.chkHdr.Size = new System.Drawing.Size(121, 20);
             this.chkHdr.TabIndex = 13;
             this.chkHdr.Text = "Include Header";
             this.chkHdr.UseVisualStyleBackColor = true;
@@ -132,7 +132,7 @@
             this.cbSchema.Location = new System.Drawing.Point(84, 11);
             this.cbSchema.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.cbSchema.Name = "cbSchema";
-            this.cbSchema.Size = new System.Drawing.Size(178, 24);
+            this.cbSchema.Size = new System.Drawing.Size(178, 28);
             this.cbSchema.TabIndex = 15;
             // 
             // label2
@@ -153,7 +153,7 @@
             this.tbTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.tbTables.Name = "tbTables";
             this.tbTables.ReadOnly = true;
-            this.tbTables.Size = new System.Drawing.Size(61, 22);
+            this.tbTables.Size = new System.Drawing.Size(61, 26);
             this.tbTables.TabIndex = 18;
             // 
             // txtSearch
@@ -161,7 +161,7 @@
             this.txtSearch.Location = new System.Drawing.Point(1284, 117);
             this.txtSearch.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(446, 20);
+            this.txtSearch.Size = new System.Drawing.Size(454, 22);
             this.txtSearch.TabIndex = 19;
             this.txtSearch.TextChanged += new System.EventHandler(this.BtnSearch_TextChanged);
             // 
@@ -169,7 +169,7 @@
             // 
             this.btnSearch.Enabled = false;
             this.btnSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSearch.Location = new System.Drawing.Point(1166, 111);
+            this.btnSearch.Location = new System.Drawing.Point(1166, 117);
             this.btnSearch.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(114, 35);
@@ -211,7 +211,7 @@
             this.txtData.Location = new System.Drawing.Point(1393, 85);
             this.txtData.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtData.Name = "txtData";
-            this.txtData.Size = new System.Drawing.Size(336, 22);
+            this.txtData.Size = new System.Drawing.Size(345, 26);
             this.txtData.TabIndex = 25;
             // 
             // pbData
@@ -219,7 +219,7 @@
             this.pbData.Location = new System.Drawing.Point(1395, 42);
             this.pbData.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.pbData.Name = "pbData";
-            this.pbData.Size = new System.Drawing.Size(334, 29);
+            this.pbData.Size = new System.Drawing.Size(343, 29);
             this.pbData.TabIndex = 26;
             // 
             // chkExact
@@ -252,7 +252,7 @@
             this.txtPreview.Location = new System.Drawing.Point(349, 10);
             this.txtPreview.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtPreview.Name = "txtPreview";
-            this.txtPreview.Size = new System.Drawing.Size(52, 22);
+            this.txtPreview.Size = new System.Drawing.Size(52, 26);
             this.txtPreview.TabIndex = 29;
             this.txtPreview.Text = "100";
             this.txtPreview.Validating += new System.ComponentModel.CancelEventHandler(this.TxtPreview_Validating);
@@ -324,7 +324,7 @@
             this.lvResults.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvResults.MultiSelect = false;
             this.lvResults.Name = "lvResults";
-            this.lvResults.Size = new System.Drawing.Size(445, 191);
+            this.lvResults.Size = new System.Drawing.Size(454, 191);
             this.lvResults.TabIndex = 36;
             this.lvResults.UseCompatibleStateImageBehavior = false;
             this.lvResults.View = System.Windows.Forms.View.Details;
@@ -338,14 +338,14 @@
             this.cbDataBases.Location = new System.Drawing.Point(465, 11);
             this.cbDataBases.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.cbDataBases.Name = "cbDataBases";
-            this.cbDataBases.Size = new System.Drawing.Size(1069, 24);
+            this.cbDataBases.Size = new System.Drawing.Size(1069, 28);
             this.cbDataBases.TabIndex = 37;
             this.cbDataBases.SelectionChangeCommitted += new System.EventHandler(this.CbDataBases_SelectionChangeCommitted);
             // 
             // btnJoin
             // 
             this.btnJoin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnJoin.Location = new System.Drawing.Point(1166, 154);
+            this.btnJoin.Location = new System.Drawing.Point(1166, 160);
             this.btnJoin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btnJoin.Name = "btnJoin";
             this.btnJoin.Size = new System.Drawing.Size(114, 35);
@@ -361,7 +361,7 @@
             this.txtQuery.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtQuery.Multiline = true;
             this.txtQuery.Name = "txtQuery";
-            this.txtQuery.Size = new System.Drawing.Size(1723, 99);
+            this.txtQuery.Size = new System.Drawing.Size(1732, 99);
             this.txtQuery.TabIndex = 39;
             // 
             // lb1
@@ -402,7 +402,7 @@
             this.dgvQuery.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dgvQuery.Name = "dgvQuery";
             this.dgvQuery.RowHeadersWidth = 62;
-            this.dgvQuery.Size = new System.Drawing.Size(1723, 333);
+            this.dgvQuery.Size = new System.Drawing.Size(1732, 333);
             this.dgvQuery.TabIndex = 47;
             this.dgvQuery.VirtualMode = true;
             this.dgvQuery.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DgvQuery_CellValueNeeded);
@@ -422,7 +422,7 @@
             // 
             this.btnResetJoin.Enabled = false;
             this.btnResetJoin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnResetJoin.Location = new System.Drawing.Point(1166, 206);
+            this.btnResetJoin.Location = new System.Drawing.Point(1166, 201);
             this.btnResetJoin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btnResetJoin.Name = "btnResetJoin";
             this.btnResetJoin.Size = new System.Drawing.Size(114, 35);
