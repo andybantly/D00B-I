@@ -1747,17 +1747,18 @@ namespace D00B
                 foreach (DBColumn Column in Table.Columns)
                 {
                     if (!m_BkgSQL.CancellationPending)
+                    {
                         Column.TypeCode = m_TypeCode[iField];
-                    dgvQuery.Columns.Add(Column.Name, Column.Name);
-                    if (!m_BkgSQL.CancellationPending)
+                        dgvQuery.Columns.Add(Column.Name, Column.Name);
                         dgvQuery.Columns[iField].Width = m_Width[iField];
-                    dgvQuery.Columns[iField].ReadOnly = true;
-                    m_ColumnAlignment.Add(Column.Alignment);
-                    m_ColumnFormatString.Add(Column.FormatString);
-                    m_ColumnFormatProvider.Add(new CultureInfo(Column.CultureName));
-                    dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Alignment = Column.TypeCode != TypeCode.String ? DataGridViewContentAlignment.MiddleRight : DataGridViewContentAlignment.MiddleLeft };
-                    dgvQuery.Columns[iField].Visible = Column.Include;
-                    iField++;
+                        dgvQuery.Columns[iField].ReadOnly = true;
+                        m_ColumnAlignment.Add(Column.Alignment);
+                        m_ColumnFormatString.Add(Column.FormatString);
+                        m_ColumnFormatProvider.Add(new CultureInfo(Column.CultureName));
+                        dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Alignment = Column.TypeCode != TypeCode.String ? DataGridViewContentAlignment.MiddleRight : DataGridViewContentAlignment.MiddleLeft };
+                        dgvQuery.Columns[iField].Visible = Column.Include;
+                        iField++;
+                    }
                 }
             }
 

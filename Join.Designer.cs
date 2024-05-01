@@ -48,7 +48,7 @@
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(679, 348);
+            this.btnOK.Location = new System.Drawing.Point(998, 349);
             this.btnOK.Margin = new System.Windows.Forms.Padding(1);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(101, 28);
@@ -65,7 +65,7 @@
             this.txtJoin.Name = "txtJoin";
             this.txtJoin.ReadOnly = true;
             this.txtJoin.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtJoin.Size = new System.Drawing.Size(762, 133);
+            this.txtJoin.Size = new System.Drawing.Size(1081, 133);
             this.txtJoin.TabIndex = 1;
             // 
             // lvJoinTables
@@ -77,7 +77,7 @@
             this.lvJoinTables.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvJoinTables.MultiSelect = false;
             this.lvJoinTables.Name = "lvJoinTables";
-            this.lvJoinTables.Size = new System.Drawing.Size(762, 165);
+            this.lvJoinTables.Size = new System.Drawing.Size(1081, 165);
             this.lvJoinTables.TabIndex = 46;
             this.lvJoinTables.UseCompatibleStateImageBehavior = false;
             this.lvJoinTables.View = System.Windows.Forms.View.Details;
@@ -178,7 +178,7 @@
             // rbNeighbors
             // 
             this.rbNeighbors.AutoSize = true;
-            this.rbNeighbors.Location = new System.Drawing.Point(66, 19);
+            this.rbNeighbors.Location = new System.Drawing.Point(71, 19);
             this.rbNeighbors.Name = "rbNeighbors";
             this.rbNeighbors.Size = new System.Drawing.Size(91, 20);
             this.rbNeighbors.TabIndex = 1;
@@ -190,7 +190,7 @@
             // rbAll
             // 
             this.rbAll.AutoSize = true;
-            this.rbAll.Location = new System.Drawing.Point(6, 19);
+            this.rbAll.Location = new System.Drawing.Point(11, 19);
             this.rbAll.Name = "rbAll";
             this.rbAll.Size = new System.Drawing.Size(43, 20);
             this.rbAll.TabIndex = 0;
@@ -201,7 +201,7 @@
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(516, 348);
+            this.btnAdd.Location = new System.Drawing.Point(884, 349);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(101, 28);
             this.btnAdd.TabIndex = 49;
@@ -214,7 +214,7 @@
             this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(795, 386);
+            this.ClientSize = new System.Drawing.Size(1114, 386);
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.gbInclude);
             this.Controls.Add(this.gbJoin);
