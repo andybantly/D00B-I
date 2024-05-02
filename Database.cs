@@ -262,7 +262,7 @@ namespace D00B
     public class DBTable : IComparable<DBTable>, IEquatable<DBTable>, IComparable
     {
         DBTableKey m_TableKey = new DBTableKey();
-        private string m_strRows = string.Empty;
+        private int m_nRows = 0;
         private int m_iSelectedIndex = 0;
         private bool m_bVisited = false;
         readonly List<DBTableKey> m_PKeys;
@@ -408,10 +408,10 @@ namespace D00B
             get { return m_bVisited; }
             set { m_bVisited = value; }
         }
-        public string Rows
+        public int Rows
         {
-            get { return m_strRows; }
-            set { m_strRows = value; }
+            get { return m_nRows; }
+            set { m_nRows = value; }
         }
         public int SelectedIndex
         {

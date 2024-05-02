@@ -151,7 +151,7 @@ namespace D00B
                                 }
                             }
 
-                            if (Table.Rows == "0")
+                            if (Table.Rows == 0)
                             {
                                 if (!bNeighbor)
                                     e.Item.BackColor = Color.Red;

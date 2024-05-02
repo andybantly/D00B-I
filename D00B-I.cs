@@ -281,15 +281,15 @@ namespace D00B
                     {
                         string strSchema = SqlTables.GetValue(0).ToString();
                         string strTable = SqlTables.GetValue(1).ToString();
-                        string strRows = SqlTables.GetValue(2).ToString();
-                        if (strRows == "0")
+                        int nRows = Convert.ToInt32(SqlTables.GetValue(2).ToString());
+                        if (nRows == 0)
                         {
                             // Test ROW count
                             string strQueryStringCount = string.Format("select count(*) from [{0}].[{1}]", strSchema, strTable);
                             SQL SqlCount = new SQL(strConnectionString, strQueryStringCount);
-                            string strCount = Convert.ToString(SqlCount.ExecuteScalar(out strError));
+                            int nCount = Convert.ToInt32(SqlCount.ExecuteScalar(out strError));
                             if (string.IsNullOrEmpty(strError))
-                                strRows = strCount;
+                                nRows = nCount;
                             SqlCount.Close();
                         }
 
@@ -299,7 +299,7 @@ namespace D00B
                             DBTable Table = new DBTable(TableKey)
                             {
                                 SelectedIndex = iSelectedIndex,
-                                Rows = strRows
+                                Rows = nRows
                             };
                             m_TableMap.Add(TableKey, Table);
                             iSelectedIndex++;
@@ -525,9 +525,9 @@ namespace D00B
 
                     // Update ROW count
                     SQL Sql = new SQL(strConnectionString, strQueryString);
-                    string strRows = Convert.ToString(Sql.ExecuteScalar(out strError));
+                    int nRows = Convert.ToInt32(Sql.ExecuteScalar(out strError));
                     Sql.Close();
-                    m_TableMap[TableKey].Rows = strRows;
+                    m_TableMap[TableKey].Rows = nRows;
                     bool bCount = false;
 
                     if (m_TableKeys.Count > 1)
@@ -596,7 +596,7 @@ namespace D00B
                         Sql.Close();
                     }
                     else
-                        nCount = Convert.ToInt32(strRows);
+                        nCount = nRows;
 
                     // Set the final count of rows in the view
                     nCount = chkPrevAll.Checked ? nCount : Math.Min(nCount, m_nPreview);
@@ -717,7 +717,7 @@ namespace D00B
                                 if (m_TableMap.ContainsKey(TK))
                                 {
                                     Table = m_TableMap[TK];
-                                    if (Table.Rows == "0")
+                                    if (Table.Rows == 0)
                                     {
                                         Item.BackColor = Color.Red;
                                         SubItem.BackColor = Color.Red;
@@ -752,7 +752,7 @@ namespace D00B
                         TK = new DBTableKey(strSchema, strTable, strColumn);
                         if (Table.HasKey(TK))
                         {
-                            if (Table.Rows == "0")
+                            if (Table.Rows == 0)
                             {
                                 Item.BackColor = Color.Red;
                                 SubItem.BackColor = Color.Red;
@@ -793,7 +793,7 @@ namespace D00B
                                         ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, TK2.Column);
                                         if (Table.HasKey(TK2))
                                         {
-                                            if (Table.Rows == "0")
+                                            if (Table.Rows == 0)
                                             {
                                                 Item.BackColor = Color.Red;
                                                 SubItem.BackColor = Color.Red;
@@ -967,7 +967,7 @@ namespace D00B
             {
                 string strOwn = KVP.Key.Schema;
                 string strTable = KVP.Key.Table;
-                bool bRows = KVP.Value.Rows != "0";
+                bool bRows = KVP.Value.Rows != 0;
 
                 DBTable Table = KVP.Value;
                 List<DBColumn> Columns = Table.Columns;
@@ -1183,7 +1183,7 @@ namespace D00B
                 e.Item = new ListViewItem(strSchema);
                 e.Item.UseItemStyleForSubItems = false;
                 ListViewItem.ListViewSubItem lvSubValue = new ListViewItem.ListViewSubItem(e.Item, strTable);
-                if (Table.Rows == "0")
+                if (Table.Rows == 0)
                 {
                     e.Item.BackColor = Color.Red;
                     lvSubValue.BackColor = Color.Red;
@@ -1772,10 +1772,11 @@ namespace D00B
                 {
                     DBTableKey TK = m_TableKeys[idx];
                     DBTable Table = m_TableMap[TK];
-                    foreach (DBColumn Column in Table.Columns)
+                    for (int iCol = 0; iCol < Table.Columns.Count; ++iCol, ++iField)
                     {
                         if (!m_BkgSQL.CancellationPending)
                         {
+                            DBColumn Column = Table.Columns[iCol];
                             Column.TypeCode = m_TypeCode[iField];
                             dgvQuery.Columns.Add(Column.Name, Column.Name);
                             dgvQuery.Columns[iField].Width = m_Width[iField];
@@ -1785,7 +1786,6 @@ namespace D00B
                             m_ColumnFormatProvider.Add(new CultureInfo(Column.CultureName));
                             dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Alignment = Column.TypeCode != TypeCode.String ? DataGridViewContentAlignment.MiddleRight : DataGridViewContentAlignment.MiddleLeft };
                             dgvQuery.Columns[iField].Visible = Column.Include;
-                            iField++;
                         }
                     }
                 }
@@ -1852,22 +1852,18 @@ namespace D00B
                 // Update the progress bar
                 pbData.Value = m_nCount;
 
-                using (dgvQuery.SuspendDrawing())
+                if (dgvQuery.Columns.Count > 0)
                 {
-                    // Update column widths
-                    for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
+                    using (dgvQuery.SuspendDrawing())
                     {
-                        DBTableKey TK = m_TableKeys[idx];
-                        DBTable Table = m_TableMap[TK];
-                        foreach (DBColumn Column in Table.Columns)
+                        // Update column widths
+                        for (int iKey = 0, iField = 0; iKey < m_TableKeys.Count && !m_BkgSQL.CancellationPending; ++iKey)
                         {
-                            if (dgvQuery.Columns.Count > 0 && !m_BkgSQL.CancellationPending)
+                            int nColumns = m_TableMap[m_TableKeys[iKey]].Columns.Count;
+                            for (int iCol = 0; iCol < nColumns && !m_BkgSQL.CancellationPending; ++iCol, ++iField)
                             {
                                 if (m_Width[iField] > dgvQuery.Columns[iField].Width)
-                                {
                                     dgvQuery.Columns[iField].Width = m_Width[iField];
-                                    iField++;
-                                }
                             }
                         }
                     }
