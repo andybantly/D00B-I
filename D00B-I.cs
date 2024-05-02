@@ -32,6 +32,7 @@ namespace D00B
 
         int m_nCount = -1;
         int m_nPreview = 100;
+        Timer m_PBTimer = null;
 
         // Screen rectangle and positions of the controls
         private Rectangle m_DialogRect;
@@ -162,7 +163,7 @@ namespace D00B
 
             // Move the search results listview
             lvResults.Left = m_lvResultsLeft + PtDiff.X;
-            
+
             // Move the exact check box
             chkExact.Left = m_chkExactLeft + PtDiff.X;
 
@@ -431,8 +432,11 @@ namespace D00B
             catch { }
             finally
             {
-                pbData.Value = pbData.Minimum;
+                // Restore the cursor
                 Cursor.Current = Cursors.Default;
+
+                // Start the timer to reset the progress bar
+                StartPBTimer();
             }
         }
 
@@ -801,7 +805,7 @@ namespace D00B
                                         else
                                             SubItem2.BackColor = Color.DarkGreen;
                                         SubItem2.ForeColor = Color.Yellow;
-                                        
+
                                         Item.SubItems.Add(SubItem);
                                         Item.SubItems.Add(SubItem2);
                                         lvAdjTables.Items.Add(Item); // DBTableKey TK2
@@ -871,7 +875,7 @@ namespace D00B
                 //SetupJoinTables();
                 SetupSearchResults();
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
                 bReturn = false;
@@ -1152,7 +1156,7 @@ namespace D00B
                     {
                         e.Value = m_Arr[iCol][iRow]?.ToString(m_ColumnAlignment[iCol], m_ColumnFormatString[iCol], m_ColumnFormatProvider[iCol]); // IFormattable
                     }
-                    catch (Exception ex) 
+                    catch (Exception ex)
                     {
                         Debug.WriteLine(string.Format("{0} {1},{2}", ex.Message, e.ColumnIndex, e.RowIndex));
                         e.Value = string.Empty;
@@ -1544,14 +1548,17 @@ namespace D00B
         // Finish up and shpw the results
         private void FinishBackgroundSQL()
         {
-            // Operation succeeded
-            lvTables.Select();
+            using (dgvQuery.SuspendDrawing())
+            {
+                // Operation succeeded
+                lvTables.Select();
 
-            // Set the virtual list size
-            dgvQuery.RowCount = m_nCount + 1;
+                // Set the virtual list size
+                dgvQuery.RowCount = m_nCount + 1;
+            }
         }
 
-        private void BkgSQL_DoWork(object sender, DoWorkEventArgs e) 
+        private void BkgSQL_DoWork(object sender, DoWorkEventArgs e)
         {
             e.Result = BackgroundQuery(sender, e);
         }
@@ -1559,14 +1566,14 @@ namespace D00B
         private long BackgroundQuery(object sender, DoWorkEventArgs e)
         {
             long iResult = 0;
-            
+
             BackgroundWorker SQLWorker = sender as BackgroundWorker;
             List<string> Parms = e.Argument as List<string>;
 
             string strConnectionString = Parms[0];
             string strQueryString = Parms[1];
             int nCount = Convert.ToInt32(Parms[2]);
-            int nReportProgress = (int)((Double)nCount * 0.01) + 1;
+            int nReportProgress = (int)((Double)nCount * 0.10) + 1;
 
             SQL Sql = new SQL(strConnectionString, strQueryString);
             if (Sql.ExecuteReader(out string strError))
@@ -1604,7 +1611,7 @@ namespace D00B
                 SQLWorker.ReportProgress(0);
 
                 // Extra column width
-                for (int iRow = 0; !e.Cancel && Sql.Read(); ++iRow)
+                for (int iRow = 0; !e.Cancel && Sql.Read() && iRow < nCount; ++iRow)
                 {
                     if (SQLWorker.CancellationPending)
                         e.Cancel = true;
@@ -1712,7 +1719,9 @@ namespace D00B
         {
             // Reset the cursor
             Cursor.Current = Cursors.Default;
-            pbData.Value = pbData.Minimum;
+
+            // Set the progress bar to 100% and reset with a timer.
+            StartPBTimer();
 
             if (e.Error != null)
             {
@@ -1730,78 +1739,101 @@ namespace D00B
             }
         }
 
+        // Start the timer that keeps the progress bar at 100% for a moment
+        private void StartPBTimer()
+        {
+            pbData.Value = pbData.Maximum;
+            if (m_PBTimer == null)
+                m_PBTimer = new Timer();
+            m_PBTimer.Stop();
+            m_PBTimer.Tick += new EventHandler(TimerProcessor);
+            m_PBTimer.Interval = 500;
+            m_PBTimer.Start();
+        }
+        private void TimerProcessor(Object myObject, EventArgs myEventArgs)
+        {
+            pbData.Value = pbData.Minimum;
+            m_PBTimer.Stop();
+        }
+
         // Setup the column headers of the data grid view query results
         private void SetupHeaders()
         {
-            Size szRowHeader = TextRenderer.MeasureText("XXXXXXXXXX", Utility.m_Font);
-            dgvQuery.RowHeadersWidth = szRowHeader.Width;
-            dgvQuery.Columns.Clear();
-
-            m_ColumnAlignment = new List<int>();
-            m_ColumnFormatString = new List<string>();
-            m_ColumnFormatProvider = new List<IFormatProvider>();
-            for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
+            using (dgvQuery.SuspendDrawing())
             {
-                DBTableKey TK = m_TableKeys[idx];
-                DBTable Table = m_TableMap[TK];
-                foreach (DBColumn Column in Table.Columns)
+                Size szRowHeader = TextRenderer.MeasureText("XXXXXXXXXX", Utility.m_Font);
+                dgvQuery.RowHeadersWidth = szRowHeader.Width;
+                dgvQuery.Columns.Clear();
+
+                m_ColumnAlignment = new List<int>();
+                m_ColumnFormatString = new List<string>();
+                m_ColumnFormatProvider = new List<IFormatProvider>();
+                for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
                 {
-                    if (!m_BkgSQL.CancellationPending)
+                    DBTableKey TK = m_TableKeys[idx];
+                    DBTable Table = m_TableMap[TK];
+                    foreach (DBColumn Column in Table.Columns)
                     {
-                        Column.TypeCode = m_TypeCode[iField];
-                        dgvQuery.Columns.Add(Column.Name, Column.Name);
-                        dgvQuery.Columns[iField].Width = m_Width[iField];
-                        dgvQuery.Columns[iField].ReadOnly = true;
-                        m_ColumnAlignment.Add(Column.Alignment);
-                        m_ColumnFormatString.Add(Column.FormatString);
-                        m_ColumnFormatProvider.Add(new CultureInfo(Column.CultureName));
-                        dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Alignment = Column.TypeCode != TypeCode.String ? DataGridViewContentAlignment.MiddleRight : DataGridViewContentAlignment.MiddleLeft };
-                        dgvQuery.Columns[iField].Visible = Column.Include;
-                        iField++;
+                        if (!m_BkgSQL.CancellationPending)
+                        {
+                            Column.TypeCode = m_TypeCode[iField];
+                            dgvQuery.Columns.Add(Column.Name, Column.Name);
+                            dgvQuery.Columns[iField].Width = m_Width[iField];
+                            dgvQuery.Columns[iField].ReadOnly = true;
+                            m_ColumnAlignment.Add(Column.Alignment);
+                            m_ColumnFormatString.Add(Column.FormatString);
+                            m_ColumnFormatProvider.Add(new CultureInfo(Column.CultureName));
+                            dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Alignment = Column.TypeCode != TypeCode.String ? DataGridViewContentAlignment.MiddleRight : DataGridViewContentAlignment.MiddleLeft };
+                            dgvQuery.Columns[iField].Visible = Column.Include;
+                            iField++;
+                        }
                     }
                 }
-            }
 
-            // Set the background color of the columns for the keys
-            int iColStart = 0;
-            foreach (DBTableKey TableKey in m_TableKeys)
-            {
-                DBTable Table = m_TableMap[TableKey];
-                int nCols = m_TableMap[TableKey].Columns.Count;
-                for (int idx = 0; idx < nCols; ++idx)
+                // Set the background color of the columns for the keys
+                int iColStart = 0;
+                foreach (DBTableKey TableKey in m_TableKeys)
                 {
-                    int iCol = iColStart + idx;
-                    DBColumn Column = Table.Columns[idx];
-                    if (Column.IsPrimaryKey)
+                    DBTable Table = m_TableMap[TableKey];
+                    int nCols = m_TableMap[TableKey].Columns.Count;
+                    for (int idx = 0; idx < nCols; ++idx)
                     {
-                        if (Table.ContainsFK(TableKey.Schema, TableKey.Table, Column.Name))
+                        int iCol = iColStart + idx;
+                        DBColumn Column = Table.Columns[idx];
+                        if (Column.IsPrimaryKey)
                         {
-                            // The case where the the foreign key is in the primary table
-                            dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
-                            dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.DarkBlue;
+                            if (Table.ContainsFK(TableKey.Schema, TableKey.Table, Column.Name))
+                            {
+                                // The case where the the foreign key is in the primary table
+                                dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
+                                dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.DarkBlue;
+                            }
+                            else
+                            {
+                                dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
+                                dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.Yellow;
+                            }
                         }
                         else
                         {
-                            dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
-                            dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.Yellow;
+                            DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
+                            if (m_TableMap[TableKey].HasKey(TK))
+                            {
+                                dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
+                                dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.Yellow;
+                            }
                         }
                     }
-                    else
-                    {
-                        DBTableKey TK = new DBTableKey(TableKey.Schema, TableKey.Table, Column.Name);
-                        if (m_TableMap[TableKey].HasKey(TK))
-                        {
-                            dgvQuery.Columns[iCol].DefaultCellStyle.ForeColor = Color.DarkBlue;
-                            dgvQuery.Columns[iCol].DefaultCellStyle.BackColor = Color.Yellow;
-                        }
-                    }
+                    iColStart += nCols;
                 }
-                iColStart += nCols;
             }
         }
 
         private void BkgSQL_ProgressChanged(object sender, ProgressChangedEventArgs e) 
         {
+            // Busy with background thread
+            Cursor.Current = Cursors.WaitCursor;
+
             // Set virtual list box count
             m_nCount = e.ProgressPercentage;
 
@@ -1810,6 +1842,7 @@ namespace D00B
                 // Prepare the progress bar
                 pbData.Minimum = 1;
                 pbData.Maximum = m_Arr.RowLength;
+                pbData.Value = pbData.Minimum;
 
                 // Setup the column headers // move column widths, prevent from null
                 SetupHeaders();
@@ -1819,22 +1852,28 @@ namespace D00B
                 // Update the progress bar
                 pbData.Value = m_nCount;
 
-                // Update column widths
-                for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
+                using (dgvQuery.SuspendDrawing())
                 {
-                    DBTableKey TK = m_TableKeys[idx];
-                    DBTable Table = m_TableMap[TK];
-                    foreach (DBColumn Column in Table.Columns)
+                    // Update column widths
+                    for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
                     {
-                        if (dgvQuery.Columns.Count > 0 && !m_BkgSQL.CancellationPending)
+                        DBTableKey TK = m_TableKeys[idx];
+                        DBTable Table = m_TableMap[TK];
+                        foreach (DBColumn Column in Table.Columns)
                         {
-                            if (m_Width[iField] > dgvQuery.Columns[iField].Width)
-                                dgvQuery.Columns[iField].Width = m_Width[iField];
+                            if (dgvQuery.Columns.Count > 0 && !m_BkgSQL.CancellationPending)
+                            {
+                                if (m_Width[iField] > dgvQuery.Columns[iField].Width)
+                                {
+                                    dgvQuery.Columns[iField].Width = m_Width[iField];
+                                    iField++;
+                                }
+                            }
                         }
                     }
                 }
+
                 dgvQuery.RowCount = m_nCount + 1;
-                Cursor.Current = Cursors.WaitCursor;
             }
         }
         #endregion // THREADING
