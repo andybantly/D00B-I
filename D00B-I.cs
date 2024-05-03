@@ -722,12 +722,10 @@ namespace D00B
                                         Item.BackColor = Color.Red;
                                         SubItem.BackColor = Color.Red;
                                     }
-                                    else
-                                    {
-                                        // The case where the the foreign key is in the primary table
-                                        SubItem2.ForeColor = Color.DarkBlue;
-                                        SubItem2.BackColor = Color.Yellow;
-                                    }
+
+                                    // The case where the the foreign key is in the primary table
+                                    SubItem2.ForeColor = Color.DarkBlue;
+                                    SubItem2.BackColor = Color.Yellow;
                                 }
                                 else
                                 {
@@ -756,10 +754,7 @@ namespace D00B
                             {
                                 Item.BackColor = Color.Red;
                                 SubItem.BackColor = Color.Red;
-                                SubItem2.BackColor = Color.Yellow;
                             }
-                            else
-                                SubItem2.BackColor = Color.Yellow;
                             SubItem2.ForeColor = Color.DarkBlue;
                         }
                         Item.SubItems.Add(SubItem);
@@ -797,10 +792,8 @@ namespace D00B
                                             {
                                                 Item.BackColor = Color.Red;
                                                 SubItem.BackColor = Color.Red;
-                                                SubItem2.BackColor = Color.Red;
                                             }
-                                            else
-                                                SubItem2.BackColor = Color.DarkGreen;
+                                            SubItem2.BackColor = Color.DarkGreen;
                                         }
                                         else
                                             SubItem2.BackColor = Color.DarkGreen;
@@ -1183,15 +1176,15 @@ namespace D00B
                 e.Item = new ListViewItem(strSchema);
                 e.Item.UseItemStyleForSubItems = false;
                 ListViewItem.ListViewSubItem lvSubValue = new ListViewItem.ListViewSubItem(e.Item, strTable);
-                if (Table.Rows == 0)
-                {
-                    e.Item.BackColor = Color.Red;
-                    lvSubValue.BackColor = Color.Red;
-                }
-                else if (Table.View)
+                if (Table.View)
                 {
                     e.Item.BackColor = Color.Orange;
                     lvSubValue.BackColor = Color.Orange;
+                }
+                else if (Table.Rows == 0)
+                {
+                    e.Item.BackColor = Color.Red;
+                    lvSubValue.BackColor = Color.Red;
                 }
                 e.Item.SubItems.Add(lvSubValue);
             }
