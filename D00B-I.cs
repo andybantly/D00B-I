@@ -15,6 +15,7 @@ namespace D00B
         BackgroundWorker m_BkgSQL;
         Dictionary<DBTableKey, DBTable> m_TableMap;
         private List<ListViewItem> m_AdjTables;
+        int m_iLastTableIndex = -1;
         List<DBTableKey> m_TableKeys = new List<DBTableKey>();
         List<DBJoinKey> m_JoinKeysFr = new List<DBJoinKey>();
         List<DBJoinKey> m_JoinKeysTo = new List<DBJoinKey>();
@@ -1336,12 +1337,38 @@ namespace D00B
 
         private void LvTables_SelectedIndexChanged(object sender, EventArgs e)
         {
+            int iTableIndex = TableIndex();
+            if (iTableIndex == -1)
+                return;
+
+            if (m_TableKeys.Count > 1)
+            {
+                ParseKey(TableCurSel(iTableIndex), out string strSchema, out string strTable);
+                DBTableKey TK = new DBTableKey(strSchema, strTable, string.Empty);
+                if (m_TableKeys.Contains(TK))
+                {
+                    // Select the table that is in the join list
+                    m_iLastTableIndex = iTableIndex;
+                    SelectIndex();
+                    return;
+                }
+                else
+                {
+                    if (MessageBox.Show("The current join(s) will be lost when switching to a table outside of the join tables.  Is this OK?", Text, MessageBoxButtons.YesNo) == DialogResult.No)
+                        return;
+                }
+            }
+            m_iLastTableIndex = iTableIndex;
             ChangeTables();
             UpdateUI(true);
         }
 
         private void ChangeTables()
         {
+            int iTableIndex = TableIndex();
+            if (iTableIndex == -1)
+                return;
+
             // Stop the virtual list from asking for cell information
             dgvQuery.Columns.Clear();
             dgvQuery.Rows.Clear();
@@ -1354,10 +1381,7 @@ namespace D00B
             m_JoinKeysTo = new List<DBJoinKey>();
 
             // Setup the first key in case this isn't a join
-            ParseKey(TableCurSel(TableIndex()), out string strSchema, out string strTable);
-            if (string.IsNullOrEmpty(strSchema))
-                return;
-
+            ParseKey(TableCurSel(iTableIndex), out string strSchema, out string strTable);
             DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty)
             {
                 JoinTag = string.Format("T{0}", ++m_nCT)
