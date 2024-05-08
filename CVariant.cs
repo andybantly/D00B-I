@@ -217,91 +217,91 @@ namespace D00B
                     case TypeCode.Boolean:
                         Boolean boolLhs = m_boolVal != null ? m_boolVal[0] : false;
                         Boolean boolRhs = rhs.m_boolVal != null ? rhs.m_boolVal[0] : false;
-                        iRet = Global.g_bSortOrder ? (boolLhs == true && boolRhs == false ? -1 : (boolLhs == boolRhs ? 0 : 1)) : (boolLhs == true && boolRhs == false ? 1 : (boolLhs == boolRhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (boolLhs == true && boolRhs == false ? -1 : (boolLhs == boolRhs ? 0 : 1)) : (boolLhs == true && boolRhs == false ? 1 : (boolLhs == boolRhs ? 0 : -1));
                         break;
 
                     case TypeCode.Byte:
                         Byte bLhs = m_byteVal != null ? m_byteVal[0] : Byte.MinValue;
                         Byte bRhs = rhs.m_byteVal != null ? rhs.m_byteVal[0] : Byte.MinValue;
-                        iRet = Global.g_bSortOrder ? (bLhs < bRhs ? -1 : (bLhs == bRhs ? 0 : 1)) : (bLhs < bRhs ? 1 : (bLhs == bRhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (bLhs < bRhs ? -1 : (bLhs == bRhs ? 0 : 1)) : (bLhs < bRhs ? 1 : (bLhs == bRhs ? 0 : -1));
                         break;
 
                     case TypeCode.SByte:
                         SByte sbLhs = m_sbyteVal != null ? m_sbyteVal[0] : SByte.MinValue;
                         SByte sbRhs = rhs.m_sbyteVal != null ? rhs.m_sbyteVal[0] : SByte.MinValue;
-                        iRet = Global.g_bSortOrder ? (sbLhs < sbRhs ? -1 : (sbLhs == sbRhs ? 0 : 1)) : (sbLhs < sbRhs ? 1 : (sbLhs == sbRhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (sbLhs < sbRhs ? -1 : (sbLhs == sbRhs ? 0 : 1)) : (sbLhs < sbRhs ? 1 : (sbLhs == sbRhs ? 0 : -1));
                         break;
 
                     case TypeCode.Char:
                         Char cLhs = m_cVal != null ? m_cVal[0] : Char.MinValue;
                         Char cRhs = rhs.m_cVal != null ? rhs.m_cVal[0] : Char.MinValue;
-                        iRet = Global.g_bSortOrder ? (cLhs < cRhs ? -1 : (cLhs == cRhs ? 0 : 1)) : (cLhs < cRhs ? 1 : (cLhs == cRhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (cLhs < cRhs ? -1 : (cLhs == cRhs ? 0 : 1)) : (cLhs < cRhs ? 1 : (cLhs == cRhs ? 0 : -1));
                         break;
 
                     case TypeCode.Int16:
                         Int16 i16Lhs = m_int16Val != null ? m_int16Val[0] : Int16.MinValue;
                         Int16 i16Rhs = rhs.m_int16Val != null ? rhs.m_int16Val[0] : Int16.MinValue;
-                        iRet = Global.g_bSortOrder ? (i16Lhs < i16Rhs ? -1 : (i16Lhs == i16Rhs ? 0 : 1)) : (i16Lhs < i16Rhs ? 1 : (i16Lhs == i16Rhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (i16Lhs < i16Rhs ? -1 : (i16Lhs == i16Rhs ? 0 : 1)) : (i16Lhs < i16Rhs ? 1 : (i16Lhs == i16Rhs ? 0 : -1));
                         break;
 
                     case TypeCode.UInt16:
                         UInt16 ui16Lhs = m_uint16Val != null ? m_uint16Val[0] : UInt16.MinValue;
                         UInt16 ui16Rhs = rhs.m_uint16Val != null ? rhs.m_uint16Val[0] : UInt16.MinValue;
-                        iRet = Global.g_bSortOrder ? (ui16Lhs < ui16Rhs ? -1 : (ui16Lhs == ui16Rhs ? 0 : 1)) : (ui16Lhs < ui16Rhs ? 1 : (ui16Lhs == ui16Rhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (ui16Lhs < ui16Rhs ? -1 : (ui16Lhs == ui16Rhs ? 0 : 1)) : (ui16Lhs < ui16Rhs ? 1 : (ui16Lhs == ui16Rhs ? 0 : -1));
                         break;
 
                     case TypeCode.Int32:
                         Int32 i32Lhs = m_int32Val != null ? m_int32Val[0] : Int32.MinValue;
                         Int32 i32Rhs = rhs.m_int32Val != null ? rhs.m_int32Val[0] : Int32.MinValue;
-                        iRet = Global.g_bSortOrder ? (i32Lhs < i32Rhs ? -1 : (i32Lhs == i32Rhs ? 0 : 1)) : (i32Lhs < i32Rhs ? 1 : (i32Lhs == i32Rhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (i32Lhs < i32Rhs ? -1 : (i32Lhs == i32Rhs ? 0 : 1)) : (i32Lhs < i32Rhs ? 1 : (i32Lhs == i32Rhs ? 0 : -1));
                         break;
 
                     case TypeCode.UInt32:
                         UInt32 ui32Lhs = m_uint32Val != null ? m_uint32Val[0] : UInt32.MinValue;
                         UInt32 ui32Rhs = rhs.m_uint32Val != null ? rhs.m_uint32Val[0] : UInt32.MinValue;
-                        iRet = Global.g_bSortOrder ? (ui32Lhs < ui32Rhs ? -1 : (ui32Lhs == ui32Rhs ? 0 : 1)) : (ui32Lhs < ui32Rhs ? 1 : (ui32Lhs == ui32Rhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (ui32Lhs < ui32Rhs ? -1 : (ui32Lhs == ui32Rhs ? 0 : 1)) : (ui32Lhs < ui32Rhs ? 1 : (ui32Lhs == ui32Rhs ? 0 : -1));
                         break;
 
                     case TypeCode.Int64:
                         Int64 i64Lhs = m_int64Val != null ? m_int64Val[0] : Int64.MinValue;
                         Int64 i64Rhs = rhs.m_int64Val != null ? rhs.m_int64Val[0] : Int64.MinValue;
-                        iRet = Global.g_bSortOrder ? (i64Lhs < i64Rhs ? -1 : (i64Lhs == i64Rhs ? 0 : 1)) : (i64Lhs < i64Rhs ? 1 : (i64Lhs == i64Rhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (i64Lhs < i64Rhs ? -1 : (i64Lhs == i64Rhs ? 0 : 1)) : (i64Lhs < i64Rhs ? 1 : (i64Lhs == i64Rhs ? 0 : -1));
                         break;
 
                     case TypeCode.UInt64:
                         UInt64 ui64Lhs = m_uint64Val != null ? m_uint64Val[0] : UInt64.MinValue;
                         UInt64 ui64Rhs = rhs.m_uint64Val != null ? rhs.m_uint64Val[0] : UInt64.MinValue;
-                        iRet = Global.g_bSortOrder ? (ui64Lhs < ui64Rhs ? -1 : (ui64Lhs == ui64Rhs ? 0 : 1)) : (ui64Lhs < ui64Rhs ? 1 : (ui64Lhs == ui64Rhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (ui64Lhs < ui64Rhs ? -1 : (ui64Lhs == ui64Rhs ? 0 : 1)) : (ui64Lhs < ui64Rhs ? 1 : (ui64Lhs == ui64Rhs ? 0 : -1));
                         break;
 
                     case TypeCode.Single:
                         Single fLhs = m_fVal != null ? m_fVal[0] : Single.MinValue;
                         Single fRhs = rhs.m_fVal != null ? rhs.m_fVal[0] : Single.MinValue;
-                        iRet = Global.g_bSortOrder ? (fLhs < fRhs ? -1 : (fLhs == fRhs ? 0 : 1)) : (fLhs < fRhs ? 1 : (fLhs == fRhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (fLhs < fRhs ? -1 : (fLhs == fRhs ? 0 : 1)) : (fLhs < fRhs ? 1 : (fLhs == fRhs ? 0 : -1));
                         break;
 
                     case TypeCode.Double:
                         Double dLhs = m_dVal != null ? m_dVal[0] : Double.MinValue;
                         Double dRhs = rhs.m_dVal != null ? rhs.m_dVal[0] : Double.MinValue;
-                        iRet = Global.g_bSortOrder ? (dLhs < dRhs ? -1 : (dLhs == dRhs ? 0 : 1)) : (dLhs < dRhs ? 1 : (dLhs == dRhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (dLhs < dRhs ? -1 : (dLhs == dRhs ? 0 : 1)) : (dLhs < dRhs ? 1 : (dLhs == dRhs ? 0 : -1));
                         break;
 
                     case TypeCode.Decimal:
                         Decimal decLhs = m_decVal != null ? m_decVal[0] : Decimal.MinValue;
                         Decimal decRhs = rhs.m_decVal != null ? rhs.m_decVal[0] : Decimal.MinValue;
-                        iRet = Global.g_bSortOrder ? (decLhs < decRhs ? -1 : (decLhs == decRhs ? 0 : 1)) : (decLhs < decRhs ? 1 : (decLhs == decRhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (decLhs < decRhs ? -1 : (decLhs == decRhs ? 0 : 1)) : (decLhs < decRhs ? 1 : (decLhs == decRhs ? 0 : -1));
                         break;
 
                     case TypeCode.DateTime:
                         DateTime dtLhs = m_dtVal != null ? m_dtVal[0] : DateTime.MinValue;
                         DateTime dtRhs = rhs.m_dtVal != null ? rhs.m_dtVal[0] : DateTime.MinValue;
-                        iRet = Global.g_bSortOrder ? (dtLhs < dtRhs ? -1 : (dtLhs == dtRhs ? 0 : 1)) : (dtLhs < dtRhs ? 1 : (dtLhs == dtRhs ? 0 : -1));
+                        iRet = Global.SortOrder ? (dtLhs < dtRhs ? -1 : (dtLhs == dtRhs ? 0 : 1)) : (dtLhs < dtRhs ? 1 : (dtLhs == dtRhs ? 0 : -1));
                         break;
 
                     case TypeCode.String:
                         string strLhs = m_strVal != null ? m_strVal[0] : String.Empty;
                         string strRhs = rhs.m_strVal != null ? rhs.m_strVal[0] : String.Empty;
-                        iRet = Global.g_bSortOrder ? string.Compare(strLhs, strRhs, false) : string.Compare(strRhs, strLhs, false);
+                        iRet = Global.SortOrder ? string.Compare(strLhs, strRhs, false) : string.Compare(strRhs, strLhs, false);
                         break;
 
                     case TypeCode.Empty:
@@ -314,7 +314,7 @@ namespace D00B
             {
                 string strLhs = Value.ToString();
                 string strRhs = rhs.Value.ToString();
-                iRet = Global.g_bSortOrder ? string.Compare(strLhs, strRhs, false) : string.Compare(strRhs, strLhs, false);
+                iRet = Global.SortOrder ? string.Compare(strLhs, strRhs, false) : string.Compare(strRhs, strLhs, false);
             }
             return iRet;
         }

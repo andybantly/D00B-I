@@ -9,6 +9,12 @@ namespace D00B
 {
     public static class Global
     {
-        static public bool g_bSortOrder;
+        static private bool g_bSortOrder;
+
+        static public bool SortOrder
+        {
+            get { return g_bSortOrder; }
+            set { g_bSortOrder = value; }
+        }
     }
 }

@@ -1091,7 +1091,7 @@ namespace D00B
             }
 
             // Sort using the classes comparer
-            Global.g_bSortOrder = m_SortOrder[e.ColumnIndex];
+            Global.SortOrder = m_SortOrder[e.ColumnIndex];
 
             // Sort the indexed column and rearrange
             m_Arr.ParallelSort(e.ColumnIndex);
