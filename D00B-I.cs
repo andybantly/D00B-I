@@ -497,7 +497,6 @@ namespace D00B
                     return;
 
                 // Clear the output
-                dgvQuery.Columns.Clear();
                 dgvQuery.Rows.Clear();
 
                 try
@@ -508,13 +507,6 @@ namespace D00B
                     string strTable = TableKey.Table;
                     string strColumn = string.Empty;
                     string strOT = TableKey.JoinTag;
-
-                    // Columns
-                    DBTable Table = m_TableMap[TableKey];
-                    int nTotColumns = 0;
-                    for (int iTable = 0; iTable < m_TableKeys.Count; ++iTable)
-                        nTotColumns += m_TableMap[m_TableKeys[iTable]].Columns.Count;
-                    lvColumns.VirtualListSize = nTotColumns;
 
                     // Update the current tables adjacent tables and find out where we can go
                     UpdateAdjTables(strSchema, strTable);
@@ -575,7 +567,7 @@ namespace D00B
                             if (TableIndex() != -1 && ColumnIndex() != -1)
                             {
                                 bCount = true;
-                                strSchema = lvResults.SelectedItems[0].Text;
+                                strSchema = lvTables.Items[TableIndex()].Text;
                                 strTable = lvTables.Items[TableIndex()].SubItems[1].Text;
                                 strColumn = lvColumns.Items[ColumnIndex()].Text;
 
@@ -585,7 +577,11 @@ namespace D00B
                                 string strTestVal = bIsNum ? txtData.Text : (chkExact.Checked ? string.Format("'{0}'", txtData.Text) : string.Format("'%{0}%'", txtData.Text));
                                 strQueryString = string.Format("select {0} from [{1}].[{2}] where [{3}].[{4}].{5} {6} {7}", strSelect, strSchema, strTable, strSchema, strTable, strColumn, strTest, strTestVal);
                             }
+                            else
+                                MessageBox.Show("Please select a Table and Column to search within for the data", Text, MessageBoxButtons.OK);
                         }
+                        else
+                            MessageBox.Show("There is no text to search for in the Table and Column", Text, MessageBoxButtons.OK);
                     }
 
                     // Get the list size which will become the virtual list size when the operation completes
@@ -688,6 +684,9 @@ namespace D00B
 
         private void UpdateAdjTables(string strSchema, string strTable)
         {
+            // Track keys so that the loose/faux keys don't overlap
+            List<DBTableKey> AdjTableKeys = new List<DBTableKey>();
+
             // Setup the adjacent table headers
             Utility.SetupListViewHeaders(lvAdjTables);
 
@@ -738,6 +737,9 @@ namespace D00B
                                 Item.SubItems.Add(SubItem2);
                                 lvAdjTables.Items.Add(Item); // DBTableKey FK
                                 m_AdjTables.Add(Item);
+
+                                // Track the table
+                                AdjTableKeys.Add(FK);
                             }
                         }
                     }
@@ -756,56 +758,112 @@ namespace D00B
                                 Item.BackColor = Color.Red;
                                 SubItem.BackColor = Color.Red;
                             }
+                            SubItem2.BackColor = Color.Yellow;
                             SubItem2.ForeColor = Color.DarkBlue;
                         }
                         Item.SubItems.Add(SubItem);
                         Item.SubItems.Add(SubItem2);
                         lvAdjTables.Items.Add(Item); // DBTableKey TK
                         m_AdjTables.Add(Item);
+
+                        // Track the table
+                        AdjTableKeys.Add(TK);
                     }
                 }
 
                 // BackKeys
-                DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty);
-                if (m_TableMap.ContainsKey(TableKey))
+                TK = new DBTableKey(strSchema, strTable, string.Empty);
+                DBTable TableL = m_TableMap[TK];
+                foreach (KeyValuePair<DBTableKey, DBTable> KVP2 in m_TableMap)
                 {
-                    DBTable TableL = m_TableMap[TableKey];
-                    foreach (KeyValuePair<DBTableKey, DBTable> KVP2 in m_TableMap)
+                    if (KVP2.Key == TK)
+                        continue;
+                    DBTable TableR = KVP2.Value;
+                    foreach (DBTableKey TK1 in TableL.Keys)
                     {
-                        if (KVP2.Key == TableKey)
-                            continue;
-                        DBTable TableR = KVP2.Value;
-                        foreach (DBTableKey TK1 in TableL.Keys)
+                        if (TableR.ContainsFK(TK1))
                         {
-                            if (TableR.ContainsFK(TK1))
+                            foreach (DBTableKey TK2 in TableR.Keys)
                             {
-                                foreach (DBTableKey TK2 in TableR.Keys)
+                                if ((TableR.TableSchema == TK2.Schema) && (TableR.TableName == TK2.Table))
                                 {
-                                    if ((TableR.TableSchema == TK2.Schema) && (TableR.TableName == TK2.Table))
+                                    ListViewItem Item = new ListViewItem(TK2.Schema);
+                                    Item.UseItemStyleForSubItems = false;
+                                    ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, TK2.Table);
+                                    ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, TK2.Column);
+                                    if (Table.HasKey(TK2))
                                     {
-                                        ListViewItem Item = new ListViewItem(TK2.Schema);
-                                        Item.UseItemStyleForSubItems = false;
-                                        ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, TK2.Table);
-                                        ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, TK2.Column);
-                                        if (Table.HasKey(TK2))
+                                        if (Table.Rows == 0)
                                         {
-                                            if (Table.Rows == 0)
-                                            {
-                                                Item.BackColor = Color.Red;
-                                                SubItem.BackColor = Color.Red;
-                                            }
-                                            SubItem2.BackColor = Color.DarkGreen;
+                                            Item.BackColor = Color.Red;
+                                            SubItem.BackColor = Color.Red;
                                         }
-                                        else
-                                            SubItem2.BackColor = Color.DarkGreen;
-                                        SubItem2.ForeColor = Color.Yellow;
+                                        SubItem2.BackColor = Color.DarkGreen;
+                                    }
+                                    else
+                                        SubItem2.BackColor = Color.DarkGreen;
+                                    SubItem2.ForeColor = Color.Yellow;
 
-                                        Item.SubItems.Add(SubItem);
-                                        Item.SubItems.Add(SubItem2);
-                                        lvAdjTables.Items.Add(Item); // DBTableKey TK2
-                                        m_AdjTables.Add(Item);
+                                    Item.SubItems.Add(SubItem);
+                                    Item.SubItems.Add(SubItem2);
+                                    lvAdjTables.Items.Add(Item); // DBTableKey TK2
+                                    m_AdjTables.Add(Item);
+
+                                    // Track the table
+                                    AdjTableKeys.Add(TK2);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Faux/Loose Keys - column name the same
+                TK = new DBTableKey(strSchema, strTable, string.Empty);
+                TableL = m_TableMap[TK];
+                foreach (KeyValuePair<DBTableKey, DBTable> KVP2 in m_TableMap)
+                {
+                    if (KVP2.Key == TK)
+                        continue;
+                    DBTable TableR = KVP2.Value;
+                    foreach (DBColumn LC in TableL.Columns)
+                    {
+                        foreach (DBColumn RC in TableR.Columns)
+                        {
+                            if (string.Compare(LC.Name, RC.Name, true) == 0)
+                            {
+                                // If it was already added as a strong key, don't add it twice
+                                DBTableKey LK = new DBTableKey(TableR.TableSchema, TableR.TableName, RC.Name);
+                                if (AdjTableKeys.Contains(LK))
+                                    continue;
+
+                                ListViewItem Item = new ListViewItem(TableR.TableSchema);
+                                Item.UseItemStyleForSubItems = false;
+                                ListViewItem.ListViewSubItem SubItem = new ListViewItem.ListViewSubItem(Item, TableR.TableName);
+                                ListViewItem.ListViewSubItem SubItem2 = new ListViewItem.ListViewSubItem(Item, RC.Name);
+                                
+                                if (Table.HasKey(LK))
+                                {
+                                    if (Table.Rows == 0)
+                                    {
+                                        Item.BackColor = Color.Red;
+                                        SubItem.BackColor = Color.Red;
+                                    }
+                                    else
+                                    {
+                                        SubItem2.ForeColor = Color.DarkGreen;
+                                        SubItem2.BackColor = Color.DarkGray;
                                     }
                                 }
+                                else
+                                {
+                                    SubItem2.ForeColor = Color.DarkGreen;
+                                    SubItem2.BackColor = Color.DarkGray;
+                                }
+
+                                Item.SubItems.Add(SubItem);
+                                Item.SubItems.Add(SubItem2);
+                                lvAdjTables.Items.Add(Item);
+                                m_AdjTables.Add(Item);
                             }
                         }
                     }
@@ -860,19 +918,26 @@ namespace D00B
 
         private bool LoadView()
         {
+            // Set the busy cursor
+            Cursor.Current = Cursors.WaitCursor;
             bool bReturn = true;
+
             try
             {
                 ClearUI();
                 ClearData();
                 RefreshIndex();
-                //SetupJoinTables();
                 SetupSearchResults();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                MessageBox.Show(ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 bReturn = false;
+            }
+            finally
+            {
+                // Set the default cursor
+                Cursor.Current = Cursors.Default;
             }
             return bReturn;
         }
@@ -895,7 +960,6 @@ namespace D00B
             lvColumns.Clear();
             lvAdjTables.Clear();
             lvResults.Clear();
-            dgvQuery.Columns.Clear();
             dgvQuery.Rows.Clear();
 
             // Get the schemas
@@ -1355,7 +1419,12 @@ namespace D00B
                 else
                 {
                     if (MessageBox.Show("The current join(s) will be lost when switching to a table outside of the join tables.  Is this OK?", Text, MessageBoxButtons.YesNo) == DialogResult.No)
+                    {
+                        lvTables.Select();
+                        lvTables.EnsureVisible(m_iLastTableIndex);
+                        lvTables.SelectedIndices.Add(m_iLastTableIndex);
                         return;
+                    }
                 }
             }
             m_iLastTableIndex = iTableIndex;
@@ -1370,7 +1439,6 @@ namespace D00B
                 return;
 
             // Stop the virtual list from asking for cell information
-            dgvQuery.Columns.Clear();
             dgvQuery.Rows.Clear();
             CancelBackgroundSQL();
 
@@ -1776,6 +1844,12 @@ namespace D00B
         // Setup the column headers of the data grid view query results
         private void SetupHeaders()
         {
+            // Columns
+            int nTotColumns = 0;
+            for (int iTable = 0; iTable < m_TableKeys.Count; ++iTable)
+                nTotColumns += m_TableMap[m_TableKeys[iTable]].Columns.Count;
+            lvColumns.VirtualListSize = nTotColumns;
+
             using (dgvQuery.SuspendDrawing())
             {
                 Size szRowHeader = TextRenderer.MeasureText("XXXXXXXXXX", Utility.m_Font);
