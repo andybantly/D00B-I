@@ -28,7 +28,7 @@ namespace D00B
             }
         }
 
-        static public bool ExportToExcel(CArray Arr, List<KeyValuePair<string, bool>> Header, List<int> m_ColumnAlignment, List<string> m_ColumnFormatString, List<IFormatProvider> m_ColumnFormatProvider, string strTableName, out double dDuration)
+        static public bool ExportToExcel(CArray Arr, List<DBColumn> ColumnHeaders, string strTableName, out double dDuration)
         {
             dDuration = 0.0;
             DateTime st = DateTime.Now;
@@ -37,7 +37,7 @@ namespace D00B
             int nColLength = 0;
             int iCol = -1;
             for (iCol = 0; iCol < Arr.ColLength; ++iCol)
-                if (Header[iCol].Value)
+                if (ColumnHeaders[iCol].Include)
                     nColLength++;
             if (nColLength == 0)
                 return true;
@@ -60,13 +60,13 @@ namespace D00B
                     int idx;
                     object[,] oArray = new object[Arr.RowLength + 1, nColLength];
                     for (iCol = 0, idx = 0; iCol < Arr.ColLength; ++iCol)
-                        if (Header[iCol].Value)
-                            oArray[0, idx++] = Header[iCol].Key;
+                        if (ColumnHeaders[iCol].Include)
+                            oArray[0, idx++] = ColumnHeaders[iCol].Name;
 
                     for (int iRow = 0; iRow < Arr.RowLength; ++iRow)
                         for (iCol = 0, idx = 0; iCol < Arr.ColLength; ++iCol)
-                            if (Header[iCol].Value)
-                                oArray[iRow + 1, idx++] = Arr[iCol][iRow].ToString(m_ColumnAlignment[iCol], m_ColumnFormatString[iCol], m_ColumnFormatProvider[iCol]);
+                            if (ColumnHeaders[iCol].Include)
+                                oArray[iRow + 1, idx++] = Arr[iCol][iRow].ToString(ColumnHeaders[iCol].Alignment, ColumnHeaders[iCol].FormatString, ColumnHeaders[iCol].FormatProvider);
 
                     Range Column1 = oSheet.Cells[1, 1];
                     Range Column2 = oSheet.Cells[Arr.RowLength + 1, nColLength];

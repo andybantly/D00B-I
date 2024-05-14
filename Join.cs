@@ -179,7 +179,7 @@ namespace D00B
                 return;
         }
 
-        private void BtnAdd_Click(object sender, EventArgs e)
+        private void Add_Click(object sender, EventArgs e)
         {
             int iItemIndex = JoinTablesIndex();
 
@@ -254,6 +254,11 @@ namespace D00B
             }
         }
 
+        private void Clear_Click(object sender, EventArgs e)
+        {
+            m_JoinKeys.Clear();
+            txtJoin.Text = string.Empty;
+        }
         private void Include_Changed(object sender, EventArgs e)
         {
             lvJoinTables.VirtualListSize = 0;

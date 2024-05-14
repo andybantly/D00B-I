@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -126,6 +127,7 @@ namespace D00B
         private string m_strFormatString;
         private int m_iAlignment;
         string m_strCultureName;
+        IFormatProvider m_FormatProvider;
         private TypeCode m_TypeCode;
         private bool m_bIsKey = false;
         private List<DBTableKey> m_Tables = new List<DBTableKey>();
@@ -135,6 +137,7 @@ namespace D00B
             m_strFormatString = "G";
             m_iAlignment = 0;
             m_strCultureName = CultureInfo.CurrentCulture.Name;
+            m_FormatProvider = new CultureInfo(m_strCultureName);
             m_bInclude = true;
         }
 
@@ -219,7 +222,18 @@ namespace D00B
             } 
             set 
             { 
-                m_strFormatString = value; 
+                m_strFormatString = value;
+            }
+        }
+
+        public IFormatProvider FormatProvider
+        {
+            get
+            {
+                return m_FormatProvider;
+            }
+            set
+            {
             }
         }
 
@@ -244,6 +258,7 @@ namespace D00B
             set
             {
                 m_strCultureName = value;
+                m_FormatProvider = new CultureInfo(m_strCultureName);
             }
         }
         public TypeCode TypeCode

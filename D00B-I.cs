@@ -24,12 +24,9 @@ namespace D00B
         CArray m_Arr;
         int[] m_Width;
         bool[] m_SortOrder;
-        TypeCode[] m_TypeCode;
 
         // Built during progress reporting
-        List<int> m_ColumnAlignment;
-        List<string> m_ColumnFormatString;
-        List<IFormatProvider> m_ColumnFormatProvider;
+        List<DBColumn> m_ColumnHeaders;
 
         int m_nCount = -1;
         int m_nPreview = 100;
@@ -499,47 +496,149 @@ namespace D00B
                 // Clear the output
                 dgvQuery.Rows.Clear();
 
-                try
+                // Get the current table selection
+                DBTableKey TableKey = m_TableKeys[0];
+                string strSchema = TableKey.Schema;
+                string strTable = TableKey.Table;
+                string strColumn;
+                string strOT = TableKey.JoinTag;
+
+                // Update the current tables adjacent tables and find out where we can go
+                UpdateAdjTables(strSchema, strTable);
+
+                // Count the result tables data
+                string strError = string.Empty;
+                string strConnectionString = txtConnString.Text;
+                string strQueryString = string.Format("select count(*) from [{0}].[{1}] {2}", strSchema, strTable, strOT);
+
+                // Update ROW count
+                SQL Sql = new SQL(strConnectionString, strQueryString);
+                int nRows = Convert.ToInt32(Sql.ExecuteScalar(out strError));
+                Sql.Close();
+                m_TableMap[TableKey].Rows = nRows;
+                bool bCount = false;
+
+                if (m_TableKeys.Count > 1)
                 {
-                    // Get the current table selection
-                    DBTableKey TableKey = m_TableKeys[0];
-                    string strSchema = TableKey.Schema;
-                    string strTable = TableKey.Table;
-                    string strColumn = string.Empty;
-                    string strOT = TableKey.JoinTag;
+                    // When switching tables during a join, the number of table keys is less than the join keys
+                    // ? - loop through tables first, then joins
+                    bCount = true;
+                    for (int idx = 0; idx < m_TableKeys.Count - 1; idx++)
+                    {
+                        Utility.Join JoinType = m_JoinKeysFr[idx].JoinType;
+                        string strJoinType = m_JoinKeysFr[idx].ToString();
+                        string strCF = m_JoinKeysFr[idx].JoinTag;
+                        string strCT = m_JoinKeysTo[idx].JoinTag;
+                        string strSrcOwn = m_JoinKeysFr[idx].Schema;
+                        string strSrcTable = m_JoinKeysFr[idx].Table;
+                        string strSrcColumn = m_JoinKeysFr[idx].Column;
+                        string strJoinSchema = m_JoinKeysTo[idx].Schema;
+                        string strJoinTable = m_JoinKeysTo[idx].Table;
+                        string strJoinColumn = m_JoinKeysTo[idx].Column;
+                        if (JoinType != Utility.Join.Self)
+                        {
+                            strQueryString = string.Format("{0} {1} join [{2}].[{3}] {4} on {5}.{6} = {7}.{8}",
+                            strQueryString, strJoinType,
+                            strJoinSchema, strJoinTable, strCT,
+                            strCF, strSrcColumn,
+                            strCT, strJoinColumn);
+                        }
+                        else
+                        {
+                            strQueryString = string.Format("{0} join [{1}].[{2}] {3} on {4}.{5} = {6}.{7}",
+                            strQueryString,
+                            strSrcOwn, strSrcTable, strCT,
+                            strCF, strSrcColumn,
+                            strCT, strJoinColumn);
+                        }
+                    }
+                }
 
-                    // Update the current tables adjacent tables and find out where we can go
-                    UpdateAdjTables(strSchema, strTable);
+                // Search?
+                if (chkData.Checked)
+                {
+                    if (!string.IsNullOrEmpty(txtData.Text))
+                    {
+                        if (TableIndex() != -1 && ColumnIndex() != -1)
+                        {
+                            bCount = true;
+                            strSchema = lvTables.Items[TableIndex()].Text;
+                            strTable = lvTables.Items[TableIndex()].SubItems[1].Text;
+                            strColumn = lvColumns.Items[ColumnIndex()].Text;
 
-                    // Count the result tables data
-                    string strError = string.Empty;
-                    string strConnectionString = txtConnString.Text;
-                    string strQueryString = string.Format("select count(*) from [{0}].[{1}] {2}", strSchema, strTable, strOT);
+                            string strSelect = "count(*)";
+                            bool bIsNum = IsNumber(txtData.Text);
+                            string strTest = bIsNum ? "=" : (chkExact.Checked ? "=" : "like");
+                            string strTestVal = bIsNum ? txtData.Text : (chkExact.Checked ? string.Format("'{0}'", txtData.Text) : string.Format("'%{0}%'", txtData.Text));
+                            strQueryString = string.Format("select {0} from [{1}].[{2}] where [{3}].[{4}].{5} {6} {7}", strSelect, strSchema, strTable, strSchema, strTable, strColumn, strTest, strTestVal);
+                        }
+                        else
+                            MessageBox.Show("Please select a Table and Column to search within for the data", Text, MessageBoxButtons.OK);
+                    }
+                    else
+                        MessageBox.Show("There is no text to search for in the Table and Column", Text, MessageBoxButtons.OK);
+                }
 
-                    // Update ROW count
-                    SQL Sql = new SQL(strConnectionString, strQueryString);
-                    int nRows = Convert.ToInt32(Sql.ExecuteScalar(out strError));
+                // Get the list size which will become the virtual list size when the operation completes
+                int nCount;
+                if (bCount)
+                {
+                    Sql = new SQL(strConnectionString, strQueryString);
+                    nCount = Convert.ToInt32(Sql.ExecuteScalar(out strError));
                     Sql.Close();
-                    m_TableMap[TableKey].Rows = nRows;
-                    bool bCount = false;
+                }
+                else
+                    nCount = nRows;
 
+                // Set the final count of rows in the view
+                nCount = chkPrevAll.Checked ? nCount : Math.Min(nCount, m_nPreview);
+
+                // Search criteria
+                strColumn = string.Empty;
+                if (ColumnIndex() != -1)
+                    strColumn = lvColumns.Items[ColumnIndex()].Text;
+
+                strQueryString = string.Empty;
+
+                // Search?
+                if (chkData.Checked)
+                {
+                    if (!string.IsNullOrEmpty(txtData.Text))
+                    {
+                        if (TableIndex() != -1 && ColumnIndex() != -1)
+                        {
+                            string strSelect = chkPrevAll.Checked ? "*" : string.Format("top {0} *", nCount);
+                            bool bIsNum = IsNumber(txtData.Text);
+                            string strTest = bIsNum ? "=" : (chkExact.Checked ? "=" : "like");
+                            string strTestVal = bIsNum ? txtData.Text : (chkExact.Checked ? string.Format("'{0}'", txtData.Text) : string.Format("'%{0}%'", txtData.Text));
+                            strQueryString = string.Format("select {0} from [{1}].[{2}] where [{3}].[{4}].{5} {6} {7}", strSelect, strSchema, strTable, strSchema, strTable, strColumn, strTest, strTestVal);
+                        }
+                    }
+                }
+
+                // If no search then build regular query
+                if (string.IsNullOrEmpty(strQueryString))
+                {
+                    if (chkPrevAll.Checked)
+                        strQueryString = string.Format("select * from [{0}].[{1}] {2}", strSchema, strTable, strOT);
+                    else
+                        strQueryString = string.Format("select top {0} * from [{1}].[{2}] {3}", nCount, strSchema, strTable, strOT);
+
+                    // Join and preview the output
                     if (m_TableKeys.Count > 1)
                     {
-                        // When switching tables during a join, the number of table keys is less than the join keys
-                        // ? - loop through tables first, then joins
-                        bCount = true;
                         for (int idx = 0; idx < m_TableKeys.Count - 1; idx++)
                         {
                             Utility.Join JoinType = m_JoinKeysFr[idx].JoinType;
                             string strJoinType = m_JoinKeysFr[idx].ToString();
-                            string strCF = m_JoinKeysFr[idx].JoinTag;
-                            string strCT = m_JoinKeysTo[idx].JoinTag;
                             string strSrcOwn = m_JoinKeysFr[idx].Schema;
                             string strSrcTable = m_JoinKeysFr[idx].Table;
                             string strSrcColumn = m_JoinKeysFr[idx].Column;
+                            string strCF = m_JoinKeysFr[idx].JoinTag;
                             string strJoinSchema = m_JoinKeysTo[idx].Schema;
                             string strJoinTable = m_JoinKeysTo[idx].Table;
                             string strJoinColumn = m_JoinKeysTo[idx].Column;
+                            string strCT = m_JoinKeysTo[idx].JoinTag;
                             if (JoinType != Utility.Join.Self)
                             {
                                 strQueryString = string.Format("{0} {1} join [{2}].[{3}] {4} on {5}.{6} = {7}.{8}",
@@ -558,127 +657,16 @@ namespace D00B
                             }
                         }
                     }
-
-                    // Search?
-                    if (chkData.Checked)
-                    {
-                        if (!string.IsNullOrEmpty(txtData.Text))
-                        {
-                            if (TableIndex() != -1 && ColumnIndex() != -1)
-                            {
-                                bCount = true;
-                                strSchema = lvTables.Items[TableIndex()].Text;
-                                strTable = lvTables.Items[TableIndex()].SubItems[1].Text;
-                                strColumn = lvColumns.Items[ColumnIndex()].Text;
-
-                                string strSelect = "count(*)";
-                                bool bIsNum = IsNumber(txtData.Text);
-                                string strTest = bIsNum ? "=" : (chkExact.Checked ? "=" : "like");
-                                string strTestVal = bIsNum ? txtData.Text : (chkExact.Checked ? string.Format("'{0}'", txtData.Text) : string.Format("'%{0}%'", txtData.Text));
-                                strQueryString = string.Format("select {0} from [{1}].[{2}] where [{3}].[{4}].{5} {6} {7}", strSelect, strSchema, strTable, strSchema, strTable, strColumn, strTest, strTestVal);
-                            }
-                            else
-                                MessageBox.Show("Please select a Table and Column to search within for the data", Text, MessageBoxButtons.OK);
-                        }
-                        else
-                            MessageBox.Show("There is no text to search for in the Table and Column", Text, MessageBoxButtons.OK);
-                    }
-
-                    // Get the list size which will become the virtual list size when the operation completes
-                    int nCount;
-                    if (bCount)
-                    {
-                        Sql = new SQL(strConnectionString, strQueryString);
-                        nCount = Convert.ToInt32(Sql.ExecuteScalar(out strError));
-                        Sql.Close();
-                    }
-                    else
-                        nCount = nRows;
-
-                    // Set the final count of rows in the view
-                    nCount = chkPrevAll.Checked ? nCount : Math.Min(nCount, m_nPreview);
-
-                    // Search criteria
-                    strColumn = string.Empty;
-                    if (ColumnIndex() != -1)
-                        strColumn = lvColumns.Items[ColumnIndex()].Text;
-
-                    strQueryString = string.Empty;
-
-                    // Search?
-                    if (chkData.Checked)
-                    {
-                        if (!string.IsNullOrEmpty(txtData.Text))
-                        {
-                            if (TableIndex() != -1 && ColumnIndex() != -1)
-                            {
-                                string strSelect = chkPrevAll.Checked ? "*" : string.Format("top {0} *", nCount);
-                                bool bIsNum = IsNumber(txtData.Text);
-                                string strTest = bIsNum ? "=" : (chkExact.Checked ? "=" : "like");
-                                string strTestVal = bIsNum ? txtData.Text : (chkExact.Checked ? string.Format("'{0}'", txtData.Text) : string.Format("'%{0}%'", txtData.Text));
-                                strQueryString = string.Format("select {0} from [{1}].[{2}] where [{3}].[{4}].{5} {6} {7}", strSelect, strSchema, strTable, strSchema, strTable, strColumn, strTest, strTestVal);
-                            }
-                        }
-                    }
-
-                    if (string.IsNullOrEmpty(strQueryString))
-                    {
-                        if (chkPrevAll.Checked)
-                            strQueryString = string.Format("select * from [{0}].[{1}] {2}", strSchema, strTable, strOT);
-                        else
-                            strQueryString = string.Format("select top {0} * from [{1}].[{2}] {3}", nCount, strSchema, strTable, strOT);
-
-                        // Join and preview the output
-                        if (m_TableKeys.Count > 1)
-                        {
-                            for (int idx = 0; idx < m_TableKeys.Count - 1; idx++)
-                            {
-                                Utility.Join JoinType = m_JoinKeysFr[idx].JoinType;
-                                string strJoinType = m_JoinKeysFr[idx].ToString();
-                                string strSrcOwn = m_JoinKeysFr[idx].Schema;
-                                string strSrcTable = m_JoinKeysFr[idx].Table;
-                                string strSrcColumn = m_JoinKeysFr[idx].Column;
-                                string strCF = m_JoinKeysFr[idx].JoinTag;
-                                string strJoinSchema = m_JoinKeysTo[idx].Schema;
-                                string strJoinTable = m_JoinKeysTo[idx].Table;
-                                string strJoinColumn = m_JoinKeysTo[idx].Column;
-                                string strCT = m_JoinKeysTo[idx].JoinTag;
-                                if (JoinType != Utility.Join.Self)
-                                {
-                                    strQueryString = string.Format("{0} {1} join [{2}].[{3}] {4} on {5}.{6} = {7}.{8}",
-                                    strQueryString, strJoinType,
-                                    strJoinSchema, strJoinTable, strCT,
-                                    strCF, strSrcColumn,
-                                    strCT, strJoinColumn);
-                                }
-                                else
-                                {
-                                    strQueryString = string.Format("{0} join [{1}].[{2}] {3} on {4}.{5} = {6}.{7}",
-                                    strQueryString,
-                                    strSrcOwn, strSrcTable, strCT,
-                                    strCF, strSrcColumn,
-                                    strCT, strJoinColumn);
-                                }
-                            }
-                        }
-                    }
-
-                    lvTables.Invalidate();
-                    lvColumns.Invalidate();
-
-                    // Perform the search
-                    txtQuery.Text = strQueryString;
-
-                    // Process the SQL query in the background
-                    StartBackgroundSQL(strConnectionString, strQueryString, nCount);
                 }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.Message);
-                }
-                finally
-                {
-                }
+
+                lvTables.Invalidate();
+                lvColumns.Invalidate();
+
+                // Perform the search
+                txtQuery.Text = strQueryString;
+
+                // Process the SQL query in the background
+                StartBackgroundSQL(strConnectionString, strQueryString, nCount);
             }
         }
 
@@ -946,9 +934,7 @@ namespace D00B
         {
             // Clear storages used for UI
             m_Arr = null;
-            m_ColumnAlignment = null;
-            m_ColumnFormatString = null;
-            m_ColumnFormatProvider = null;
+            m_ColumnHeaders = null;
             m_Width = null;
             m_SortOrder = null;
         }
@@ -990,16 +976,16 @@ namespace D00B
 
         private void BtnExport_Click(object sender, EventArgs e)
         {
-            List<KeyValuePair<string, bool>> Header = new List<KeyValuePair<string, bool>>();
+            List<string> Header = new List<string>();
             for (int idx = 0; idx < m_TableKeys.Count; idx++)
             {
                 DBTableKey TK = m_TableKeys[idx];
                 DBTable Table = m_TableMap[TK];
                 foreach (DBColumn Column in Table.Columns)
-                    Header.Add(new KeyValuePair<string, bool>(Column.Name, Column.Include));
+                    Header.Add(Column.Name);
             }
 
-            if (dgvQuery.RowCount > 0 && ExportListView.ExportToExcel(m_Arr, Header, m_ColumnAlignment, m_ColumnFormatString, m_ColumnFormatProvider, "SQL", out double dDuration))
+            if (dgvQuery.RowCount > 0 && ExportListView.ExportToExcel(m_Arr, m_ColumnHeaders, "SQL", out double dDuration))
                 MessageBox.Show(string.Format("Successfully exported to Excel in {0} seconds", dDuration), Text);
             else
                 MessageBox.Show("Failed to export to Excel", Text);
@@ -1212,7 +1198,7 @@ namespace D00B
                 {
                     try
                     {
-                        e.Value = m_Arr[iCol][iRow]?.ToString(m_ColumnAlignment[iCol], m_ColumnFormatString[iCol], m_ColumnFormatProvider[iCol]); // IFormattable
+                        e.Value = m_Arr[iCol][iRow]?.ToString(m_ColumnHeaders[iCol].Alignment, m_ColumnHeaders[iCol].FormatString, m_ColumnHeaders[iCol].FormatProvider);
                     }
                     catch (Exception ex)
                     {
@@ -1261,9 +1247,7 @@ namespace D00B
         }
         private void ToggleColumn(int iColumn)
         {
-            DBTableKey TableKey = m_TableKeys[0];
-            DBTable Table = m_TableMap[TableKey];
-            DBColumn Column = Table.Columns[iColumn];
+            DBColumn Column = m_ColumnHeaders[iColumn];
             Column.Include = !Column.Include;
 
             // Trigger the new column visibility
@@ -1278,14 +1262,13 @@ namespace D00B
         {
             if (e.Location.X > 20)
                 return;
-            int iColumn = ColumnIndex();
-            if (iColumn < 0)
-                return;
-            lvColumns.SelectedIndices.Add(iColumn);
             ListViewItem Item = lvColumns.GetItemAt(e.Location.X, e.Location.Y);
-            ListViewItem SelItem = lvColumns.Items[iColumn];
-            if (Item.Text == SelItem.Text)
-                ToggleColumn(iColumn);
+            int iColumn = Item.Index;
+            lvColumns.Select();
+            lvColumns.EnsureVisible(iColumn);
+            lvColumns.SelectedIndices.Add(iColumn);
+            lvColumns.SelectedIndices.Add(iColumn);
+            ToggleColumn(iColumn);
         }
 
         private void LvColumns_KeyPress(object sender, KeyPressEventArgs e)
@@ -1296,25 +1279,6 @@ namespace D00B
             ToggleColumn(iColumn);
         }
 
-        // Lookup the column based on the column index which could be in any of the tables that are joined
-        private DBColumn LookupColumn(int iItemIndex, out int iTable)
-        {
-            DBTableKey TableKey;
-            DBTable Table;
-            for (iTable = 0; iTable < m_TableKeys.Count; ++iTable)
-            {
-                TableKey = m_TableKeys[iTable];
-                Table = m_TableMap[TableKey];
-                if (Table.Columns.Count - 1 < iItemIndex)
-                    iItemIndex -= Table.Columns.Count;
-                else
-                    break;
-            }
-            TableKey = m_TableKeys[iTable];
-            Table = m_TableMap[TableKey];
-            return Table.Columns[iItemIndex];
-        }
-
         private void LvColumns_EditFormat(object sender, MouseEventArgs e)
         {
             int iItemIndex = ColumnIndex();
@@ -1322,7 +1286,7 @@ namespace D00B
                 return;
 
             // Lookup the column based on the column index
-            DBColumn Column = LookupColumn(iItemIndex, out int _);
+            DBColumn Column = m_ColumnHeaders[iItemIndex];
 
             string strCultureName = Column.CultureName;
             string strFormatString = Column.FormatString;
@@ -1337,8 +1301,9 @@ namespace D00B
                 {
                     // Update the format string
                     Column.FormatString = FmtDlg.FormatString;
-                    Column.Alignment = FmtDlg.Alignment; ;
+                    Column.Alignment = FmtDlg.Alignment;
                     Column.CultureName = FmtDlg.CultureName;
+                    m_ColumnHeaders[iItemIndex] = Column;
 
                     // Trigger the new formatting
                     SetupHeaders();
@@ -1355,13 +1320,25 @@ namespace D00B
                 if (m_Arr != null)
                 {
                     // Lookup the column and table based on the item index
-                    DBColumn Column = LookupColumn(iItemIndex, out int iTable);
-                    DBTableKey TableKey = m_TableKeys[iTable];
-                    DBTable Table = m_TableMap[TableKey];
+                    DBColumn Column = m_ColumnHeaders[iItemIndex];
 
-                    e.Item = new ListViewItem(Column.Name);
-                    e.Item.Checked = Column.Include;
-                    e.Item.UseItemStyleForSubItems = false;
+                    DBTableKey TableKey = null;
+                    DBTable Table = null;
+                    for (int iTable = 0, idx = iItemIndex; iTable < m_TableKeys.Count; ++iTable)
+                    {
+                        TableKey = m_TableKeys[iTable];
+                        Table = m_TableMap[TableKey];
+                        if (Table.Columns.Count - 1 < idx)
+                            idx -= Table.Columns.Count;
+                        else
+                            break;
+                    }
+
+                    e.Item = new ListViewItem(Column.Name)
+                    {
+                        Checked = Column.Include,
+                        UseItemStyleForSubItems = false
+                    };
                     e.Item.SubItems.Add(Column.FormatString);
                     e.Item.SubItems.Add(Column.Alignment.ToString());
                     e.Item.SubItems.Add(Column.CultureName);
@@ -1457,6 +1434,7 @@ namespace D00B
             m_TableKeys.Add(TableKey);
 
             // Setup the column and format list
+            lvColumns.CheckBoxes = true;
             lvColumns.VirtualListSize = 0;
             Utility.m_nMaxColumnWidth = 0;
             DBTable Table = m_TableMap[TableKey];
@@ -1678,18 +1656,21 @@ namespace D00B
                 m_Arr = new CArray(nCount, nColumns);
                 m_Width = new int[nColumns];
                 m_SortOrder = new bool[nColumns];
-                m_TypeCode = new TypeCode[nColumns];
 
                 // Column headers
+                m_ColumnHeaders = new List<DBColumn>();
                 Size szExtra = TextRenderer.MeasureText("XXXXXXXX", Utility.m_Font);
                 for (int iField = 0; iField < nColumns; ++iField)
                 {
                     string strColHdr = Sql.Columns[iField];
+                    DBColumn ColumnHeader = new DBColumn(strColHdr);
                     m_SortOrder[iField] = false;
                     Size sz = szExtra + TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), Utility.m_Font);
                     if (sz.Width > m_Width[iField])
                         m_Width[iField] = Math.Min(65535, sz.Width);
-                    m_TypeCode[iField] = Sql.ColumnType(iField);
+                    ColumnHeader.Include = true;
+                    ColumnHeader.TypeCode = Sql.ColumnType(iField);
+                    m_ColumnHeaders.Add(ColumnHeader);
                 }
 
                 // Report the number of columns
@@ -1856,9 +1837,6 @@ namespace D00B
                 dgvQuery.RowHeadersWidth = szRowHeader.Width;
                 dgvQuery.Columns.Clear();
 
-                m_ColumnAlignment = new List<int>();
-                m_ColumnFormatString = new List<string>();
-                m_ColumnFormatProvider = new List<IFormatProvider>();
                 for (int idx = 0, iField = 0; idx < m_TableKeys.Count; idx++)
                 {
                     DBTableKey TK = m_TableKeys[idx];
@@ -1867,14 +1845,10 @@ namespace D00B
                     {
                         if (!m_BkgSQL.CancellationPending)
                         {
-                            DBColumn Column = Table.Columns[iCol];
-                            Column.TypeCode = m_TypeCode[iField];
+                            DBColumn Column = m_ColumnHeaders[iField];
                             dgvQuery.Columns.Add(Column.Name, Column.Name);
                             dgvQuery.Columns[iField].Width = m_Width[iField];
                             dgvQuery.Columns[iField].ReadOnly = true;
-                            m_ColumnAlignment.Add(Column.Alignment);
-                            m_ColumnFormatString.Add(Column.FormatString);
-                            m_ColumnFormatProvider.Add(new CultureInfo(Column.CultureName));
                             dgvQuery.Columns[iField].DefaultCellStyle = new DataGridViewCellStyle { Alignment = Column.TypeCode != TypeCode.String ? DataGridViewContentAlignment.MiddleRight : DataGridViewContentAlignment.MiddleLeft };
                             dgvQuery.Columns[iField].Visible = Column.Include;
                         }

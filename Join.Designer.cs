@@ -41,6 +41,7 @@
             this.rbNeighbors = new System.Windows.Forms.RadioButton();
             this.rbAll = new System.Windows.Forms.RadioButton();
             this.btnAdd = new System.Windows.Forms.Button();
+            this.btnClear = new System.Windows.Forms.Button();
             this.gbJoin.SuspendLayout();
             this.gbInclude.SuspendLayout();
             this.SuspendLayout();
@@ -48,7 +49,7 @@
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(998, 349);
+            this.btnOK.Location = new System.Drawing.Point(998, 341);
             this.btnOK.Margin = new System.Windows.Forms.Padding(1);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(101, 28);
@@ -201,20 +202,31 @@
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(884, 349);
+            this.btnAdd.Location = new System.Drawing.Point(527, 341);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(101, 28);
             this.btnAdd.TabIndex = 49;
             this.btnAdd.Text = "Add Join";
             this.btnAdd.UseVisualStyleBackColor = true;
-            this.btnAdd.Click += new System.EventHandler(this.BtnAdd_Click);
+            this.btnAdd.Click += new System.EventHandler(this.Add_Click);
+            // 
+            // btnClear
+            // 
+            this.btnClear.Location = new System.Drawing.Point(634, 341);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(101, 28);
+            this.btnClear.TabIndex = 50;
+            this.btnClear.Text = "Clear Join(s)";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.Clear_Click);
             // 
             // DlgJoin
             // 
             this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1114, 386);
+            this.ClientSize = new System.Drawing.Size(1114, 382);
+            this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.gbInclude);
             this.Controls.Add(this.gbJoin);
@@ -252,5 +264,6 @@
         private System.Windows.Forms.RadioButton rbNeighbors;
         private System.Windows.Forms.RadioButton rbAll;
         private System.Windows.Forms.Button btnAdd;
+        private System.Windows.Forms.Button btnClear;
     }
 }
