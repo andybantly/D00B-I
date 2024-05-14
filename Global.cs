@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace D00B
 {
     public static class Global
     {
-        static private bool g_bSortOrder;
+        static private SortOrder g_SortOrder;
 
-        static public bool SortOrder
+        static public SortOrder SortOrder
         {
-            get { return g_bSortOrder; }
-            set { g_bSortOrder = value; }
+            get { return g_SortOrder; }
+            set { g_SortOrder = value; }
         }
     }
 }

@@ -6,7 +6,6 @@ using System.Security.Principal;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.ComponentModel;
-using System.Globalization;
 
 namespace D00B
 {
@@ -23,7 +22,6 @@ namespace D00B
 
         CArray m_Arr;
         int[] m_Width;
-        bool[] m_SortOrder;
 
         // Built during progress reporting
         List<DBColumn> m_ColumnHeaders;
@@ -936,7 +934,6 @@ namespace D00B
             m_Arr = null;
             m_ColumnHeaders = null;
             m_Width = null;
-            m_SortOrder = null;
         }
 
         void ClearUI()
@@ -1141,12 +1138,12 @@ namespace D00B
             }
 
             // Sort using the classes comparer
-            Global.SortOrder = m_SortOrder[e.ColumnIndex];
+            Global.SortOrder = m_ColumnHeaders[e.ColumnIndex].SortOrder;
 
             // Sort the indexed column and rearrange
             m_Arr.ParallelSort(e.ColumnIndex);
 
-            m_SortOrder[e.ColumnIndex] = !m_SortOrder[e.ColumnIndex];
+            m_ColumnHeaders[e.ColumnIndex].SortOrder = m_ColumnHeaders[e.ColumnIndex].SortOrder == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
             dgvQuery.Invalidate();
 
             // Set the default cursor
@@ -1655,7 +1652,6 @@ namespace D00B
                 int nColumns = Sql.Columns.Count;
                 m_Arr = new CArray(nCount, nColumns);
                 m_Width = new int[nColumns];
-                m_SortOrder = new bool[nColumns];
 
                 // Column headers
                 m_ColumnHeaders = new List<DBColumn>();
@@ -1664,7 +1660,6 @@ namespace D00B
                 {
                     string strColHdr = Sql.Columns[iField];
                     DBColumn ColumnHeader = new DBColumn(strColHdr);
-                    m_SortOrder[iField] = false;
                     Size sz = szExtra + TextRenderer.MeasureText(new string('X', strColHdr.Length + 3), Utility.m_Font);
                     if (sz.Width > m_Width[iField])
                         m_Width[iField] = Math.Min(65535, sz.Width);

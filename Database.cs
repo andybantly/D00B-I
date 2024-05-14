@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Globalization;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace D00B
@@ -122,14 +120,15 @@ namespace D00B
 
     public class DBColumn : IComparable<DBColumn>, IEquatable<DBColumn>, IComparable
     {
-        private string m_strName = string.Empty;
+        private string m_strName;
         private bool m_bInclude;
         private string m_strFormatString;
         private int m_iAlignment;
         string m_strCultureName;
         IFormatProvider m_FormatProvider;
         private TypeCode m_TypeCode;
-        private bool m_bIsKey = false;
+        private bool m_bIsKey;
+        private SortOrder m_SortOrder;
         private List<DBTableKey> m_Tables = new List<DBTableKey>();
 
         public DBColumn()
@@ -139,6 +138,8 @@ namespace D00B
             m_strCultureName = CultureInfo.CurrentCulture.Name;
             m_FormatProvider = new CultureInfo(m_strCultureName);
             m_bInclude = true;
+            m_bIsKey = false;
+            m_SortOrder = SortOrder.Ascending;
         }
 
         public DBColumn(string strName) : this()
@@ -270,6 +271,17 @@ namespace D00B
             set
             {
                 m_TypeCode = value;
+            }
+        }
+        public SortOrder SortOrder
+        {
+            get
+            {
+                return m_SortOrder;
+            }
+            set
+            {
+                m_SortOrder = value;
             }
         }
     }
