@@ -5,7 +5,6 @@ using System.Windows.Forms;
 
 namespace D00B
 {
-
     public static class Utility
     {
         static float m_nFontHeight;

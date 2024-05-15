@@ -417,8 +417,10 @@ namespace D00B
                         {
                             string strCol = SqlCol.GetValue("COLUMN_NAME").ToString();
                             string strTableOwner = SqlCol.GetValue("TABLE_OWNER").ToString();
+                            string strSqlDataType = SqlCol.GetValue("DATA_TYPE").ToString();
                             DBTableKey TK = new DBTableKey(strTableOwner, Table.TableName, strCol);
-                            Columns.Add(new DBColumn(strCol, Table.ContainsPK(TK)));
+                            DBColumn DBColumn = new DBColumn(strCol, Table.ContainsPK(TK));
+                            Columns.Add(DBColumn);
                         }
                         Table.Columns = Columns;
                         SqlCol.Close();
@@ -505,7 +507,7 @@ namespace D00B
                 UpdateAdjTables(strSchema, strTable);
 
                 // Count the result tables data
-                string strError = string.Empty;
+                string strError;
                 string strConnectionString = txtConnString.Text;
                 string strQueryString = string.Format("select count(*) from [{0}].[{1}] {2}", strSchema, strTable, strOT);
 
@@ -560,14 +562,15 @@ namespace D00B
                         if (TableIndex() != -1 && ColumnIndex() != -1)
                         {
                             bCount = true;
+                            int iColumnIndex = ColumnIndex();
                             strSchema = lvTables.Items[TableIndex()].Text;
                             strTable = lvTables.Items[TableIndex()].SubItems[1].Text;
-                            strColumn = lvColumns.Items[ColumnIndex()].Text;
-
+                            strColumn = lvColumns.Items[iColumnIndex].Text;
+                            TypeCode TC = m_ColumnHeaders[iColumnIndex].TypeCode;
+                            bool bIsText = TC == TypeCode.Char || TC == TypeCode.String || TC == TypeCode.DateTime;
                             string strSelect = "count(*)";
-                            bool bIsNum = IsNumber(txtData.Text);
-                            string strTest = bIsNum ? "=" : (chkExact.Checked ? "=" : "like");
-                            string strTestVal = bIsNum ? txtData.Text : (chkExact.Checked ? string.Format("'{0}'", txtData.Text) : string.Format("'%{0}%'", txtData.Text));
+                            string strTest = bIsText ? "like" : (chkExact.Checked ? "=" : "like");
+                            string strTestVal = bIsText ? (chkExact.Checked ? string.Format("'{0}'", txtData.Text) : string.Format("'%{0}%'", txtData.Text)) : txtData.Text;
                             strQueryString = string.Format("select {0} from [{1}].[{2}] where [{3}].[{4}].{5} {6} {7}", strSelect, strSchema, strTable, strSchema, strTable, strColumn, strTest, strTestVal);
                         }
                         else
@@ -605,10 +608,11 @@ namespace D00B
                     {
                         if (TableIndex() != -1 && ColumnIndex() != -1)
                         {
+                            TypeCode TC = m_ColumnHeaders[ColumnIndex()].TypeCode;
+                            bool bIsText = TC == TypeCode.Char || TC == TypeCode.String || TC == TypeCode.DateTime;
                             string strSelect = chkPrevAll.Checked ? "*" : string.Format("top {0} *", nCount);
-                            bool bIsNum = IsNumber(txtData.Text);
-                            string strTest = bIsNum ? "=" : (chkExact.Checked ? "=" : "like");
-                            string strTestVal = bIsNum ? txtData.Text : (chkExact.Checked ? string.Format("'{0}'", txtData.Text) : string.Format("'%{0}%'", txtData.Text));
+                            string strTest = bIsText ? "like" : (chkExact.Checked ? "=" : "like");
+                            string strTestVal = bIsText ? (chkExact.Checked ? string.Format("'{0}'", txtData.Text) : string.Format("'%{0}%'", txtData.Text)) : txtData.Text;
                             strQueryString = string.Format("select {0} from [{1}].[{2}] where [{3}].[{4}].{5} {6} {7}", strSelect, strSchema, strTable, strSchema, strTable, strColumn, strTest, strTestVal);
                         }
                     }

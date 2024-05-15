@@ -218,7 +218,7 @@ namespace D00B
             if (m_Reader != null && m_Reader.IsClosed)
                 return false;
 
-            bool bReturn = m_Reader != null && m_Reader.Read();
+            bool bReturn = m_Reader != null && m_Reader.HasRows && m_Reader.Read();
             if (bReturn)
             {
                 m_CurrentRow = new object[m_nFieldCount];
