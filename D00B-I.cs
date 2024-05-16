@@ -30,6 +30,7 @@ namespace D00B
         int m_nPreview = 100;
         Timer m_PBTimer = null;
 
+        #region RESIZE
         // Screen rectangle and positions of the controls
         private Rectangle m_DialogRect;
         private int m_btnLoadLeft;
@@ -55,6 +56,7 @@ namespace D00B
         private int m_lvColumnsWidth;
         private int m_lvAdjTablesWidth;
         private int m_dx;
+        #endregion RESIZE
 
         public D00B()
         {
@@ -1313,6 +1315,20 @@ namespace D00B
             }
         }
 
+        private void LvColumns_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
+        {
+            e.DrawDefault = true;
+        }
+
+        private void LvColumns_DrawItem(object sender, DrawListViewItemEventArgs e)
+        {
+            e.DrawDefault = true;
+        }
+
+        private void LvColumns_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
+        {
+            e.DrawDefault = true;
+        }
         private void LvColumns_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             int iItemIndex = e.ItemIndex;

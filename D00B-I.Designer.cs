@@ -287,11 +287,15 @@
             this.lvColumns.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.lvColumns.MultiSelect = false;
             this.lvColumns.Name = "lvColumns";
+            this.lvColumns.OwnerDraw = true;
             this.lvColumns.Size = new System.Drawing.Size(564, 235);
             this.lvColumns.TabIndex = 34;
             this.lvColumns.UseCompatibleStateImageBehavior = false;
             this.lvColumns.View = System.Windows.Forms.View.Details;
             this.lvColumns.VirtualMode = true;
+            this.lvColumns.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.LvColumns_DrawColumnHeader);
+            this.lvColumns.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.LvColumns_DrawItem);
+            this.lvColumns.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.LvColumns_DrawSubItem);
             this.lvColumns.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.LvColumns_RetrieveVirtualItem);
             this.lvColumns.SelectedIndexChanged += new System.EventHandler(this.LvColumns_SelectedIndexChanged);
             this.lvColumns.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.LvColumns_KeyPress);
