@@ -57,19 +57,19 @@
             this.lb2 = new System.Windows.Forms.Label();
             this.lb3 = new System.Windows.Forms.Label();
             this.dgvQuery = new System.Windows.Forms.DataGridView();
-            this.label1 = new System.Windows.Forms.Label();
             this.btnResetJoin = new System.Windows.Forms.Button();
+            this.btnAddConnection = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvQuery)).BeginInit();
             this.SuspendLayout();
             // 
             // txtConnString
             // 
             this.txtConnString.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtConnString.Location = new System.Drawing.Point(166, 42);
+            this.txtConnString.Location = new System.Drawing.Point(274, 8);
             this.txtConnString.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtConnString.Multiline = true;
             this.txtConnString.Name = "txtConnString";
-            this.txtConnString.Size = new System.Drawing.Size(1217, 29);
+            this.txtConnString.Size = new System.Drawing.Size(889, 29);
             this.txtConnString.TabIndex = 6;
             // 
             // btnLoad
@@ -106,7 +106,7 @@
             this.chkHdr.Location = new System.Drawing.Point(1636, 1960);
             this.chkHdr.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkHdr.Name = "chkHdr";
-            this.chkHdr.Size = new System.Drawing.Size(121, 20);
+            this.chkHdr.Size = new System.Drawing.Size(113, 19);
             this.chkHdr.TabIndex = 13;
             this.chkHdr.Text = "Include Header";
             this.chkHdr.UseVisualStyleBackColor = true;
@@ -115,10 +115,10 @@
             // 
             this.chkPrevAll.Enabled = false;
             this.chkPrevAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkPrevAll.Location = new System.Drawing.Point(413, 12);
+            this.chkPrevAll.Location = new System.Drawing.Point(148, 42);
             this.chkPrevAll.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkPrevAll.Name = "chkPrevAll";
-            this.chkPrevAll.Size = new System.Drawing.Size(53, 24);
+            this.chkPrevAll.Size = new System.Drawing.Size(70, 24);
             this.chkPrevAll.TabIndex = 14;
             this.chkPrevAll.Text = "All";
             this.chkPrevAll.UseVisualStyleBackColor = true;
@@ -161,7 +161,7 @@
             this.txtSearch.Location = new System.Drawing.Point(1284, 117);
             this.txtSearch.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(454, 22);
+            this.txtSearch.Size = new System.Drawing.Size(454, 20);
             this.txtSearch.TabIndex = 19;
             this.txtSearch.TextChanged += new System.EventHandler(this.BtnSearch_TextChanged);
             // 
@@ -216,10 +216,10 @@
             // 
             // pbData
             // 
-            this.pbData.Location = new System.Drawing.Point(1395, 42);
+            this.pbData.Location = new System.Drawing.Point(1284, 42);
             this.pbData.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.pbData.Name = "pbData";
-            this.pbData.Size = new System.Drawing.Size(343, 29);
+            this.pbData.Size = new System.Drawing.Size(454, 29);
             this.pbData.TabIndex = 26;
             // 
             // chkExact
@@ -237,7 +237,7 @@
             // lblPreview
             // 
             this.lblPreview.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPreview.Location = new System.Drawing.Point(274, 12);
+            this.lblPreview.Location = new System.Drawing.Point(9, 44);
             this.lblPreview.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblPreview.Name = "lblPreview";
             this.lblPreview.Size = new System.Drawing.Size(74, 20);
@@ -249,7 +249,7 @@
             // 
             this.txtPreview.Enabled = false;
             this.txtPreview.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPreview.Location = new System.Drawing.Point(349, 10);
+            this.txtPreview.Location = new System.Drawing.Point(84, 42);
             this.txtPreview.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtPreview.Name = "txtPreview";
             this.txtPreview.Size = new System.Drawing.Size(52, 26);
@@ -339,10 +339,10 @@
             this.cbDataBases.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbDataBases.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cbDataBases.FormattingEnabled = true;
-            this.cbDataBases.Location = new System.Drawing.Point(465, 11);
+            this.cbDataBases.Location = new System.Drawing.Point(1284, 9);
             this.cbDataBases.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.cbDataBases.Name = "cbDataBases";
-            this.cbDataBases.Size = new System.Drawing.Size(1069, 28);
+            this.cbDataBases.Size = new System.Drawing.Size(250, 28);
             this.cbDataBases.TabIndex = 37;
             this.cbDataBases.SelectionChangeCommitted += new System.EventHandler(this.CbDataBases_SelectionChangeCommitted);
             // 
@@ -404,6 +404,7 @@
             this.dgvQuery.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvQuery.Location = new System.Drawing.Point(6, 343);
             this.dgvQuery.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.dgvQuery.MultiSelect = false;
             this.dgvQuery.Name = "dgvQuery";
             this.dgvQuery.RowHeadersWidth = 62;
             this.dgvQuery.Size = new System.Drawing.Size(1732, 333);
@@ -411,16 +412,6 @@
             this.dgvQuery.VirtualMode = true;
             this.dgvQuery.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DgvQuery_CellValueNeeded);
             this.dgvQuery.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DgvQuery_ColumnHeaderMouseClick);
-            // 
-            // label1
-            // 
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(3, 45);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(154, 20);
-            this.label1.TabIndex = 48;
-            this.label1.Text = "Connection String";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // btnResetJoin
             // 
@@ -435,12 +426,24 @@
             this.btnResetJoin.UseVisualStyleBackColor = true;
             this.btnResetJoin.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnResetJoin_Click);
             // 
+            // btnAddConnection
+            // 
+            this.btnAddConnection.Enabled = false;
+            this.btnAddConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAddConnection.Location = new System.Drawing.Point(1166, 5);
+            this.btnAddConnection.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            this.btnAddConnection.Name = "btnAddConnection";
+            this.btnAddConnection.Size = new System.Drawing.Size(114, 35);
+            this.btnAddConnection.TabIndex = 50;
+            this.btnAddConnection.Text = "Add Connection";
+            this.btnAddConnection.UseVisualStyleBackColor = true;
+            // 
             // D00B
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(1743, 780);
+            this.Controls.Add(this.btnAddConnection);
             this.Controls.Add(this.btnResetJoin);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.dgvQuery);
             this.Controls.Add(this.lb3);
             this.Controls.Add(this.lb2);
@@ -511,8 +514,8 @@
         private System.Windows.Forms.Label lb2;
         private System.Windows.Forms.Label lb3;
         private System.Windows.Forms.DataGridView dgvQuery;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnResetJoin;
+        private System.Windows.Forms.Button btnAddConnection;
     }
 }
 

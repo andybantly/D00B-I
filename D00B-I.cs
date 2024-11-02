@@ -23,6 +23,8 @@ namespace D00B
         CArray m_Arr;
         int[] m_Width;
 
+        Dictionary<string, string> m_DataBases = new Dictionary<string, string>();
+
         // Built during progress reporting
         List<DBColumn> m_ColumnHeaders;
 
@@ -41,6 +43,7 @@ namespace D00B
         private int m_chkExactLeft;
         private int m_chkTableLeft;
         private int m_chkDataLeft;
+        private int m_btnAddConnectionLeft;
         private int m_btnSearchLeft;
         private int m_btnJoinLeft;
         private int m_btnResetJoinLeft;
@@ -80,13 +83,18 @@ namespace D00B
             UpdateUI(false);
 
             string strUserID = WindowsIdentity.GetCurrent().Name;
-            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=AdventureWorks2022;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID));
-            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=master;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID));  // accidentally installed this to master, if you install it properly then you will need to change the catalog
-            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=WideWorldImporters;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID));
-            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=pubs;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID));
+            m_DataBases[@"Adventure Works 2022"] = string.Format(@"Data Source=.\;Initial Catalog=AdventureWorks2022;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID);
+            m_DataBases[@"Master"] = string.Format(@"Data Source=.\;Initial Catalog=master;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID);
+            m_DataBases[@"Wide World Importers"] = string.Format(@"Data Source=.\;Initial Catalog=WideWorldImporters;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID);
+            m_DataBases[@"Pubs"] = string.Format(@"Data Source=.\;Initial Catalog=pubs;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID);
+
+            cbDataBases.Items.Add(@"Adventure Works 2022");
+            cbDataBases.Items.Add(@"Master");
+            cbDataBases.Items.Add(@"Wide World Importers");
+            cbDataBases.Items.Add(@"Pubs");
             cbDataBases.SelectedIndex = 0;
 
-            txtConnString.Text = cbDataBases.Text;
+            txtConnString.Text = m_DataBases[cbDataBases.Text];
             chkPrevAll.Checked = false;
             txtPreview.Text = m_nPreview.ToString();
 
@@ -120,6 +128,7 @@ namespace D00B
             m_chkExactLeft = chkExact.Left;
             m_chkTableLeft = chkTable.Left;
             m_chkDataLeft = chkData.Left;
+            m_btnAddConnectionLeft = btnAddConnection.Left;
             m_btnSearchLeft = btnSearch.Left;
             m_btnJoinLeft = btnJoin.Left;
             m_btnResetJoinLeft = btnResetJoin.Left;
@@ -170,6 +179,9 @@ namespace D00B
 
             // Move the data check box
             chkData.Left = m_chkDataLeft + PtDiff.X;
+
+            // Move the add button
+            btnAddConnection.Left = m_btnAddConnectionLeft + PtDiff.X;
 
             // Move the search button
             btnSearch.Left = m_btnSearchLeft + PtDiff.X;
@@ -232,6 +244,7 @@ namespace D00B
             label2.Enabled = bEnabled;
             tbTables.Enabled = bEnabled;
             txtSearch.Enabled = bEnabled;
+            btnAddConnection.Enabled = true;
             btnSearch.Enabled = bEnabled;
             lvResults.Enabled = bEnabled;
             chkTable.Enabled = bEnabled;
@@ -269,6 +282,7 @@ namespace D00B
                 Utility.m_nMaxSchemaWidth = 0;
                 Utility.m_nMaxTableWidth = 0;
                 Utility.m_nMaxColumnWidth = 0;
+                int nTotalRows = 0;
                 int iSelectedIndex = 0;
                 m_TableMap = new Dictionary<DBTableKey, DBTable>();
                 if (SqlTables.ExecuteReader(out string strError))
@@ -290,6 +304,7 @@ namespace D00B
                                 nRows = nCount;
                             SqlCount.Close();
                         }
+                        nTotalRows += nRows;
 
                         DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty);
                         if (!m_TableMap.ContainsKey(TableKey))
@@ -1506,6 +1521,11 @@ namespace D00B
             if (iResIdx == -1)
                 return;
 
+//            string strTables = string.Empty;
+//            for (int i = 0; i < lvResults.Items.Count; i++)
+//                strTables += lvResults.Items[i].SubItems[1].Text + "\r\n";
+//            MessageBox.Show(strTables);
+
             string strSchema = lvResults.SelectedItems[0].Text;
             string strTable = lvResults.SelectedItems[0].SubItems[1].Text;
 
@@ -1522,7 +1542,7 @@ namespace D00B
 
         private void CbDataBases_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            txtConnString.Text = cbDataBases.Text;
+            txtConnString.Text = m_DataBases[cbDataBases.Text];
 
             // Reload the view
             UpdateUI(LoadView());
