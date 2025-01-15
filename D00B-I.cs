@@ -111,6 +111,7 @@ namespace D00B
             lvResults.View = View.Details;
             lvResults.Font = Utility.m_Font;
             cbDataBases.Font = Utility.m_Font;
+            txtConnString.Font = Utility.m_Font;
         }
         private void D00B_Resize(object sender, EventArgs e)
         {
@@ -269,6 +270,13 @@ namespace D00B
                 Cursor.Current = Cursors.WaitCursor;
                 string strConnectionString = txtConnString.Text;
 
+                // Move the progress bar along for something to watch
+                pbData.Minimum = 1;
+                pbData.Maximum = 5;
+
+                // Rows section
+                pbData.Value = 1;
+                    
                 // Count of rows in each table
                 string strQueryString;
                 if (cbSchema.SelectedIndex == 0)
@@ -325,6 +333,9 @@ namespace D00B
                     MessageBox.Show(strError);
                 SqlTables.Close();
 
+                // Views section
+                pbData.Value = 2;
+
                 // Now do views
                 if (cbSchema.SelectedIndex == 0)
                     strQueryString = "select distinct schema_name(v.schema_id) as schema_name, v.name as table_name from sys.views as v order by schema_name;";
@@ -362,8 +373,11 @@ namespace D00B
                     MessageBox.Show(strError);
                 SqlViews.Close();
 
+                // Primary Keys section
+                pbData.Value = 3;
+
                 // Now do primary keys
-                strQueryString = "SELECT TABLE_QUALIFIER = CONVERT(SYSNAME,DB_NAME()), TABLE_OWNER = CONVERT(SYSNAME,SCHEMA_NAME(O.SCHEMA_ID)), TABLE_NAME = CONVERT(SYSNAME,O.NAME), COLUMN_NAME = CONVERT(SYSNAME,C.NAME), PK_NAME = CONVERT(SYSNAME,K.NAME) FROM SYS.INDEXES I, SYS.ALL_COLUMNS C, SYS.ALL_OBJECTS O, SYS.KEY_CONSTRAINTS K WHERE O.OBJECT_ID = C.OBJECT_ID AND O.OBJECT_ID = I.OBJECT_ID AND K.PARENT_OBJECT_ID = O.OBJECT_ID AND K.UNIQUE_INDEX_ID = I.INDEX_ID AND I.IS_PRIMARY_KEY = 1 ORDER BY 1, 2, 3, 5";
+                strQueryString = "select TABLE_QUALIFIER = convert(sysname,db_name()),TABLE_OWNER = convert(sysname,schema_name(o.schema_id)), TABLE_NAME = convert(sysname,o.name), COLUMN_NAME = convert(sysname,c.name), PK_NAME = convert(sysname,k.name) from sys.indexes i, sys.all_columns c, sys.all_objects o, sys.key_constraints k where o.object_id = c.object_id and o.object_id = i.object_id and k.parent_object_id = o.object_id and k.unique_index_id = i.index_id and i.is_primary_key = 1 order by 1, 2, 3, 5";
                 SQL SqlPK = new SQL(strConnectionString, strQueryString);
 
                 if (SqlPK.ExecuteReader(out strError))
@@ -387,7 +401,10 @@ namespace D00B
                     MessageBox.Show(strError);
                 SqlPK.Close();
 
-                strQueryString = "SELECT PKTABLE_QUALIFIER = CONVERT(SYSNAME,DB_NAME()), PKTABLE_OWNER = CONVERT(SYSNAME,SCHEMA_NAME(O1.SCHEMA_ID)), PKTABLE_NAME = CONVERT(SYSNAME,O1.NAME), PKCOLUMN_NAME = CONVERT(SYSNAME,C1.NAME), FKTABLE_QUALIFIER = CONVERT(SYSNAME,DB_NAME()), FKTABLE_OWNER = CONVERT(SYSNAME,SCHEMA_NAME(O2.SCHEMA_ID)), FKTABLE_NAME = CONVERT(SYSNAME,O2.NAME), FKCOLUMN_NAME = CONVERT(SYSNAME,C2.NAME), FK_NAME = CONVERT(SYSNAME,OBJECT_NAME(F.OBJECT_ID)), PK_NAME = CONVERT(SYSNAME,I.NAME), DEFERRABILITY = CONVERT(SMALLINT, 7) FROM SYS.OBJECTS O1, SYS.OBJECTS O2, SYS.COLUMNS C1, SYS.COLUMNS C2, SYS.FOREIGN_KEYS F INNER JOIN SYS.FOREIGN_KEY_COLUMNS K ON (K.CONSTRAINT_OBJECT_ID = F.OBJECT_ID) INNER JOIN SYS.INDEXES I ON (F.REFERENCED_OBJECT_ID = I.OBJECT_ID AND F.KEY_INDEX_ID = I.INDEX_ID) WHERE O1.OBJECT_ID = F.REFERENCED_OBJECT_ID AND O2.OBJECT_ID = F.PARENT_OBJECT_ID AND C1.OBJECT_ID = F.REFERENCED_OBJECT_ID AND C2.OBJECT_ID = F.PARENT_OBJECT_ID AND C1.COLUMN_ID = K.REFERENCED_COLUMN_ID AND C2.COLUMN_ID = K.PARENT_COLUMN_ID ORDER BY 1, 2, 3, 9, 4";
+                // Pk to FK section
+                pbData.Value = 4;
+
+                strQueryString = "select PKTABLE_QUALIFIER = convert(sysname,db_name()), PKTABLE_OWNER = convert(sysname,schema_name(o1.schema_id)), PKTABLE_NAME = convert(sysname,o1.name), PKCOLUMN_NAME = convert(sysname,c1.name), FKTABLE_QUALIFIER = convert(sysname,db_name()), FKTABLE_OWNER = convert(sysname,schema_name(o2.schema_id)), FKTABLE_NAME = convert(sysname,o2.name), FKCOLUMN_NAME = convert(sysname,c2.name), FK_NAME = convert(sysname,object_name(f.object_id)), PK_NAME = convert(sysname,i.name), DEFERRABILITY = convert(smallint, 7) from sys.objects o1, sys.objects o2, sys.columns c1, sys.columns c2, sys.foreign_keys f inner join sys.foreign_key_columns k on (k.constraint_object_id = f.object_id) inner join sys.indexes i on (f.referenced_object_id = i.object_id and f.key_index_id = i.index_id) where o1.object_id = f.referenced_object_id and o2.object_id = f.parent_object_id and c1.object_id = f.referenced_object_id and c2.object_id = f.parent_object_id and c1.column_id = k.referenced_column_id and c2.column_id = k.parent_column_id order by 1, 2, 3, 9, 4";
                 SQL SqlFK = new SQL(strConnectionString, strQueryString);
 
                 if (SqlFK.ExecuteReader(out strError))
@@ -418,61 +435,33 @@ namespace D00B
                     MessageBox.Show(strError);
                 SqlFK.Close();
 
-                // For every table get the list of the tables primary keys and foreign keys and map as two database keys, then get the table columns and if they are keys or not
-                pbData.Minimum = 1;
-                pbData.Maximum = m_TableMap.Count;
-                int nData = 0;
-                foreach (KeyValuePair<DBTableKey, DBTable> KVP in m_TableMap)
-                {
-                    pbData.Value = ++nData;
-                    DBTable Table = KVP.Value;
-/*
-                    // Build the list of adjacent tables for each column (edges!)
-                    strQueryString = "[sys].[sp_fkeys]";
-                    SQL SqlFK = new SQL(strConnectionString, strQueryString, true);
-                    SqlFK.AddWithValue("@pktable_name", Table.TableName, SqlDbType.NVarChar);
-                    SqlFK.AddWithValue("@pktable_owner", Table.TableSchema, SqlDbType.NVarChar);
-                    if (SqlFK.ExecuteReader(out strError))
-                    {
-                        if (!string.IsNullOrEmpty(strError))
-                            throw new Exception(strError);
-                        while (SqlFK.Read())
-                        {
-                            string strPKOwn = SqlFK.GetValue("PKTABLE_OWNER").ToString();
-                            string strPKTab = SqlFK.GetValue("PKTABLE_NAME").ToString();
-                            string strPKCol = SqlFK.GetValue("PKCOLUMN_NAME").ToString();
-                            string strFKOwn = SqlFK.GetValue("FKTABLE_OWNER").ToString();
-                            string strFKTab = SqlFK.GetValue("FKTABLE_NAME").ToString();
-                            string strFKCol = SqlFK.GetValue("FKCOLUMN_NAME").ToString();
+                // Columns section
+                pbData.Value = 5;
 
-                            // Keys
-                            Table.AddKeyMap(strPKOwn, strPKTab, strPKCol, strFKOwn, strFKTab, strFKCol);
-                        }
-                        SqlFK.Close();
-                    }
-*/
-                    // Build the list of columns (edges) for each table (room), some doors will be keyed
-                    strQueryString = "[sys].[sp_columns]";
-                    SQL SqlCol = new SQL(strConnectionString, strQueryString, true);
-                    SqlCol.AddWithValue("@table_name", Table.TableName, SqlDbType.NVarChar);
-                    SqlCol.AddWithValue("@table_owner", Table.TableSchema, SqlDbType.NVarChar);
-                    if (SqlCol.ExecuteReader(out strError))
+                // Now do columns
+                strQueryString = "[sys].[sp_columns]";
+                SQL SqlCol = new SQL(strConnectionString, strQueryString, true);
+                SqlCol.AddWithValue("@table_name", "%", SqlDbType.NVarChar);
+                SqlCol.AddWithValue("@table_owner", "dbo", SqlDbType.NVarChar);
+
+                if (SqlCol.ExecuteReader(out strError))
+                {
+                    if (!string.IsNullOrEmpty(strError))
+                        throw new Exception(strError);
+                    while (SqlCol.Read())
                     {
-                        if (!string.IsNullOrEmpty(strError))
-                            throw new Exception(strError);
-                        List<DBColumn> Columns = new List<DBColumn>();
-                        while (SqlCol.Read())
+                        string strTableOwner = SqlCol.GetValue("TABLE_OWNER").ToString();
+                        string strTableName = SqlCol.GetValue("TABLE_NAME").ToString();
+                        string strTableColumn = SqlCol.GetValue("COLUMN_NAME").ToString();
+
+                        DBTableKey TK = new DBTableKey(strTableOwner, strTableName, string.Empty);
+                        if (m_TableMap.ContainsKey(TK))
                         {
-                            string strCol = SqlCol.GetValue("COLUMN_NAME").ToString();
-                            string strTableOwner = SqlCol.GetValue("TABLE_OWNER").ToString();
-                            string strSqlDataType = SqlCol.GetValue("DATA_TYPE").ToString();
-                            DBTableKey TK = new DBTableKey(strTableOwner, Table.TableName, strCol);
-                            DBColumn DBColumn = new DBColumn(strCol, Table.ContainsPK(TK));
-                            Columns.Add(DBColumn);
+                            DBTable Table = m_TableMap[TK];
+                            Table.Columns.Add(new DBColumn(strTableColumn, Table.ContainsPK(new DBTableKey(strTableOwner, strTableName, strTableColumn))));
                         }
-                        Table.Columns = Columns;
-                        SqlCol.Close();
                     }
+                    SqlCol.Close();
                 }
             }
             catch { }

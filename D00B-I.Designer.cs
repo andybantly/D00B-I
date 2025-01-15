@@ -68,7 +68,7 @@
             this.txtConnString.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.txtConnString.Multiline = true;
             this.txtConnString.Name = "txtConnString";
-            this.txtConnString.Size = new System.Drawing.Size(880, 29);
+            this.txtConnString.Size = new System.Drawing.Size(880, 25);
             this.txtConnString.TabIndex = 6;
             // 
             // btnLoad
