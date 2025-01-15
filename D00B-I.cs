@@ -6,6 +6,7 @@ using System.Security.Principal;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.ComponentModel;
+using System.Threading;
 
 namespace D00B
 {
@@ -23,16 +24,20 @@ namespace D00B
         CArray m_Arr;
         int[] m_Width;
 
+        Dictionary<string, string> m_DataBases = new Dictionary<string, string>();
+
         // Built during progress reporting
         List<DBColumn> m_ColumnHeaders;
 
         int m_nCount = -1;
         int m_nPreview = 100;
-        Timer m_PBTimer = null;
+        System.Windows.Forms.Timer m_PBTimer = null;
+
+        Mutex m_Mutex = new Mutex();
 
         #region RESIZE
         // Screen rectangle and positions of the controls
-        private Rectangle m_DialogRect;
+        private System.Drawing.Rectangle m_DialogRect;
         private int m_btnLoadLeft;
         private int m_pbDataLeft;
         private int m_txtDataLeft;
@@ -50,7 +55,7 @@ namespace D00B
         private int m_dgvQueryHeight;
         private int m_txtQueryWidth;
         private int m_txtQueryTop;
-        private int m_cbDataBasesWidth;
+        private int m_cbDataBasesLeft;
         private int m_txtConnStringWidth;
         private int m_lvTablesWidth;
         private int m_lvColumnsWidth;
@@ -80,13 +85,18 @@ namespace D00B
             UpdateUI(false);
 
             string strUserID = WindowsIdentity.GetCurrent().Name;
-            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=AdventureWorks2022;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID));
-            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=master;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID));  // accidentally installed this to master, if you install it properly then you will need to change the catalog
-            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=WideWorldImporters;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID));
-            cbDataBases.Items.Add(string.Format(@"Data Source=.\;Initial Catalog=pubs;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID));
+            m_DataBases[@"Adventure Works 2022"] = string.Format(@"Data Source=.\;Initial Catalog=AdventureWorks2022;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID);
+            m_DataBases[@"Master"] = string.Format(@"Data Source=.\;Initial Catalog=master;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID);
+            m_DataBases[@"Wide World Importers"] = string.Format(@"Data Source=.\;Initial Catalog=WideWorldImporters;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID);
+            m_DataBases[@"Pubs"] = string.Format(@"Data Source=.\;Initial Catalog=pubs;MultipleActiveResultSets=True;Integrated Security=True;User ID={0};", strUserID);
+
+            cbDataBases.Items.Add(@"Adventure Works 2022");
+            cbDataBases.Items.Add(@"Master");
+            cbDataBases.Items.Add(@"Wide World Importers");
+            cbDataBases.Items.Add(@"Pubs");
             cbDataBases.SelectedIndex = 0;
 
-            txtConnString.Text = cbDataBases.Text;
+            txtConnString.Text = m_DataBases[cbDataBases.Text];
             chkPrevAll.Checked = false;
             txtPreview.Text = m_nPreview.ToString();
 
@@ -100,6 +110,7 @@ namespace D00B
             lvAdjTables.Font = Utility.m_Font;
             lvResults.View = View.Details;
             lvResults.Font = Utility.m_Font;
+            cbDataBases.Font = Utility.m_Font;
         }
         private void D00B_Resize(object sender, EventArgs e)
         {
@@ -129,7 +140,7 @@ namespace D00B
             m_dgvQueryHeight = dgvQuery.Height;
             m_txtQueryWidth = txtQuery.Width;
             m_txtQueryTop = txtQuery.Top;
-            m_cbDataBasesWidth = cbDataBases.Width;
+            m_cbDataBasesLeft = cbDataBases.Left;
             m_txtConnStringWidth = txtConnString.Width;
             m_lvTablesWidth = lvTables.Width;
             m_lvColumnsWidth = lvColumns.Width;
@@ -142,10 +153,10 @@ namespace D00B
         private void OnSizing()
         {
             // Get the dialog rectangle
-            Rectangle DialogRect = ClientRectangle;
+            System.Drawing.Rectangle DialogRect = ClientRectangle;
 
             // Get the dialog size delta
-            Point PtDiff = new Point(DialogRect.Right - m_DialogRect.Right, DialogRect.Bottom - m_DialogRect.Bottom);
+            System.Drawing.Point PtDiff = new System.Drawing.Point(DialogRect.Right - m_DialogRect.Right, DialogRect.Bottom - m_DialogRect.Bottom);
 
             // Move the load button
             btnLoad.Left = m_btnLoadLeft + PtDiff.X;
@@ -195,7 +206,7 @@ namespace D00B
             txtQuery.Top = m_txtQueryTop + PtDiff.Y;
 
             // Expand the database combobox
-            cbDataBases.Width = m_cbDataBasesWidth + PtDiff.X;
+            cbDataBases.Left = m_cbDataBasesLeft + PtDiff.X;
 
             // Expand the connection string text box
             txtConnString.Width = m_txtConnStringWidth + PtDiff.X;
@@ -269,6 +280,7 @@ namespace D00B
                 Utility.m_nMaxSchemaWidth = 0;
                 Utility.m_nMaxTableWidth = 0;
                 Utility.m_nMaxColumnWidth = 0;
+                int nTotalRows = 0;
                 int iSelectedIndex = 0;
                 m_TableMap = new Dictionary<DBTableKey, DBTable>();
                 if (SqlTables.ExecuteReader(out string strError))
@@ -290,6 +302,7 @@ namespace D00B
                                 nRows = nCount;
                             SqlCount.Close();
                         }
+                        nTotalRows += nRows;
 
                         DBTableKey TableKey = new DBTableKey(strSchema, strTable, string.Empty);
                         if (!m_TableMap.ContainsKey(TableKey))
@@ -349,28 +362,61 @@ namespace D00B
                     MessageBox.Show(strError);
                 SqlViews.Close();
 
-                foreach (KeyValuePair<DBTableKey, DBTable> kvp in m_TableMap)
+                // Now do primary keys
+                strQueryString = "SELECT TABLE_QUALIFIER = CONVERT(SYSNAME,DB_NAME()), TABLE_OWNER = CONVERT(SYSNAME,SCHEMA_NAME(O.SCHEMA_ID)), TABLE_NAME = CONVERT(SYSNAME,O.NAME), COLUMN_NAME = CONVERT(SYSNAME,C.NAME), PK_NAME = CONVERT(SYSNAME,K.NAME) FROM SYS.INDEXES I, SYS.ALL_COLUMNS C, SYS.ALL_OBJECTS O, SYS.KEY_CONSTRAINTS K WHERE O.OBJECT_ID = C.OBJECT_ID AND O.OBJECT_ID = I.OBJECT_ID AND K.PARENT_OBJECT_ID = O.OBJECT_ID AND K.UNIQUE_INDEX_ID = I.INDEX_ID AND I.IS_PRIMARY_KEY = 1 ORDER BY 1, 2, 3, 5";
+                SQL SqlPK = new SQL(strConnectionString, strQueryString);
+
+                if (SqlPK.ExecuteReader(out strError))
                 {
-                    DBTable Table = kvp.Value;
-                    strQueryString = "[sys].[sp_pkeys]";
-                    SQL SqlPK = new SQL(strConnectionString, strQueryString, true);
-                    SqlPK.AddWithValue("@table_name", Table.TableName, SqlDbType.NVarChar);
-                    SqlPK.AddWithValue("@table_owner", Table.TableSchema, SqlDbType.NVarChar);
-                    if (SqlPK.ExecuteReader(out strError))
+                    if (!string.IsNullOrEmpty(strError))
+                        throw new Exception(strError);
+                    while (SqlPK.Read())
                     {
-                        if (!string.IsNullOrEmpty(strError))
-                            throw new Exception(strError);
-                        while (SqlPK.Read())
+                        string strTableOwner = SqlPK.GetValue("TABLE_OWNER").ToString();
+                        string strTableName = SqlPK.GetValue("TABLE_NAME").ToString();
+                        string strColumnName = SqlPK.GetValue("COLUMN_NAME").ToString();
+                        DBTableKey TK = new DBTableKey(strTableOwner, strTableName, string.Empty);
+                        if (m_TableMap.ContainsKey(TK))
                         {
-                            string strTableOwner = SqlPK.GetValue("TABLE_OWNER").ToString();
-                            string strTableName = SqlPK.GetValue("TABLE_NAME").ToString();
-                            string strColumnName = SqlPK.GetValue("COLUMN_NAME").ToString();
-                            DBTableKey TK = new DBTableKey(strTableOwner, strTableName, strColumnName);
-                            Table.AddPK(TK);
+                            DBTable Table = m_TableMap[TK];
+                            Table.AddPK(new DBTableKey(strTableOwner, strTableName, strColumnName));
                         }
                     }
-                    SqlPK.Close();
                 }
+                else
+                    MessageBox.Show(strError);
+                SqlPK.Close();
+
+                strQueryString = "SELECT PKTABLE_QUALIFIER = CONVERT(SYSNAME,DB_NAME()), PKTABLE_OWNER = CONVERT(SYSNAME,SCHEMA_NAME(O1.SCHEMA_ID)), PKTABLE_NAME = CONVERT(SYSNAME,O1.NAME), PKCOLUMN_NAME = CONVERT(SYSNAME,C1.NAME), FKTABLE_QUALIFIER = CONVERT(SYSNAME,DB_NAME()), FKTABLE_OWNER = CONVERT(SYSNAME,SCHEMA_NAME(O2.SCHEMA_ID)), FKTABLE_NAME = CONVERT(SYSNAME,O2.NAME), FKCOLUMN_NAME = CONVERT(SYSNAME,C2.NAME), FK_NAME = CONVERT(SYSNAME,OBJECT_NAME(F.OBJECT_ID)), PK_NAME = CONVERT(SYSNAME,I.NAME), DEFERRABILITY = CONVERT(SMALLINT, 7) FROM SYS.OBJECTS O1, SYS.OBJECTS O2, SYS.COLUMNS C1, SYS.COLUMNS C2, SYS.FOREIGN_KEYS F INNER JOIN SYS.FOREIGN_KEY_COLUMNS K ON (K.CONSTRAINT_OBJECT_ID = F.OBJECT_ID) INNER JOIN SYS.INDEXES I ON (F.REFERENCED_OBJECT_ID = I.OBJECT_ID AND F.KEY_INDEX_ID = I.INDEX_ID) WHERE O1.OBJECT_ID = F.REFERENCED_OBJECT_ID AND O2.OBJECT_ID = F.PARENT_OBJECT_ID AND C1.OBJECT_ID = F.REFERENCED_OBJECT_ID AND C2.OBJECT_ID = F.PARENT_OBJECT_ID AND C1.COLUMN_ID = K.REFERENCED_COLUMN_ID AND C2.COLUMN_ID = K.PARENT_COLUMN_ID ORDER BY 1, 2, 3, 9, 4";
+                SQL SqlFK = new SQL(strConnectionString, strQueryString);
+
+                if (SqlFK.ExecuteReader(out strError))
+                {
+                    if (!string.IsNullOrEmpty(strError))
+                        throw new Exception(strError);
+                    while (SqlFK.Read())
+                    {
+                        string strPKOwn = SqlFK.GetValue("PKTABLE_OWNER").ToString();
+                        string strPKTab = SqlFK.GetValue("PKTABLE_NAME").ToString();
+
+                        DBTableKey TK = new DBTableKey(strPKOwn, strPKTab, string.Empty);
+                        if (m_TableMap.ContainsKey(TK))
+                        {
+                            DBTable Table = m_TableMap[TK];
+
+                            string strPKCol = SqlFK.GetValue("PKCOLUMN_NAME").ToString();
+                            string strFKOwn = SqlFK.GetValue("FKTABLE_OWNER").ToString();
+                            string strFKTab = SqlFK.GetValue("FKTABLE_NAME").ToString();
+                            string strFKCol = SqlFK.GetValue("FKCOLUMN_NAME").ToString();
+
+                            // Keys
+                            Table.AddKeyMap(strPKOwn, strPKTab, strPKCol, strFKOwn, strFKTab, strFKCol);
+                        }
+                    }
+                }
+                else
+                    MessageBox.Show(strError);
+                SqlFK.Close();
 
                 // For every table get the list of the tables primary keys and foreign keys and map as two database keys, then get the table columns and if they are keys or not
                 pbData.Minimum = 1;
@@ -380,7 +426,7 @@ namespace D00B
                 {
                     pbData.Value = ++nData;
                     DBTable Table = KVP.Value;
-
+/*
                     // Build the list of adjacent tables for each column (edges!)
                     strQueryString = "[sys].[sp_fkeys]";
                     SQL SqlFK = new SQL(strConnectionString, strQueryString, true);
@@ -404,7 +450,7 @@ namespace D00B
                         }
                         SqlFK.Close();
                     }
-
+*/
                     // Build the list of columns (edges) for each table (room), some doors will be keyed
                     strQueryString = "[sys].[sp_columns]";
                     SQL SqlCol = new SQL(strConnectionString, strQueryString, true);
@@ -1149,7 +1195,7 @@ namespace D00B
             // Sort the indexed column and rearrange
             m_Arr.ParallelSort(e.ColumnIndex);
 
-            m_ColumnHeaders[e.ColumnIndex].SortOrder = m_ColumnHeaders[e.ColumnIndex].SortOrder == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
+            m_ColumnHeaders[e.ColumnIndex].SortOrder = m_ColumnHeaders[e.ColumnIndex].SortOrder == System.Windows.Forms.SortOrder.Ascending ? System.Windows.Forms.SortOrder.Descending : System.Windows.Forms.SortOrder.Ascending;
             dgvQuery.Invalidate();
 
             // Set the default cursor
@@ -1506,6 +1552,11 @@ namespace D00B
             if (iResIdx == -1)
                 return;
 
+            string strTables = string.Empty;
+            for (int i = 0; i < lvResults.Items.Count; i++)
+                strTables += lvResults.Items[i].SubItems[1].Text + "\r\n";
+            //MessageBox.Show(strTables);
+
             string strSchema = lvResults.SelectedItems[0].Text;
             string strTable = lvResults.SelectedItems[0].SubItems[1].Text;
 
@@ -1522,7 +1573,7 @@ namespace D00B
 
         private void CbDataBases_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            txtConnString.Text = cbDataBases.Text;
+            txtConnString.Text = m_DataBases[cbDataBases.Text];
 
             // Reload the view
             UpdateUI(LoadView());
@@ -1625,7 +1676,7 @@ namespace D00B
             }
         }
 
-        // Finish up and shpw the results
+        // Finish up and show the results
         private void FinishBackgroundSQL()
         {
             using (dgvQuery.SuspendDrawing())
@@ -1825,7 +1876,7 @@ namespace D00B
         {
             pbData.Value = pbData.Maximum;
             if (m_PBTimer == null)
-                m_PBTimer = new Timer();
+                m_PBTimer = new System.Windows.Forms.Timer();
             m_PBTimer.Stop();
             m_PBTimer.Tick += new EventHandler(TimerProcessor);
             m_PBTimer.Interval = 500;
@@ -1953,5 +2004,10 @@ namespace D00B
             }
         }
         #endregion // THREADING
+
+        private void btnAddConnection_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

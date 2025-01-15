@@ -293,7 +293,10 @@ namespace D00B
             if (m_Reader != null)
                 m_Reader = null;
             if (m_Connection != null)
+            {
+                m_Connection.Dispose();
                 m_Connection = null;
+            }
             if (m_Command != null)
                 m_Command = null;
             Cleanup();
