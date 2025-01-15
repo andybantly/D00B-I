@@ -58,6 +58,7 @@
             this.lb3 = new System.Windows.Forms.Label();
             this.dgvQuery = new System.Windows.Forms.DataGridView();
             this.btnResetJoin = new System.Windows.Forms.Button();
+            this.btnAddConnection = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvQuery)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,7 +106,7 @@
             this.chkHdr.Location = new System.Drawing.Point(1636, 1960);
             this.chkHdr.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.chkHdr.Name = "chkHdr";
-            this.chkHdr.Size = new System.Drawing.Size(99, 17);
+            this.chkHdr.Size = new System.Drawing.Size(121, 20);
             this.chkHdr.TabIndex = 13;
             this.chkHdr.Text = "Include Header";
             this.chkHdr.UseVisualStyleBackColor = true;
@@ -341,7 +342,7 @@
             this.cbDataBases.Location = new System.Drawing.Point(1284, 9);
             this.cbDataBases.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.cbDataBases.Name = "cbDataBases";
-            this.cbDataBases.Size = new System.Drawing.Size(250, 24);
+            this.cbDataBases.Size = new System.Drawing.Size(1069, 28);
             this.cbDataBases.TabIndex = 37;
             this.cbDataBases.SelectionChangeCommitted += new System.EventHandler(this.CbDataBases_SelectionChangeCommitted);
             // 
@@ -425,10 +426,23 @@
             this.btnResetJoin.UseVisualStyleBackColor = true;
             this.btnResetJoin.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnResetJoin_Click);
             // 
+            // btnAddConnection
+            // 
+            this.btnAddConnection.Enabled = false;
+            this.btnAddConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAddConnection.Location = new System.Drawing.Point(1166, 5);
+            this.btnAddConnection.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            this.btnAddConnection.Name = "btnAddConnection";
+            this.btnAddConnection.Size = new System.Drawing.Size(114, 35);
+            this.btnAddConnection.TabIndex = 50;
+            this.btnAddConnection.Text = "Add Connection";
+            this.btnAddConnection.UseVisualStyleBackColor = true;
+            // 
             // D00B
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(1743, 780);
+            this.Controls.Add(this.btnAddConnection);
             this.Controls.Add(this.btnResetJoin);
             this.Controls.Add(this.dgvQuery);
             this.Controls.Add(this.lb3);
@@ -501,6 +515,7 @@
         private System.Windows.Forms.Label lb3;
         private System.Windows.Forms.DataGridView dgvQuery;
         private System.Windows.Forms.Button btnResetJoin;
+        private System.Windows.Forms.Button btnAddConnection;
     }
 }
 

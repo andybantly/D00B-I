@@ -46,6 +46,7 @@ namespace D00B
         private int m_chkExactLeft;
         private int m_chkTableLeft;
         private int m_chkDataLeft;
+        private int m_btnAddConnectionLeft;
         private int m_btnSearchLeft;
         private int m_btnJoinLeft;
         private int m_btnResetJoinLeft;
@@ -131,6 +132,7 @@ namespace D00B
             m_chkExactLeft = chkExact.Left;
             m_chkTableLeft = chkTable.Left;
             m_chkDataLeft = chkData.Left;
+            m_btnAddConnectionLeft = btnAddConnection.Left;
             m_btnSearchLeft = btnSearch.Left;
             m_btnJoinLeft = btnJoin.Left;
             m_btnResetJoinLeft = btnResetJoin.Left;
@@ -181,6 +183,9 @@ namespace D00B
 
             // Move the data check box
             chkData.Left = m_chkDataLeft + PtDiff.X;
+
+            // Move the add button
+            btnAddConnection.Left = m_btnAddConnectionLeft + PtDiff.X;
 
             // Move the search button
             btnSearch.Left = m_btnSearchLeft + PtDiff.X;
@@ -243,6 +248,7 @@ namespace D00B
             label2.Enabled = bEnabled;
             tbTables.Enabled = bEnabled;
             txtSearch.Enabled = bEnabled;
+            btnAddConnection.Enabled = true;
             btnSearch.Enabled = bEnabled;
             lvResults.Enabled = bEnabled;
             chkTable.Enabled = bEnabled;
@@ -1551,11 +1557,6 @@ namespace D00B
             int iResIdx = ResultTableIndex();
             if (iResIdx == -1)
                 return;
-
-            string strTables = string.Empty;
-            for (int i = 0; i < lvResults.Items.Count; i++)
-                strTables += lvResults.Items[i].SubItems[1].Text + "\r\n";
-            //MessageBox.Show(strTables);
 
             string strSchema = lvResults.SelectedItems[0].Text;
             string strTable = lvResults.SelectedItems[0].SubItems[1].Text;
