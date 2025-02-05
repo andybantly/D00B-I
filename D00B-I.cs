@@ -6,7 +6,6 @@ using System.Security.Principal;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.ComponentModel;
-using System.Threading;
 
 namespace D00B
 {
@@ -32,8 +31,6 @@ namespace D00B
         int m_nCount = -1;
         int m_nPreview = 100;
         System.Windows.Forms.Timer m_PBTimer = null;
-
-        Mutex m_Mutex = new Mutex();
 
         #region RESIZE
         // Screen rectangle and positions of the controls
@@ -270,13 +267,20 @@ namespace D00B
                 Cursor.Current = Cursors.WaitCursor;
                 string strConnectionString = txtConnString.Text;
 
+                Utility.m_nMaxSchemaWidth = 0;
+                Utility.m_nMaxTableWidth = 0;
+                Utility.m_nMaxColumnWidth = 0;
+                int nTotalRows = 0;
+                int iSelectedIndex = 0;
+                m_TableMap = new Dictionary<DBTableKey, DBTable>();
+
                 // Move the progress bar along for something to watch
                 pbData.Minimum = 1;
                 pbData.Maximum = 5;
 
                 // Rows section
                 pbData.Value = 1;
-                    
+
                 // Count of rows in each table
                 string strQueryString;
                 if (cbSchema.SelectedIndex == 0)
@@ -285,12 +289,6 @@ namespace D00B
                     strQueryString = string.Format("select distinct schema_name(t.schema_id) as schema_name, t.name as table_name, p.[Rows] 'Rows' from sys.tables as t INNER JOIN sys.indexes as i ON t.OBJECT_ID = i.object_id INNER JOIN sys.partitions p ON i.object_id = p.OBJECT_ID AND i.index_id = p.index_id where p.[Rows] >= 0 and schema_name(t.schema_id) = '{0}' order by schema_name;", cbSchema.Text);
                 SQL SqlTables = new SQL(strConnectionString, strQueryString);
 
-                Utility.m_nMaxSchemaWidth = 0;
-                Utility.m_nMaxTableWidth = 0;
-                Utility.m_nMaxColumnWidth = 0;
-                int nTotalRows = 0;
-                int iSelectedIndex = 0;
-                m_TableMap = new Dictionary<DBTableKey, DBTable>();
                 if (SqlTables.ExecuteReader(out string strError))
                 {
                     if (!string.IsNullOrEmpty(strError))
@@ -442,7 +440,7 @@ namespace D00B
                 strQueryString = "[sys].[sp_columns]";
                 SQL SqlCol = new SQL(strConnectionString, strQueryString, true);
                 SqlCol.AddWithValue("@table_name", "%", SqlDbType.NVarChar);
-                SqlCol.AddWithValue("@table_owner", "dbo", SqlDbType.NVarChar);
+                SqlCol.AddWithValue("@table_owner", "%", SqlDbType.NVarChar);
 
                 if (SqlCol.ExecuteReader(out strError))
                 {
